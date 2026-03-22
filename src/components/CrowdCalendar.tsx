@@ -8,15 +8,27 @@ import { DayWeather } from "@/app/api/weather/route";
 import { DayTicketPrice } from "@/app/api/ticket-prices/route";
 
 // ── ホテルアフィリエイトリンク生成 ──────────────────────
-// ※ ASP登録後にアフィリエイトIDをURLに追加してください
 function hotelLinks(dateStr: string) {
   const [y, m, d] = dateStr.split("-");
-  const checkIn  = `${y}/${m}/${d}`;
   const nextDay  = new Date(Number(y), Number(m) - 1, Number(d) + 1);
-  const checkOut = `${nextDay.getFullYear()}/${String(nextDay.getMonth() + 1).padStart(2, "0")}/${String(nextDay.getDate()).padStart(2, "0")}`;
+  const co_y = String(nextDay.getFullYear());
+  const co_m = String(nextDay.getMonth() + 1).padStart(2, "0");
+  const co_d = String(nextDay.getDate()).padStart(2, "0");
+
+  // Shift-JIS encoded "舞浜" (%95%91=舞, %95%6C=浜)
+  // encodeURIComponentを使うとUTF-8に変換されてじゃらんの旧サーバーで文字化けするため
+  // 手動でURLエンコード済み文字列を1段階だけ組み立てる
+  const kw = "%95%91%95%6C";
+  const a8dest =
+    "https%3A%2F%2Fwww.jalan.net%2Fuw%2Fuwp2011%2Fuww2011init.do" +
+    `%3Fkeyword%3D${kw}%26distCd%3D06%26rootCd%3D7701` +
+    `%26stayFrom%3D${y}%2F${m}%2F${d}` +
+    `%26stayTo%3D${co_y}%2F${co_m}%2F${co_d}` +
+    "%26adultNum%3D2%26roomNum%3D1";
+
   return {
-    jalan: `https://px.a8.net/svt/ejp?a8mat=4AZLSM+5N0U2A+14CS+64RJ5&a8ejpredirect=${encodeURIComponent(`https://www.jalan.net/uw/uwp2011/uww2011init.do?distCd=06&rootCd=7701&stayFrom=${checkIn}&stayTo=${checkOut}&adultNum=2&roomNum=1`)}`,
-    rakuten: `https://travel.rakuten.co.jp/yado/search/?f_checkin=${y}${m}${d}&f_checkout=${nextDay.getFullYear()}${String(nextDay.getMonth()+1).padStart(2,"0")}${String(nextDay.getDate()).padStart(2,"0")}&f_area_cd=129`,
+    jalan: `https://px.a8.net/svt/ejp?a8mat=4AZLSM+5N0U2A+14CS+64RJ5&a8ejpredirect=${a8dest}`,
+    rakuten: `https://travel.rakuten.co.jp/yado/search/?f_checkin=${y}${m}${d}&f_checkout=${co_y}${co_m}${co_d}&f_area_cd=129`,
   };
 }
 
