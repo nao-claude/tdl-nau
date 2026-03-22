@@ -173,7 +173,7 @@ export function AreaMap({ parkId }: Props) {
                           <div className="w-14 h-14 rounded-xl bg-gray-200 shrink-0" />
                         )}
                         <div className="min-w-0">
-                          <span className={`text-base font-semibold truncate block ${attraction.is_open ? "text-gray-800" : "text-gray-400"}`}>
+                          <span className={`text-sm md:text-base font-semibold truncate block ${attraction.is_open ? "text-gray-800" : "text-gray-400"}`}>
                             {attraction.nameJa}
                           </span>
                           {passes.length > 0 && (
