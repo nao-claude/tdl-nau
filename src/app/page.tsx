@@ -13,17 +13,6 @@ export default function Home() {
               <p className="text-xs text-gray-500">東京ディズニーランド・シー リアルタイム待ち時間</p>
             </div>
           </div>
-          <div className="text-xs text-gray-400 text-right">
-            <p>データ提供:</p>
-            <a
-              href="https://queue-times.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:underline"
-            >
-              Queue-Times.com
-            </a>
-          </div>
         </div>
       </header>
 
