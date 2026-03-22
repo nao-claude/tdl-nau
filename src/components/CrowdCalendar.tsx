@@ -15,7 +15,7 @@ function hotelLinks(dateStr: string) {
   const nextDay  = new Date(Number(y), Number(m) - 1, Number(d) + 1);
   const checkOut = `${nextDay.getFullYear()}/${String(nextDay.getMonth() + 1).padStart(2, "0")}/${String(nextDay.getDate()).padStart(2, "0")}`;
   return {
-    jalan: `https://www.jalan.net/yad334/search/?stayFrom=${checkIn}&stayTo=${checkOut}&adultNum=2&roomNum=1`,
+    jalan: `https://px.a8.net/svt/ejp?a8mat=4AZLSM+5N0U2A+14CS+64RJ5&a8ejpredirect=${encodeURIComponent(`https://www.jalan.net/yad334/search/?stayFrom=${checkIn}&stayTo=${checkOut}&adultNum=2&roomNum=1`)}`,
     rakuten: `https://travel.rakuten.co.jp/yado/search/?f_checkin=${y}${m}${d}&f_checkout=${nextDay.getFullYear()}${String(nextDay.getMonth()+1).padStart(2,"0")}${String(nextDay.getDate()).padStart(2,"0")}&f_area_cd=129`,
   };
 }
