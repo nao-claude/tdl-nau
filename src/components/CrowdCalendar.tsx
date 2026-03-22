@@ -21,8 +21,7 @@ function hotelLinks(dateStr: string) {
   const jalanUrl =
     `https://www.jalan.net/uw/uwp2011/uww2011init.do` +
     `?keyword=${kw}&distCd=06&rootCd=7701` +
-    `&stayFrom=${y}${m}${d}` +
-    `&stayTo=${co_y}${co_m}${co_d}` +
+    `&stayYear=${y}&stayMonth=${Number(m)}&stayDay=${Number(d)}` +
     `&adultNum=2&roomNum=1`;
 
   return {
