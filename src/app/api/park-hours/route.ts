@@ -35,10 +35,24 @@ export async function GET() {
     const html = await res.text();
 
     // ticketPopup = { "20260323": { "tdl": { "openTime": { "open": "9:00", "close": "21:00" } }, "tds": {...} } }
-    const match = html.match(/var ticketPopup\s*=\s*(\{[\s\S]*?\});\s*\n/);
-    if (!match) return NextResponse.json(fallback());
+    // ネストされたJSONを正確に取得するためブレースカウンタで抽出
+    const startIdx = html.indexOf("var ticketPopup");
+    if (startIdx === -1) return NextResponse.json(fallback());
+    const jsonStart = html.indexOf("{", startIdx);
+    if (jsonStart === -1) return NextResponse.json(fallback());
 
-    const popup = JSON.parse(match[1]);
+    let depth = 0;
+    let jsonEnd = -1;
+    for (let i = jsonStart; i < html.length; i++) {
+      if (html[i] === "{") depth++;
+      else if (html[i] === "}") {
+        depth--;
+        if (depth === 0) { jsonEnd = i; break; }
+      }
+    }
+    if (jsonEnd === -1) return NextResponse.json(fallback());
+
+    const popup = JSON.parse(html.slice(jsonStart, jsonEnd + 1));
     const today = popup[ymd];
     if (!today) return NextResponse.json(fallback());
 
