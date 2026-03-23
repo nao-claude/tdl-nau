@@ -29,7 +29,7 @@ export function MainTabs() {
   return (
     <div>
       {/* 今日のサマリー */}
-      {tab !== "calendar" && <TodaySummary parkId={park} />}
+      <TodaySummary parkId={park} />
 
       {/* タブナビ */}
       <div className="max-w-4xl mx-auto px-4 pt-4">

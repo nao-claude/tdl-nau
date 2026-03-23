@@ -16,7 +16,10 @@ const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 
 export function TodaySummary({ parkId }: Props) {
   const [data, setData] = useState<ParkData | null>(null);
-  const [hours, setHours] = useState<TodayParkHours | null>(null);
+  const [hours, setHours] = useState<TodayParkHours>({
+    tdl: { open: "9:00", close: "21:00" },
+    tds: { open: "9:00", close: "21:00" },
+  });
 
   useEffect(() => {
     fetch(`/api/wait-times/${parkId}`)
@@ -61,8 +64,7 @@ export function TodaySummary({ parkId }: Props) {
             {holidayName && (
               <p className="text-xs text-red-500 font-medium">{holidayName}</p>
             )}
-            {hours && (
-              <div className="flex flex-col gap-0 mt-0.5">
+            <div className="flex flex-col gap-0 mt-0.5">
                 {hours.tdl && (
                   <p className="text-xs text-gray-500">ランド: {hours.tdl.open}〜{hours.tdl.close}</p>
                 )}
@@ -70,7 +72,6 @@ export function TodaySummary({ parkId }: Props) {
                   <p className="text-xs text-gray-500">シー: {hours.tds.open}〜{hours.tds.close}</p>
                 )}
               </div>
-            )}
           </div>
 
           {/* 統計 */}
