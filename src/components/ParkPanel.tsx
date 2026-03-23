@@ -94,7 +94,7 @@ export function ParkPanel({ parkId, parkName }: Props) {
       {/* アトラクション一覧 */}
       {(() => {
         const parkHour = hours[parkId];
-        if (!isWithinParkHours(parkHour.open, parkHour.close)) {
+        if (parkHour && !isWithinParkHours(parkHour.open, parkHour.close)) {
           const now = new Date();
           const nowMin = now.getHours() * 60 + now.getMinutes();
           const [oh, om] = parkHour.open.split(":").map(Number);
