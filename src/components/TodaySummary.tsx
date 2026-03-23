@@ -65,6 +65,7 @@ export function TodaySummary({ parkId }: Props) {
               <p className="text-xs text-red-500 font-medium">{holidayName}</p>
             )}
             <div className="flex flex-col gap-0 mt-0.5">
+                <p className="text-xs text-gray-400 font-medium">本日の営業時間</p>
                 {hours.tdl && (
                   <p className="text-xs text-gray-500">ランド: {hours.tdl.open}〜{hours.tdl.close}</p>
                 )}
