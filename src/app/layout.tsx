@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -35,28 +36,22 @@ export default function RootLayout({
       lang="ja"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head>
-        <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-1MCFQBSRF2"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-1MCFQBSRF2');
-            `,
-          }}
-        />
-        <script
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-1MCFQBSRF2" strategy="afterInteractive" />
+        <Script id="ga4" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-1MCFQBSRF2');
+        `}</Script>
+        <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8944633356519670"
           crossOrigin="anonymous"
+          strategy="afterInteractive"
         />
-      </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      </body>
     </html>
   );
 }
