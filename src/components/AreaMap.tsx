@@ -94,8 +94,24 @@ export function AreaMap({ parkId }: Props) {
   // お気に入りのアトラクション一覧
   const favoriteAttractions = effectiveAttractions.filter((a) => isFavorite(a.id));
 
+  const parkName = parkId === "tdl" ? "東京ディズニーランド" : "東京ディズニーシー";
+  const totalCount = data?.attractions.length ?? 0;
+  const openCount = effectiveAttractions.filter((a) => a.is_open).length;
+  const maxWaitAll = effectiveAttractions.reduce((m, a) => Math.max(m, a.wait_time), 0);
+
   return (
     <div className="flex flex-col gap-3">
+      {/* パーク名ヘッダー */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-gray-800">{parkName}</h2>
+          <p className="text-sm text-gray-500">
+            {openCount}/{totalCount} 営業中
+            {maxWaitAll > 0 && <span className="ml-2">最大 <span className="font-semibold text-red-500">{maxWaitAll}分</span></span>}
+          </p>
+        </div>
+      </div>
+
       {/* お気に入り説明 */}
       <p className="text-xs text-gray-400">♡ をタップしてお気に入り登録。次回から素早く確認できます。</p>
 
