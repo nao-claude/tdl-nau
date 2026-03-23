@@ -9,6 +9,15 @@ import { getAttractionPasses } from "@/lib/attraction-passes";
 import { getAttractionImageUrl } from "@/lib/attraction-images";
 import { ShowSchedule } from "./ShowSchedule";
 import Image from "next/image";
+import { TodayParkHours } from "@/app/api/park-hours/route";
+
+function isWithinParkHours(open: string, close: string): boolean {
+  const now = new Date();
+  const [oh, om] = open.split(":").map(Number);
+  const [ch, cm] = close.split(":").map(Number);
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  return nowMin >= oh * 60 + om && nowMin < ch * 60 + cm;
+}
 
 interface Props {
   parkId: ParkId;
@@ -39,8 +48,16 @@ export function AreaMap({ parkId }: Props) {
   const [lastUpdated, setLastUpdated] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [hours, setHours] = useState<TodayParkHours | null>(null);
   const areas = parkId === "tdl" ? TDL_AREAS : TDS_AREAS;
   const { isFavorite, toggle, count } = useFavorites();
+
+  useEffect(() => {
+    fetch("/api/park-hours")
+      .then((r) => r.json())
+      .then(setHours)
+      .catch(() => {});
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -63,6 +80,26 @@ export function AreaMap({ parkId }: Props) {
 
   // お気に入りのアトラクション一覧（待ち時間降順）
   const favoriteAttractions = data?.attractions.filter((a) => isFavorite(a.id)) ?? [];
+
+  const parkHour = hours?.[parkId];
+  if (parkHour && !isWithinParkHours(parkHour.open, parkHour.close)) {
+    const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
+    const [oh, om] = parkHour.open.split(":").map(Number);
+    const isBefore = nowMin < oh * 60 + om;
+    return (
+      <div className="flex flex-col items-center justify-center py-16 gap-2 text-gray-400">
+        <span className="text-4xl">🏰</span>
+        <p className="font-semibold text-gray-600">
+          {isBefore ? "開園前です" : "閉園しました"}
+        </p>
+        <p className="text-sm">
+          {isBefore
+            ? `本日の開園時間: ${parkHour.open}`
+            : `本日の営業は終了しました（${parkHour.close} 閉園）`}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-3">
