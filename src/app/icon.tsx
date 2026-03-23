@@ -21,26 +21,26 @@ export default function Icon() {
         }}
       >
         {/* 星 */}
-        <div style={{ position: "absolute", top: 3, left: 14, fontSize: 6, color: "#ffe066", lineHeight: 1 }}>★</div>
-        <div style={{ position: "absolute", top: 5, left: 6, fontSize: 4, color: "#ffe066", lineHeight: 1 }}>★</div>
-        <div style={{ position: "absolute", top: 4, right: 6, fontSize: 4, color: "#ffe066", lineHeight: 1 }}>★</div>
+        <div style={{ position: "absolute", top: 2, left: 13, fontSize: 8, color: "#ffe066", lineHeight: 1 }}>★</div>
+        <div style={{ position: "absolute", top: 4, left: 4, fontSize: 5, color: "#ffe066", lineHeight: 1 }}>★</div>
+        <div style={{ position: "absolute", top: 3, right: 4, fontSize: 5, color: "#ffe066", lineHeight: 1 }}>★</div>
 
         {/* 城のシルエット */}
-        <div style={{ display: "flex", alignItems: "flex-end", position: "absolute", bottom: 4 }}>
+        <div style={{ display: "flex", alignItems: "flex-end", position: "absolute", bottom: 2 }}>
           {/* 左小塔 */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginRight: 1 }}>
-            <div style={{ width: 1, height: 4, background: "#ffe066" }} />
-            <div style={{ width: 5, height: 6, background: "#f0c040", borderRadius: "1px 1px 0 0" }} />
+            <div style={{ width: 2, height: 5, background: "#ffe066" }} />
+            <div style={{ width: 7, height: 8, background: "#f0c040", borderRadius: "1px 1px 0 0" }} />
           </div>
           {/* 中央大塔 */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginRight: 1 }}>
-            <div style={{ width: 1, height: 6, background: "#ffe066" }} />
-            <div style={{ width: 8, height: 10, background: "#f5d060", borderRadius: "1px 1px 0 0" }} />
+            <div style={{ width: 2, height: 8, background: "#ffe066" }} />
+            <div style={{ width: 10, height: 13, background: "#f5d060", borderRadius: "1px 1px 0 0" }} />
           </div>
           {/* 右小塔 */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ width: 1, height: 4, background: "#ffe066" }} />
-            <div style={{ width: 5, height: 6, background: "#f0c040", borderRadius: "1px 1px 0 0" }} />
+            <div style={{ width: 2, height: 5, background: "#ffe066" }} />
+            <div style={{ width: 7, height: 8, background: "#f0c040", borderRadius: "1px 1px 0 0" }} />
           </div>
         </div>
       </div>
