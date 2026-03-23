@@ -26,7 +26,7 @@ export async function GET() {
           "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
           "Accept-Language": "ja,en;q=0.9",
         },
-        next: { revalidate: 3600 },
+        next: { revalidate: 28800 }, // 8時間キャッシュ（1日3回のみ取得）
       }
     );
 
@@ -60,7 +60,7 @@ export async function GET() {
       tdl: today.tdl?.openTime ?? null,
       tds: today.tds?.openTime ?? null,
     } as TodayParkHours, {
-      headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=300" },
+      headers: { "Cache-Control": "public, s-maxage=28800, stale-while-revalidate=86400" },
     });
   } catch {
     return NextResponse.json(fallback());
