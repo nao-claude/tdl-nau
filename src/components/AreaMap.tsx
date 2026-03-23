@@ -184,7 +184,9 @@ export function AreaMap({ parkId }: Props) {
                           )}
                         </div>
                       </div>
-                      {waitBadge(attraction)}
+                      <div className="shrink-0">
+                        {waitBadge(attraction)}
+                      </div>
                     </div>
                   );
                 })}
