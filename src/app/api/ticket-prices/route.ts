@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+import { STATIC_TICKET_PRICES } from "@/lib/ticket-prices-static";
 
 export interface DayTicketPrice {
   date: string; // "YYYY-MM-DD"
   tdlPrice: number | null;
   tdsPrice: number | null;
+}
+
+function staticFallback(year: number, month: number): DayTicketPrice[] {
+  const prefix = `${year}-${String(month).padStart(2, "0")}`;
+  const entries = Object.entries(STATIC_TICKET_PRICES)
+    .filter(([date]) => date.startsWith(prefix));
+  if (entries.length === 0) return [];
+  return entries.map(([date, p]) => ({ date, tdlPrice: p.tdl, tdsPrice: p.tds }));
 }
 
 export async function GET(req: NextRequest) {
@@ -26,7 +35,7 @@ export async function GET(req: NextRequest) {
       }
     );
 
-    if (!res.ok) return NextResponse.json([], { status: 200 });
+    if (!res.ok) return NextResponse.json(staticFallback(year, month), { status: 200 });
 
     const html = await res.text();
 
@@ -56,10 +65,18 @@ export async function GET(req: NextRequest) {
         tdsPrice: tdsPrices.get(date) ?? null,
       }));
 
-    return NextResponse.json(result, {
+    // スクレイピングで取得できなかった日付はフォールバックで補完
+    const fallback = staticFallback(year, month);
+    const resultDates = new Set(result.map((r) => r.date));
+    const merged = [
+      ...result,
+      ...fallback.filter((f) => !resultDates.has(f.date)),
+    ].sort((a, b) => a.date.localeCompare(b.date));
+
+    return NextResponse.json(merged.length > 0 ? merged : fallback, {
       headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=300" },
     });
   } catch {
-    return NextResponse.json([]);
+    return NextResponse.json(staticFallback(year, month));
   }
 }
