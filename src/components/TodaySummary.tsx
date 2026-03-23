@@ -131,18 +131,10 @@ export function TodaySummary({ parkId }: Props) {
 
         {/* 今日の宿リンク */}
         <a
-          href={jalanTodayHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 flex items-center justify-center gap-1.5 w-full py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-colors"
-        >
-          🏨 今日の舞浜・浦安の宿を探す（じゃらん）
-        </a>
-        <a
           href={rakutenTodayHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-1.5 flex items-center justify-center gap-1.5 w-full py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-bold transition-colors"
+          className="mt-2 flex items-center justify-center gap-1.5 w-full py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-bold transition-colors"
         >
           🏨 今日の舞浜・浦安の宿を探す（楽天トラベル）
         </a>
