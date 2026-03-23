@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ParkId, ParkData } from "@/types";
 import { getMonthCalendar, CROWD_INFO } from "@/lib/crowd-prediction";
 import { getHolidayName } from "@/lib/holidays";
+import { TodayParkHours } from "@/app/api/park-hours/route";
 
 interface Props {
   parkId: ParkId;
@@ -15,6 +16,7 @@ const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 
 export function TodaySummary({ parkId }: Props) {
   const [data, setData] = useState<ParkData | null>(null);
+  const [hours, setHours] = useState<TodayParkHours | null>(null);
 
   useEffect(() => {
     fetch(`/api/wait-times/${parkId}`)
@@ -22,6 +24,13 @@ export function TodaySummary({ parkId }: Props) {
       .then(setData)
       .catch(() => {});
   }, [parkId]);
+
+  useEffect(() => {
+    fetch("/api/park-hours")
+      .then((r) => r.json())
+      .then(setHours)
+      .catch(() => {});
+  }, []);
 
   const today = new Date();
   const days = getMonthCalendar(today.getFullYear(), today.getMonth() + 1);
@@ -46,11 +55,21 @@ export function TodaySummary({ parkId }: Props) {
     <div className="bg-white border-b border-gray-100">
       <div className="max-w-4xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-3">
-          {/* 日付・祝日 */}
+          {/* 日付・祝日・営業時間 */}
           <div className="min-w-0">
             <p className="text-sm font-semibold text-gray-800">{dateLabel}</p>
             {holidayName && (
               <p className="text-xs text-red-500 font-medium">{holidayName}</p>
+            )}
+            {hours && (
+              <div className="flex flex-col gap-0 mt-0.5">
+                {hours.tdl && (
+                  <p className="text-xs text-gray-500">🏰 {hours.tdl.open}〜{hours.tdl.close}</p>
+                )}
+                {hours.tds && (
+                  <p className="text-xs text-gray-500">⛵ {hours.tds.open}〜{hours.tds.close}</p>
+                )}
+              </div>
             )}
           </div>
 
