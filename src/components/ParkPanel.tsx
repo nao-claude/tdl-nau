@@ -6,17 +6,36 @@ import { WaitTimeCard } from "./WaitTimeCard";
 import { RefreshCw } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { ShowSchedule } from "./ShowSchedule";
+import { TodayParkHours } from "@/app/api/park-hours/route";
 
 interface Props {
   parkId: ParkId;
   parkName: string;
 }
 
+function isWithinParkHours(open: string, close: string): boolean {
+  const now = new Date();
+  const [oh, om] = open.split(":").map(Number);
+  const [ch, cm] = close.split(":").map(Number);
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const openMin = oh * 60 + om;
+  const closeMin = ch * 60 + cm;
+  return nowMin >= openMin && nowMin < closeMin;
+}
+
 export function ParkPanel({ parkId, parkName }: Props) {
   const [data, setData] = useState<ParkData | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string>("");
+  const [hours, setHours] = useState<TodayParkHours | null>(null);
   const { isFavorite, toggle } = useFavorites();
+
+  useEffect(() => {
+    fetch("/api/park-hours")
+      .then((r) => r.json())
+      .then(setHours)
+      .catch(() => {});
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -67,22 +86,48 @@ export function ParkPanel({ parkId, parkName }: Props) {
       )}
 
       {/* アトラクション一覧 */}
-      {loading && !data ? (
-        <div className="flex justify-center py-12">
-          <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
-        </div>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {data?.attractions.map((attraction) => (
-            <WaitTimeCard
-              key={attraction.id}
-              attraction={attraction}
-              isFavorite={isFavorite(attraction.id)}
-              onToggleFavorite={toggle}
-            />
-          ))}
-        </div>
-      )}
+      {(() => {
+        const parkHour = hours?.[parkId];
+        if (parkHour && !isWithinParkHours(parkHour.open, parkHour.close)) {
+          const now = new Date();
+          const nowMin = now.getHours() * 60 + now.getMinutes();
+          const [oh, om] = parkHour.open.split(":").map(Number);
+          const openMin = oh * 60 + om;
+          const isBefore = nowMin < openMin;
+          return (
+            <div className="flex flex-col items-center justify-center py-12 gap-2 text-gray-400">
+              <span className="text-4xl">🏰</span>
+              <p className="font-semibold text-gray-600">
+                {isBefore ? "開園前です" : "閉園しました"}
+              </p>
+              <p className="text-sm">
+                {isBefore
+                  ? `本日の開園時間: ${parkHour.open}`
+                  : `本日の営業は終了しました（${parkHour.close} 閉園）`}
+              </p>
+            </div>
+          );
+        }
+        if (loading && !data) {
+          return (
+            <div className="flex justify-center py-12">
+              <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
+            </div>
+          );
+        }
+        return (
+          <div className="flex flex-col gap-2">
+            {data?.attractions.map((attraction) => (
+              <WaitTimeCard
+                key={attraction.id}
+                attraction={attraction}
+                isFavorite={isFavorite(attraction.id)}
+                onToggleFavorite={toggle}
+              />
+            ))}
+          </div>
+        );
+      })()}
 
       {/* ショー・パレード */}
       <ShowSchedule parkId={parkId} />
