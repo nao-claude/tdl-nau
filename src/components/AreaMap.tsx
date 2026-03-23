@@ -82,29 +82,26 @@ export function AreaMap({ parkId }: Props) {
   const favoriteAttractions = data?.attractions.filter((a) => isFavorite(a.id)) ?? [];
 
   const parkHour = hours?.[parkId];
-  if (parkHour && !isWithinParkHours(parkHour.open, parkHour.close)) {
-    const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
-    const [oh, om] = parkHour.open.split(":").map(Number);
-    const isBefore = nowMin < oh * 60 + om;
-    return (
-      <div className="flex flex-col items-center justify-center py-16 gap-2 text-gray-400">
-        <span className="text-4xl">🏰</span>
-        <p className="font-semibold text-gray-600">
-          {isBefore ? "開園前です" : "閉園しました"}
-        </p>
-        <p className="text-sm">
-          {isBefore
-            ? `本日の開園時間: ${parkHour.open}`
-            : `本日の営業は終了しました（${parkHour.close} 閉園）`}
-        </p>
-      </div>
-    );
-  }
+  const isClosed = parkHour ? !isWithinParkHours(parkHour.open, parkHour.close) : false;
+  const isBeforeOpen = isClosed && parkHour
+    ? new Date().getHours() * 60 + new Date().getMinutes() < Number(parkHour.open.split(":")[0]) * 60 + Number(parkHour.open.split(":")[1])
+    : false;
 
   return (
     <div className="flex flex-col gap-3">
       {/* お気に入り説明 */}
       <p className="text-xs text-gray-400">♡ をタップしてお気に入り登録。次回から素早く確認できます。</p>
+
+      {/* 営業時間外メッセージ */}
+      {isClosed && parkHour && (
+        <div className="flex flex-col items-center py-4 gap-1 text-gray-400">
+          <span className="text-3xl">🏰</span>
+          <p className="font-semibold text-gray-600">{isBeforeOpen ? "開園前です" : "閉園しました"}</p>
+          <p className="text-sm">
+            {isBeforeOpen ? `本日の開園時間: ${parkHour.open}` : `本日の営業は終了しました（${parkHour.close} 閉園）`}
+          </p>
+        </div>
+      )}
 
       {/* 更新時刻・フィルター */}
       <div className="flex items-center justify-between text-xs text-gray-400">

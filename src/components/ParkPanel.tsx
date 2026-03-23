@@ -91,49 +91,41 @@ export function ParkPanel({ parkId, parkName }: Props) {
       {/* お気に入り説明 */}
       <p className="text-xs text-gray-400">♡ をタップしてお気に入り登録。次回から素早く確認できます。</p>
 
-      {/* アトラクション一覧 */}
+      {/* 営業時間外メッセージ */}
       {(() => {
         const parkHour = hours[parkId];
-        if (parkHour && !isWithinParkHours(parkHour.open, parkHour.close)) {
-          const now = new Date();
-          const nowMin = now.getHours() * 60 + now.getMinutes();
-          const [oh, om] = parkHour.open.split(":").map(Number);
-          const openMin = oh * 60 + om;
-          const isBefore = nowMin < openMin;
-          return (
-            <div className="flex flex-col items-center justify-center py-12 gap-2 text-gray-400">
-              <span className="text-4xl">🏰</span>
-              <p className="font-semibold text-gray-600">
-                {isBefore ? "開園前です" : "閉園しました"}
-              </p>
-              <p className="text-sm">
-                {isBefore
-                  ? `本日の開園時間: ${parkHour.open}`
-                  : `本日の営業は終了しました（${parkHour.close} 閉園）`}
-              </p>
-            </div>
-          );
-        }
-        if (loading && !data) {
-          return (
-            <div className="flex justify-center py-12">
-              <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
-            </div>
-          );
-        }
+        if (!parkHour || isWithinParkHours(parkHour.open, parkHour.close)) return null;
+        const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
+        const [oh, om] = parkHour.open.split(":").map(Number);
+        const isBefore = nowMin < oh * 60 + om;
         return (
-          <div className="flex flex-col gap-2">
-            {data?.attractions.map((attraction) => (
-              <WaitTimeCard
-                key={attraction.id}
-                attraction={attraction}
-                isFavorite={isFavorite(attraction.id)}
-                onToggleFavorite={toggle}
-              />
-            ))}
+          <div className="flex flex-col items-center py-4 gap-1 text-gray-400">
+            <span className="text-3xl">🏰</span>
+            <p className="font-semibold text-gray-600">{isBefore ? "開園前です" : "閉園しました"}</p>
+            <p className="text-sm">
+              {isBefore ? `本日の開園時間: ${parkHour.open}` : `本日の営業は終了しました（${parkHour.close} 閉園）`}
+            </p>
           </div>
         );
       })()}
+
+      {/* アトラクション一覧 */}
+      {loading && !data ? (
+        <div className="flex justify-center py-12">
+          <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {data?.attractions.map((attraction) => (
+            <WaitTimeCard
+              key={attraction.id}
+              attraction={attraction}
+              isFavorite={isFavorite(attraction.id)}
+              onToggleFavorite={toggle}
+            />
+          ))}
+        </div>
+      )}
 
       {/* ショー・パレード */}
       <ShowSchedule parkId={parkId} />
