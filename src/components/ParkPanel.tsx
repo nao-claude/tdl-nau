@@ -58,9 +58,16 @@ export function ParkPanel({ parkId, parkName }: Props) {
     return () => clearInterval(interval);
   }, [load]);
 
-  const openCount = data?.attractions.filter((a) => a.is_open).length ?? 0;
+  const parkHour = hours[parkId];
+  const isClosed = parkHour ? !isWithinParkHours(parkHour.open, parkHour.close) : false;
+
+  const effectiveAttractions = isClosed && data
+    ? data.attractions.map((a) => ({ ...a, is_open: false, wait_time: 0 }))
+    : (data?.attractions ?? []);
+
+  const openCount = effectiveAttractions.filter((a) => a.is_open).length;
   const totalCount = data?.attractions.length ?? 0;
-  const maxWait = data?.attractions.reduce((max, a) => Math.max(max, a.wait_time), 0) ?? 0;
+  const maxWait = effectiveAttractions.reduce((max, a) => Math.max(max, a.wait_time), 0);
 
   return (
     <div className="flex flex-col gap-4">
@@ -116,7 +123,7 @@ export function ParkPanel({ parkId, parkName }: Props) {
         </div>
       ) : (
         <div className="flex flex-col gap-2">
-          {data?.attractions.map((attraction) => (
+          {effectiveAttractions.map((attraction) => (
             <WaitTimeCard
               key={attraction.id}
               attraction={attraction}

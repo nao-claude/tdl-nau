@@ -66,21 +66,20 @@ export function WaitTimeCard({ attraction, isFavorite, onToggleFavorite }: Props
         </div>
       </div>
 
-      <div className="flex items-center gap-1 shrink-0">
+      <div className="flex items-center gap-0.5 shrink-0">
         {is_open ? (
           wait_time > 0 ? (
             <>
-              <Clock className={`w-5 h-5 ${waitTimeColor(wait_time)}`} />
-              <span className={`text-2xl font-bold ${waitTimeColor(wait_time)}`}>
-                {wait_time}
+              <Clock className={`w-3 h-3 ${waitTimeColor(wait_time)}`} />
+              <span className={`text-xs font-bold ${waitTimeColor(wait_time)}`}>
+                {wait_time}分
               </span>
-              <span className="text-sm text-gray-500">分</span>
             </>
           ) : (
-            <span className="text-base text-green-600 font-medium">待ちなし</span>
+            <span className="text-xs text-green-600 font-medium">待ちなし</span>
           )
         ) : (
-          <span className="text-sm text-gray-400">運休中</span>
+          <span className="text-xs text-gray-400 flex items-center gap-0.5"><XCircle className="w-3 h-3" />運休中</span>
         )}
       </div>
     </div>

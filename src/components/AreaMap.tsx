@@ -48,7 +48,10 @@ export function AreaMap({ parkId }: Props) {
   const [lastUpdated, setLastUpdated] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
-  const [hours, setHours] = useState<TodayParkHours | null>(null);
+  const [hours, setHours] = useState<TodayParkHours>({
+    tdl: { open: "9:00", close: "21:00" },
+    tds: { open: "9:00", close: "21:00" },
+  });
   const areas = parkId === "tdl" ? TDL_AREAS : TDS_AREAS;
   const { isFavorite, toggle, count } = useFavorites();
 
@@ -74,18 +77,22 @@ export function AreaMap({ parkId }: Props) {
     return () => clearInterval(interval);
   }, [load]);
 
-  const attractionMap = new Map<number, Attraction>(
-    data?.attractions.map((a) => [a.id, a]) ?? []
-  );
-
-  // お気に入りのアトラクション一覧（待ち時間降順）
-  const favoriteAttractions = data?.attractions.filter((a) => isFavorite(a.id)) ?? [];
-
-  const parkHour = hours?.[parkId];
+  const parkHour = hours[parkId];
   const isClosed = parkHour ? !isWithinParkHours(parkHour.open, parkHour.close) : false;
   const isBeforeOpen = isClosed && parkHour
     ? new Date().getHours() * 60 + new Date().getMinutes() < Number(parkHour.open.split(":")[0]) * 60 + Number(parkHour.open.split(":")[1])
     : false;
+
+  const effectiveAttractions = isClosed
+    ? (data?.attractions.map((a) => ({ ...a, is_open: false, wait_time: 0 })) ?? [])
+    : (data?.attractions ?? []);
+
+  const attractionMap = new Map<number, Attraction>(
+    effectiveAttractions.map((a) => [a.id, a])
+  );
+
+  // お気に入りのアトラクション一覧
+  const favoriteAttractions = effectiveAttractions.filter((a) => isFavorite(a.id));
 
   return (
     <div className="flex flex-col gap-3">

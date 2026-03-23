@@ -2,6 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { ParkId, ParkData } from "@/types";
+
+function isWithinParkHours(open: string, close: string): boolean {
+  const now = new Date();
+  const [oh, om] = open.split(":").map(Number);
+  const [ch, cm] = close.split(":").map(Number);
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  return nowMin >= oh * 60 + om && nowMin < ch * 60 + cm;
+}
 import { getMonthCalendar, CROWD_INFO } from "@/lib/crowd-prediction";
 import { getHolidayName } from "@/lib/holidays";
 import { TodayParkHours } from "@/app/api/park-hours/route";
@@ -42,10 +50,13 @@ export function TodaySummary({ parkId }: Props) {
   const info = CROWD_INFO[grade];
   const holidayName = getHolidayName(today);
 
-  const openAttractions = data?.attractions.filter((a) => a.is_open) ?? [];
+  const parkHour = hours[parkId];
+  const isParkOpen = parkHour ? isWithinParkHours(parkHour.open, parkHour.close) : false;
+
+  const openAttractions = isParkOpen ? (data?.attractions.filter((a) => a.is_open) ?? []) : [];
   const totalCount = data?.attractions.length ?? 0;
-  const maxWait = openAttractions.reduce((max, a) => Math.max(max, a.wait_time), 0);
-  const noWaitCount = openAttractions.filter((a) => a.wait_time === 0).length;
+  const maxWait = isParkOpen ? openAttractions.reduce((max, a) => Math.max(max, a.wait_time), 0) : 0;
+  const noWaitCount = isParkOpen ? openAttractions.filter((a) => a.wait_time === 0).length : 0;
 
   const dateLabel = `${today.getMonth() + 1}月${today.getDate()}日(${WEEKDAYS[today.getDay()]})`;
 
