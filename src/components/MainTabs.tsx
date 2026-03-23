@@ -12,9 +12,9 @@ type Tab = "realtime" | "calendar" | "map";
 type Park = ParkId;
 
 const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: "map",      label: "待ち時間",    icon: <Map className="w-4 h-4" /> },
-  { id: "realtime", label: "待ち時間 長〜", icon: <Clock className="w-4 h-4" /> },
-  { id: "calendar", label: "混雑予想",    icon: <CalendarDays className="w-4 h-4" /> },
+  { id: "map",      label: "エリア別",   icon: <Map className="w-4 h-4" /> },
+  { id: "realtime", label: "ランキング",  icon: <Clock className="w-4 h-4" /> },
+  { id: "calendar", label: "混雑予想",   icon: <CalendarDays className="w-4 h-4" /> },
 ];
 
 const PARKS: { id: Park; label: string }[] = [

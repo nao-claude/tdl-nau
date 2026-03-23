@@ -66,6 +66,9 @@ export function AreaMap({ parkId }: Props) {
 
   return (
     <div className="flex flex-col gap-3">
+      {/* お気に入り説明 */}
+      <p className="text-xs text-gray-400">♡ をタップしてお気に入り登録。次回から素早く確認できます。</p>
+
       {/* 更新時刻・フィルター */}
       <div className="flex items-center justify-between text-xs text-gray-400">
         {lastUpdated && <span>最終更新: {lastUpdated}</span>}
