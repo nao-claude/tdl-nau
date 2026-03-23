@@ -26,7 +26,7 @@ function hotelLinks(dateStr: string) {
 
   return {
     jalan: `https://px.a8.net/svt/ejp?a8mat=4AZLSM+5N0U2A+14CS+64RJ5&a8ejpredirect=${encodeURIComponent(jalanUrl)}`,
-    rakuten: `https://hb.afl.rakuten.co.jp/hgc/522dc3a1.a8f621bb.522dc3a2.b6743386/?pc=${encodeURIComponent(`https://travel.rakuten.co.jp/yado/search/?keyword=舞浜&f_checkin=${y}${m}${d}&f_checkout=${co_y}${co_m}${co_d}&f_adult_num=2&f_room_num=1`)}`,
+    rakuten: `https://hb.afl.rakuten.co.jp/hgc/522dc3a1.a8f621bb.522dc3a2.b6743386/?pc=${encodeURIComponent(`https://search.travel.rakuten.co.jp/ds/vacant/searchVacant?f_keyword=舞浜&f_teikei=rss&f_nen1=${y}&f_tuki1=${Number(m)}&f_hi1=${Number(d)}&f_nen2=${co_y}&f_tuki2=${Number(co_m)}&f_hi2=${Number(co_d)}&f_heya_su=1&f_otona_su=2`)}`,
   };
 }
 
