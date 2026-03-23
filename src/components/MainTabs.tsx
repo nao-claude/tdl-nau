@@ -70,14 +70,6 @@ export function MainTabs() {
       <div className="max-w-4xl mx-auto px-4 py-4">
         {tab === "realtime" && (
           <>
-            {/* 凡例 */}
-            <div className="flex flex-wrap gap-3 text-xs text-gray-600 bg-white rounded-xl p-3 border border-gray-200 mb-4">
-              <span className="font-medium text-gray-700">待ち時間:</span>
-              <span className="text-green-500 font-medium">● 〜20分</span>
-              <span className="text-yellow-500 font-medium">● 21〜40分</span>
-              <span className="text-orange-500 font-medium">● 41〜60分</span>
-              <span className="text-red-500 font-medium">● 61分〜</span>
-            </div>
             <ParkPanel
               parkId={park}
               parkName={park === "tdl" ? "東京ディズニーランド" : "東京ディズニーシー"}
