@@ -49,21 +49,6 @@ export function TodaySummary({ parkId }: Props) {
 
   const dateLabel = `${today.getMonth() + 1}月${today.getDate()}日(${WEEKDAYS[today.getDay()]})`;
 
-  // 今日のじゃらんアフィリエイトリンク
-  const ty = String(today.getFullYear());
-  const tm = String(today.getMonth() + 1).padStart(2, "0");
-  const td = String(today.getDate()).padStart(2, "0");
-  const kw = "%95%91%95%6C"; // Shift-JIS: 舞浜
-  const jalanTodayUrl = `https://www.jalan.net/uw/uwp2011/uww2011init.do?keyword=${kw}&distCd=06&rootCd=7701&stayYear=${ty}&stayMonth=${Number(tm)}&stayDay=${Number(td)}&adultNum=2&roomNum=1`;
-  const jalanTodayHref = `https://px.a8.net/svt/ejp?a8mat=4AZLSM+5N0U2A+14CS+64RJ5&a8ejpredirect=${encodeURIComponent(jalanTodayUrl)}`;
-
-  // 今日の楽天トラベルアフィリエイトリンク
-  const nextDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
-  const co_y = String(nextDay.getFullYear());
-  const co_m = String(nextDay.getMonth() + 1);
-  const co_d = String(nextDay.getDate());
-  const rakutenDest = `https://search.travel.rakuten.co.jp/ds/vacant/searchVacant?f_dai=japan&f_chu=tiba&f_shou=keiyo&f_teikei=rss&f_nen1=${ty}&f_tuki1=${Number(tm)}&f_hi1=${Number(td)}&f_nen2=${co_y}&f_tuki2=${Number(co_m)}&f_hi2=${Number(co_d)}&f_heya_su=1&f_otona_su=2`;
-  const rakutenTodayHref = `https://hb.afl.rakuten.co.jp/hgc/522dc3a1.a8f621bb.522dc3a2.b6743386/?pc=${encodeURIComponent(rakutenDest)}`;
 
   const parkName = parkId === "tdl" ? "ランド" : "シー";
   const shareText = `今日の${parkName}は混雑度${grade}！${maxWait > 0 ? `最長待ち${maxWait}分` : "待ちなし多数"}🏰 #TDLなう`;
@@ -129,17 +114,8 @@ export function TodaySummary({ parkId }: Props) {
           </div>
         </div>
 
-        {/* 今日の宿リンク */}
-        <a
-          href={rakutenTodayHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 flex items-center justify-center gap-1.5 w-full py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-bold transition-colors"
-        >
-          🏨 今日の舞浜・浦安の宿を探す（楽天トラベル）
-        </a>
 
-        {/* シェアボタン */}
+{/* シェアボタン */}
         <div className="flex gap-2 shrink-0 mt-2">
           <a
             href={twitterShareUrl}
