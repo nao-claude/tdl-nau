@@ -26,7 +26,7 @@ function hotelLinks(dateStr: string) {
 
   return {
     jalan: `https://px.a8.net/svt/ejp?a8mat=4AZLSM+5N0U2A+14CS+64RJ5&a8ejpredirect=${encodeURIComponent(jalanUrl)}`,
-    rakuten: `https://travel.rakuten.co.jp/yado/search/?f_checkin=${y}${m}${d}&f_checkout=${co_y}${co_m}${co_d}&f_area_cd=129`,
+    rakuten: `https://hb.afl.rakuten.co.jp/hgc/522dc3a1.a8f621bb.522dc3a2.b6743386/?pc=${encodeURIComponent(`https://travel.rakuten.co.jp/yado/search/?f_checkin=${y}${m}${d}&f_checkout=${co_y}${co_m}${co_d}&f_area_cd=129`)}`,
   };
 }
 
