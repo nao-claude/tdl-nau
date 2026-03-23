@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://tdl-nau.vercel.app/sitemap.xml",
+    sitemap: "https://disneynow.tokyo/sitemap.xml",
   };
 }

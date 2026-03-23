@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://tdl-nau.vercel.app"),
+  metadataBase: new URL("https://disneynow.tokyo"),
   title: "TDLなう | 東京ディズニーランド・シー リアルタイム待ち時間・混雑予想",
   description: "東京ディズニーランド・ディズニーシーのリアルタイム待ち時間、エリア別混雑状況、混雑予想カレンダー、天気・チケット価格を一画面で確認できます。",
   keywords: "TDL 待ち時間, TDS 待ち時間, ディズニーランド 混雑, ディズニーシー 混雑, 東京ディズニーリゾート 待ち時間, 混雑予想",

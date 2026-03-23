@@ -10,7 +10,7 @@ interface Props {
   parkId: ParkId;
 }
 
-const SHARE_URL = "https://tdl-nau.vercel.app";
+const SHARE_URL = "https://disneynow.tokyo";
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 

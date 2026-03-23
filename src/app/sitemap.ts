@@ -3,7 +3,7 @@ import { MetadataRoute } from "next";
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: "https://tdl-nau.vercel.app",
+      url: "https://disneynow.tokyo",
       lastModified: new Date(),
       changeFrequency: "hourly",
       priority: 1,
