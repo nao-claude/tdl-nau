@@ -1,4 +1,5 @@
 import { MainTabs } from "@/components/MainTabs";
+import { AdBanner } from "@/components/AdBanner";
 
 export default function Home() {
   return (
@@ -16,7 +17,17 @@ export default function Home() {
         </div>
       </header>
 
+      {/* 広告①：コンテンツ上部 */}
+      <div className="max-w-4xl mx-auto px-4 pt-3">
+        <AdBanner adSlot="1111111111" />
+      </div>
+
       <MainTabs />
+
+      {/* 広告②：コンテンツ下部 */}
+      <div className="max-w-4xl mx-auto px-4 pb-4">
+        <AdBanner adSlot="2222222222" />
+      </div>
 
       {/* フッター */}
       <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">

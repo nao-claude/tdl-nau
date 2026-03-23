@@ -49,6 +49,14 @@ export function TodaySummary({ parkId }: Props) {
 
   const dateLabel = `${today.getMonth() + 1}月${today.getDate()}日(${WEEKDAYS[today.getDay()]})`;
 
+  // 今日のじゃらんアフィリエイトリンク
+  const ty = String(today.getFullYear());
+  const tm = String(today.getMonth() + 1).padStart(2, "0");
+  const td = String(today.getDate()).padStart(2, "0");
+  const kw = "%95%91%95%6C"; // Shift-JIS: 舞浜
+  const jalanTodayUrl = `https://www.jalan.net/uw/uwp2011/uww2011init.do?keyword=${kw}&distCd=06&rootCd=7701&stayYear=${ty}&stayMonth=${Number(tm)}&stayDay=${Number(td)}&adultNum=2&roomNum=1`;
+  const jalanTodayHref = `https://px.a8.net/svt/ejp?a8mat=4AZLSM+5N0U2A+14CS+64RJ5&a8ejpredirect=${encodeURIComponent(jalanTodayUrl)}`;
+
   const parkName = parkId === "tdl" ? "ランド" : "シー";
   const shareText = `今日の${parkName}は混雑度${grade}！${maxWait > 0 ? `最長待ち${maxWait}分` : "待ちなし多数"}🏰 #TDLなう`;
   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(SHARE_URL)}`;
@@ -113,8 +121,18 @@ export function TodaySummary({ parkId }: Props) {
           </div>
         </div>
 
+        {/* 今日の宿リンク */}
+        <a
+          href={jalanTodayHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 flex items-center justify-center gap-1.5 w-full py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-colors"
+        >
+          🏨 今日の舞浜・浦安の宿を探す（じゃらん）
+        </a>
+
         {/* シェアボタン */}
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 mt-2">
           <a
             href={twitterShareUrl}
             target="_blank"
