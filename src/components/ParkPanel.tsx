@@ -27,7 +27,10 @@ export function ParkPanel({ parkId, parkName }: Props) {
   const [data, setData] = useState<ParkData | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string>("");
-  const [hours, setHours] = useState<TodayParkHours | null>(null);
+  const [hours, setHours] = useState<TodayParkHours>({
+    tdl: { open: "9:00", close: "21:00" },
+    tds: { open: "9:00", close: "21:00" },
+  });
   const { isFavorite, toggle } = useFavorites();
 
   useEffect(() => {
@@ -85,10 +88,13 @@ export function ParkPanel({ parkId, parkName }: Props) {
         <p className="text-xs text-gray-400">最終取得: {lastUpdated}</p>
       )}
 
+      {/* お気に入り説明 */}
+      <p className="text-xs text-gray-400">♡ をタップしてお気に入り登録。次回から素早く確認できます。</p>
+
       {/* アトラクション一覧 */}
       {(() => {
-        const parkHour = hours?.[parkId];
-        if (parkHour && !isWithinParkHours(parkHour.open, parkHour.close)) {
+        const parkHour = hours[parkId];
+        if (!isWithinParkHours(parkHour.open, parkHour.close)) {
           const now = new Date();
           const nowMin = now.getHours() * 60 + now.getMinutes();
           const [oh, om] = parkHour.open.split(":").map(Number);
