@@ -13,7 +13,7 @@ interface Props {
 // 2. 各adSlotはAdSenseコンソールの「広告ユニット」で発行
 // 3. layout.tsx の <head> に AdSense スクリプトを追加（コメント参照）
 // ──────────────────────────────────────────────────────────
-const ADSENSE_CLIENT_ID = "ca-pub-8944633356519670";
+const ADSENSE_CLIENT_ID = ""; // 審査通過後に ca-pub-8944633356519670 を入力
 
 export function AdBanner({ adSlot, className = "" }: Props) {
   useEffect(() => {
