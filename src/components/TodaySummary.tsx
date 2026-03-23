@@ -64,10 +64,10 @@ export function TodaySummary({ parkId }: Props) {
             {hours && (
               <div className="flex flex-col gap-0 mt-0.5">
                 {hours.tdl && (
-                  <p className="text-xs text-gray-500">🏰 {hours.tdl.open}〜{hours.tdl.close}</p>
+                  <p className="text-xs text-gray-500">ランド: {hours.tdl.open}〜{hours.tdl.close}</p>
                 )}
                 {hours.tds && (
-                  <p className="text-xs text-gray-500">⛵ {hours.tds.open}〜{hours.tds.close}</p>
+                  <p className="text-xs text-gray-500">シー: {hours.tds.open}〜{hours.tds.close}</p>
                 )}
               </div>
             )}
