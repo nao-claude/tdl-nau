@@ -33,6 +33,9 @@ export default function Home() {
       <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
         <p>非公式サイトです。株式会社オリエンタルランドとは無関係です。</p>
         <p className="mt-1">
+          <a href="/privacy" className="underline">プライバシーポリシー</a>
+        </p>
+        <p className="mt-1">
           Powered by{" "}
           <a href="https://queue-times.com" target="_blank" rel="noopener noreferrer" className="underline">
             Queue-Times.com
