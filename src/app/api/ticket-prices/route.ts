@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
           "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
           "Accept-Language": "ja,en;q=0.9",
         },
-        next: { revalidate: 3600 },
+        next: { revalidate: 60 * 60 * 24 * 30 }, // 30日
       }
     );
 
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
     ].sort((a, b) => a.date.localeCompare(b.date));
 
     return NextResponse.json(merged.length > 0 ? merged : fallback, {
-      headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=300" },
+      headers: { "Cache-Control": "public, s-maxage=2592000, stale-while-revalidate=86400" }, // 30日
     });
   } catch {
     return NextResponse.json(staticFallback(year, month));
