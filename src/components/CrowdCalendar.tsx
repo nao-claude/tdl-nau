@@ -184,11 +184,14 @@ export function CrowdCalendar({ parkId = "tdl" }: { parkId?: string }) {
               <span className="text-gray-600 font-medium leading-none" style={{ fontSize: "11px" }}>
                 {weather ? `${weather.maxTemp}°` : "　"}
               </span>
-              {/* チケット価格ドット */}
-              <span
-                className="w-2.5 h-2.5 rounded-full"
-                style={{ backgroundColor: tier ? tier.dot : "transparent" }}
-              />
+              {/* チケット価格 */}
+              {tier ? (
+                <span className={`font-bold leading-none px-0.5 rounded ${tier.bg} ${tier.text}`} style={{ fontSize: "9px" }}>
+                  ¥{(price! / 1000).toFixed(1)}k
+                </span>
+              ) : (
+                <span style={{ fontSize: "9px" }}>&nbsp;</span>
+              )}
             </button>
           );
         })}

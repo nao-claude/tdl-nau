@@ -24,6 +24,8 @@ export async function GET(req: NextRequest) {
   const yyyymm = `${year}${String(month).padStart(2, "0")}`;
 
   try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000); // 5秒でタイムアウト
     const res = await fetch(
       `https://www.tokyodisneyresort.jp/ticket/index/${yyyymm}/`,
       {
@@ -31,9 +33,11 @@ export async function GET(req: NextRequest) {
           "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
           "Accept-Language": "ja,en;q=0.9",
         },
+        signal: controller.signal,
         next: { revalidate: 60 * 60 * 24 * 30 }, // 30日
       }
     );
+    clearTimeout(timer);
 
     if (!res.ok) return NextResponse.json(staticFallback(year, month), { status: 200 });
 
