@@ -64,4 +64,5 @@ export const STATIC_TICKET_PRICES: Record<string, { tdl: number; tds: number }> 
   "2026-05-21": { tdl:  9400, tds:  9400 },
   "2026-05-22": { tdl:  9400, tds:  9400 },
   "2026-05-23": { tdl:  9900, tds:  9900 },
+  "2026-05-24": { tdl:  9900, tds:  9900 },
 };
