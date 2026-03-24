@@ -21,8 +21,18 @@ export const metadata: Metadata = {
   openGraph: {
     title: "TDLなう | 東京ディズニーランド・シー リアルタイム待ち時間",
     description: "東京ディズニーランド・ディズニーシーのリアルタイム待ち時間と混雑予想",
+    url: "https://disneynow.tokyo",
+    siteName: "TDLなう",
     locale: "ja_JP",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TDLなう | 東京ディズニーランド・シー リアルタイム待ち時間",
+    description: "東京ディズニーランド・ディズニーシーのリアルタイム待ち時間と混雑予想",
+  },
+  alternates: {
+    canonical: "https://disneynow.tokyo",
   },
 };
 
