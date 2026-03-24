@@ -2,6 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { ParkId, ParkData } from "@/types";
+import { CurrentWeather } from "@/app/api/weather/current/route";
+
+function weatherEmoji(code: number): string {
+  if (code === 0) return "☀️";
+  if (code <= 2) return "⛅";
+  if (code <= 3) return "☁️";
+  if (code <= 48) return "🌫️";
+  if (code <= 57) return "🌦️";
+  if (code <= 67) return "🌧️";
+  if (code <= 77) return "🌨️";
+  if (code <= 82) return "🌧️";
+  if (code <= 86) return "❄️";
+  return "⛈️";
+}
 
 function isWithinParkHours(open: string, close: string): boolean {
   const now = new Date();
@@ -28,6 +42,7 @@ export function TodaySummary({ parkId }: Props) {
     tdl: { open: "9:00", close: "21:00" },
     tds: { open: "9:00", close: "21:00" },
   });
+  const [weather, setWeather] = useState<CurrentWeather | null>(null);
 
   useEffect(() => {
     fetch(`/api/wait-times/${parkId}`)
@@ -40,6 +55,13 @@ export function TodaySummary({ parkId }: Props) {
     fetch("/api/park-hours")
       .then((r) => r.json())
       .then(setHours)
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/weather/current")
+      .then((r) => r.json())
+      .then(setWeather)
       .catch(() => {});
   }, []);
 
@@ -83,6 +105,16 @@ export function TodaySummary({ parkId }: Props) {
                 )}
                 {hours.tds && (
                   <p className="text-xs text-gray-500">シー: {hours.tds.open}〜{hours.tds.close}</p>
+                )}
+                {weather && (
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    舞浜 {weatherEmoji(weather.current.code)} {weather.current.temp}°
+                    <span className="text-gray-400 mx-1">/</span>
+                    夕方 {weatherEmoji(weather.evening.code)} {weather.evening.temp}°
+                    {weather.evening.precipProb > 0 && (
+                      <span className="text-blue-400 ml-1">☂{weather.evening.precipProb}%</span>
+                    )}
+                  </p>
                 )}
               </div>
           </div>
