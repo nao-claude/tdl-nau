@@ -1,0 +1,32 @@
+name: Daily Tweet
+
+on:
+  schedule:
+    # 毎朝8時（JST）= UTC 23:00（前日）
+    - cron: "0 23 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "DRY RUN（投稿しない）"
+        type: boolean
+        default: true
+
+jobs:
+  tweet:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Post daily tweet
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          DRY_RUN: ${{ inputs.dry_run == true && 'true' || 'false' }}
+        run: node scripts/post-daily-tweet.mjs
