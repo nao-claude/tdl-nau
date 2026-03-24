@@ -194,7 +194,7 @@ async function buildTweetText() {
   // 天気（失敗してもツイートは送る）
   let weatherLine = "";
   try {
-    const res = await fetch("https://disneynow.tokyo/api/weather/current");
+    const res = await fetch("https://disneynow.tokyo/api/weather/current", { signal: AbortSignal.timeout(5000) });
     const w = await res.json();
     const eveRain = w.evening.precipProb > 0 ? ` ☂${w.evening.precipProb}%` : "";
     weatherLine = `🌡 ${weatherEmoji(w.current.code)}${w.current.temp}° / 夕方${weatherEmoji(w.evening.code)}${w.evening.temp}°${eveRain}`;
@@ -205,7 +205,7 @@ async function buildTweetText() {
   // 営業時間
   let hoursLine = "";
   try {
-    const res = await fetch("https://disneynow.tokyo/api/park-hours");
+    const res = await fetch("https://disneynow.tokyo/api/park-hours", { signal: AbortSignal.timeout(5000) });
     const h = await res.json();
     if (h.tdl && h.tds) {
       hoursLine = `🕘 ランド ${h.tdl.open}〜${h.tdl.close} / シー ${h.tds.open}〜${h.tds.close}`;
@@ -214,7 +214,7 @@ async function buildTweetText() {
     console.warn("Park hours fetch failed, skipping hours line.");
   }
 
-  const lines = [
+  const allLines = [
     `🏰 ${dateLabel} のディズニー情報`,
     ``,
     `📊 混雑予想: ${grade} ${gradeLabel}`,
@@ -225,9 +225,9 @@ async function buildTweetText() {
     `https://disneynow.tokyo`,
     ``,
     `#東京ディズニーランド #東京ディズニーシー #TDL #TDS #ディズニー待ち時間`,
-  ].filter((l) => l !== undefined && !(l === "" && lines?.[lines.indexOf(l) - 1] === ""));
+  ].filter(Boolean);
 
-  return lines.join("\n");
+  return allLines.join("\n");
 }
 
 // ── メイン ─────────────────────────────────────────────────────────
