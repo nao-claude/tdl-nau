@@ -13,6 +13,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport = {
+  themeColor: "#1a3a6b",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://disneynow.tokyo"),
   title: "TDLなう | 東京ディズニーランド・シー リアルタイム待ち時間・混雑予想",
