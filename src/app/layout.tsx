@@ -34,6 +34,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: "@disneynow_tokyo",
+    creator: "@disneynow_tokyo",
     title: "TDLなう | 東京ディズニーランド・シー リアルタイム待ち時間",
     description: "東京ディズニーランド・ディズニーシーのリアルタイム待ち時間と混雑予想",
   },

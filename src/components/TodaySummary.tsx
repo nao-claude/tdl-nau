@@ -84,7 +84,7 @@ export function TodaySummary({ parkId }: Props) {
 
 
   const parkName = parkId === "tdl" ? "ランド" : "シー";
-  const shareText = `今日の${parkName}は混雑度${grade}！${maxWait > 0 ? `最長待ち${maxWait}分` : "待ちなし多数"}🏰 #TDLなう`;
+  const shareText = `今日の${parkName}は混雑度${grade}！${maxWait > 0 ? `最長待ち${maxWait}分` : "待ちなし多数"}🏰 #TDLなう @disneynow_tokyo`;
   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(SHARE_URL)}`;
   const lineShareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(shareText)}`;
 
