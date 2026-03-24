@@ -9,13 +9,18 @@ export interface Attraction {
   last_updated: string;
 }
 
-export interface QueueTimesResponse {
-  lands: {
-    id: number;
-    name: string;
-    rides: Attraction[];
-  }[];
-  rides: Attraction[];
+export interface ThemeParksLiveData {
+  id: string;
+  name: string;
+  entityType: string;
+  externalId: string;
+  queue?: { STANDBY?: { waitTime: number | null } };
+  status: string;
+  lastUpdated: string;
+}
+
+export interface ThemeParksResponse {
+  liveData: ThemeParksLiveData[];
 }
 
 export interface ParkData {

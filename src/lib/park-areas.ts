@@ -1,4 +1,4 @@
-// パークエリア別アトラクション分類
+// パークエリア別アトラクション分類（themeparks.wiki externalId ベース）
 
 export interface AreaDef {
   name: string;
@@ -10,32 +10,32 @@ export const TDL_AREAS: AreaDef[] = [
   {
     name: "ワールドバザール",
     color: "bg-amber-100 border-amber-300",
-    attractionIds: [7985, 8019],
+    attractionIds: [151, 191],
   },
   {
     name: "アドベンチャーランド",
     color: "bg-green-100 border-green-300",
-    attractionIds: [7986, 7987, 7989, 7990],
+    attractionIds: [152, 153, 155, 156],
   },
   {
     name: "ウエスタンランド",
     color: "bg-orange-100 border-orange-300",
-    attractionIds: [7988, 7991, 7992, 7993, 7994, 7995, 7996],
+    attractionIds: [154, 157, 158, 159, 160, 161, 162],
   },
   {
     name: "ファンタジーランド",
     color: "bg-pink-100 border-pink-300",
-    attractionIds: [7997, 7998, 7999, 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8255],
+    attractionIds: [163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 197],
   },
   {
     name: "トゥーンタウン",
     color: "bg-yellow-100 border-yellow-300",
-    attractionIds: [8008, 8009, 8010, 8011, 8012, 8013, 8014, 8020],
+    attractionIds: [175, 176, 178, 179, 180, 181, 194],
   },
   {
     name: "トゥモローランド",
     color: "bg-blue-100 border-blue-300",
-    attractionIds: [8015, 8018, 8021, 8254],
+    attractionIds: [183, 189, 195, 196],
   },
 ];
 
@@ -43,46 +43,41 @@ export const TDS_AREAS: AreaDef[] = [
   {
     name: "メディテレーニアンハーバー",
     color: "bg-cyan-100 border-cyan-300",
-    attractionIds: [8031, 8034, 8037, 8048],
+    attractionIds: [227, 230, 244, 245],
   },
   {
     name: "アメリカンウォーターフロント",
     color: "bg-blue-100 border-blue-300",
-    attractionIds: [8032, 8036, 8038, 8051],
+    attractionIds: [218, 228, 232, 233, 243, 246],
   },
   {
     name: "ポート・ディスカバリー",
     color: "bg-sky-100 border-sky-300",
-    attractionIds: [8035],
+    attractionIds: [219, 231, 234, 247],
   },
   {
     name: "ロストリバーデルタ",
     color: "bg-amber-100 border-amber-300",
-    attractionIds: [8027, 8033, 8046],
+    attractionIds: [222, 229, 242],
   },
   {
     name: "アラビアンコースト",
     color: "bg-yellow-100 border-yellow-300",
-    attractionIds: [8025, 8030, 8040],
+    attractionIds: [220, 226, 235, 236],
   },
   {
     name: "マーメイドラグーン",
     color: "bg-teal-100 border-teal-300",
-    attractionIds: [8022, 8026, 8041, 8042, 8043, 8044, 8045],
+    attractionIds: [202, 221, 237, 238, 239, 240, 241],
   },
   {
     name: "ミステリアスアイランド",
     color: "bg-stone-100 border-stone-300",
-    attractionIds: [8028, 8029],
+    attractionIds: [223, 224],
   },
   {
     name: "ファンタジースプリングス",
     color: "bg-purple-100 border-purple-300",
-    attractionIds: [13559, 13560, 13561, 13562],
-  },
-  {
-    name: "その他",
-    color: "bg-gray-100 border-gray-300",
-    attractionIds: [8024, 8039, 8047, 8049, 8050],
+    attractionIds: [255, 256, 257, 258],
   },
 ];

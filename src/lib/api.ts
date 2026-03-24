@@ -1,9 +1,9 @@
-import { ParkId, ParkData, QueueTimesResponse, Attraction } from "@/types";
+import { ParkId, ParkData, ThemeParksResponse, Attraction } from "@/types";
 import { attractionNameJa } from "./attractions-ja";
 
-const PARK_IDS: Record<ParkId, number> = {
-  tdl: 274,
-  tds: 275,
+const ENTITY_IDS: Record<ParkId, string> = {
+  tdl: "3cc919f1-d16d-43e0-8c3f-1dd269bd1a42",
+  tds: "67b290d5-3478-4f23-b601-2f8fb71ba803",
 };
 
 const PARK_NAMES: Record<ParkId, string> = {
@@ -11,40 +11,41 @@ const PARK_NAMES: Record<ParkId, string> = {
   tds: "東京ディズニーシー",
 };
 
-function applyJaNames(rides: Omit<Attraction, "nameJa">[]): Attraction[] {
-  return rides.map((ride) => ({
-    ...ride,
-    nameJa: attractionNameJa[ride.id] ?? ride.name,
-  }));
-}
-
 export async function fetchParkData(parkId: ParkId): Promise<ParkData> {
-  const id = PARK_IDS[parkId];
+  const entityId = ENTITY_IDS[parkId];
   const res = await fetch(
-    `https://queue-times.com/en-US/parks/${id}/queue_times.json`,
-    { next: { revalidate: 300 } } // 5分キャッシュ
+    `https://api.themeparks.wiki/v1/entity/${entityId}/live`,
+    { next: { revalidate: 60 } } // 1分キャッシュ
   );
 
   if (!res.ok) {
     throw new Error(`Failed to fetch park data: ${res.status}`);
   }
 
-  const data: QueueTimesResponse = await res.json();
+  const data: ThemeParksResponse = await res.json();
 
-  const allRides = [
-    ...data.rides,
-    ...data.lands.flatMap((land) => land.rides),
-  ];
+  const attractions: Attraction[] = data.liveData
+    .filter((r) => r.entityType === "ATTRACTION")
+    .map((r) => {
+      const id = Number(r.externalId);
+      return {
+        id,
+        name: r.name,
+        nameJa: attractionNameJa[id] ?? r.name,
+        is_open: r.status === "OPERATING",
+        wait_time: r.queue?.STANDBY?.waitTime ?? 0,
+        last_updated: r.lastUpdated,
+      };
+    })
+    .sort((a, b) => {
+      if (a.is_open !== b.is_open) return a.is_open ? -1 : 1;
+      return b.wait_time - a.wait_time;
+    });
 
   return {
     parkId,
     parkName: PARK_NAMES[parkId],
-    attractions: applyJaNames(allRides).sort((a, b) => {
-      // 営業中を上、運休を下
-      if (a.is_open !== b.is_open) return a.is_open ? -1 : 1;
-      // 同じ営業状態なら待ち時間降順
-      return b.wait_time - a.wait_time;
-    }),
+    attractions,
     fetchedAt: new Date().toISOString(),
   };
 }
