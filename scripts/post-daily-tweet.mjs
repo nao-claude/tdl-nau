@@ -198,7 +198,7 @@ async function buildTweetText() {
     const [tdl, tds] = await Promise.all([tdlRes.json(), tdsRes.json()]);
     const tdlMax = Math.max(0, ...tdl.attractions.filter(a => a.is_open).map(a => a.wait_time));
     const tdsMax = Math.max(0, ...tds.attractions.filter(a => a.is_open).map(a => a.wait_time));
-    waitLine = `🎢 ランド 最長${tdlMax}分 / シー 最長${tdsMax}分`;
+    waitLine = `🎢 ランド 待ち最長${tdlMax}分 / シー 待ち最長${tdsMax}分`;
   } catch {
     console.warn("Wait times fetch failed, skipping wait line.");
   }
@@ -216,7 +216,7 @@ async function buildTweetText() {
   }
 
   const allLines = [
-    `🏰 ${dateLabel} のディズニー情報`,
+    `🏰 ${dateLabel} のディズニーランド情報`,
     ``,
     `📊 本日の混雑: ${gradeLabel}`,
     waitLine,
