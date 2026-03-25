@@ -215,6 +215,15 @@ async function buildTweetText() {
     console.warn("Park hours fetch failed, skipping hours line.");
   }
 
+  // 短縮URL
+  let siteUrl = "https://disneynow.tokyo";
+  try {
+    const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(siteUrl)}`, { signal: AbortSignal.timeout(5000) });
+    if (res.ok) siteUrl = await res.text();
+  } catch {
+    console.warn("TinyURL fetch failed, using original URL.");
+  }
+
   const allLines = [
     `🏰 ${dateLabel} 現在のディズニーランド情報`,
     ``,
@@ -224,6 +233,8 @@ async function buildTweetText() {
     hoursLine,
     weatherAdvice,
     ``,
+    `詳細・リアルタイム待ち時間はこちら👇`,
+    siteUrl,
     ``,
     `#TDL #TDS #ディズニーランド`,
   ].filter(Boolean);
