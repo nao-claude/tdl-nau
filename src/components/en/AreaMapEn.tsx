@@ -11,6 +11,24 @@ import { ShowSchedule } from "@/components/ShowSchedule";
 import Image from "next/image";
 import { TodayParkHours } from "@/app/api/park-hours/route";
 
+const AREA_NAME_EN: Record<string, string> = {
+  "ワールドバザール": "World Bazaar",
+  "アドベンチャーランド": "Adventureland",
+  "ウエスタンランド": "Westernland",
+  "クリッターカントリー": "Critter Country",
+  "ファンタジーランド": "Fantasyland",
+  "トゥーンタウン": "Toontown",
+  "トゥモローランド": "Tomorrowland",
+  "メディテレーニアンハーバー": "Mediterranean Harbor",
+  "アメリカンウォーターフロント": "American Waterfront",
+  "ポート・ディスカバリー": "Port Discovery",
+  "ロストリバーデルタ": "Lost River Delta",
+  "アラビアンコースト": "Arabian Coast",
+  "マーメイドラグーン": "Mermaid Lagoon",
+  "ミステリアスアイランド": "Mysterious Island",
+  "ファンタジースプリングス": "Fantasy Springs",
+};
+
 function isWithinParkHours(open: string, close: string): boolean {
   const now = new Date();
   const [oh, om] = open.split(":").map(Number);
@@ -172,7 +190,7 @@ export function AreaMapEn({ parkId }: Props) {
                       </button>
                       <div className="min-w-0">
                         <span className={`text-xs truncate block ${attraction.is_open ? "text-gray-800" : "text-gray-400"}`}>
-                          {attraction.nameJa}
+                          {attraction.name}
                         </span>
                         {passes.length > 0 && (
                           <div className="flex gap-1 mt-0.5">
@@ -208,7 +226,7 @@ export function AreaMapEn({ parkId }: Props) {
           return (
             <div key={area.name} className={`rounded-xl border p-3 ${area.color}`}>
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-bold text-gray-800">{area.name}</h4>
+                <h4 className="text-sm font-bold text-gray-800">{AREA_NAME_EN[area.name] ?? area.name}</h4>
                 <span className="text-xs text-gray-500">
                   {openCount}/{rides.length} open
                   {maxWait > 0 && <span className="ml-1 text-red-500 font-medium"> max {maxWait} min</span>}
@@ -226,14 +244,14 @@ export function AreaMapEn({ parkId }: Props) {
                         </button>
                         {imageUrl ? (
                           <div className={`w-14 h-14 rounded-xl overflow-hidden shrink-0 ${!attraction.is_open ? "opacity-40 grayscale" : ""}`}>
-                            <Image src={imageUrl} alt={attraction.nameJa} width={56} height={56} className="w-full h-full object-cover" unoptimized />
+                            <Image src={imageUrl} alt={attraction.name} width={56} height={56} className="w-full h-full object-cover" unoptimized />
                           </div>
                         ) : (
                           <div className="w-14 h-14 rounded-xl bg-gray-200 shrink-0" />
                         )}
                         <div className="min-w-0">
                           <span className={`text-sm md:text-base font-semibold block ${attraction.is_open ? "text-gray-800" : "text-gray-400"}`}>
-                            {attraction.nameJa}
+                            {attraction.name}
                           </span>
                           {passes.length > 0 && (
                             <div className="flex gap-1 mt-1">

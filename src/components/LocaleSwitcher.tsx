@@ -24,22 +24,22 @@ export function LocaleSwitcher({ currentLocale }: Props) {
     <div className="flex items-center gap-1 text-sm">
       <button
         onClick={switchToJa}
-        className={`px-2 py-1 rounded transition-colors ${
+        className={`px-2 py-1 rounded transition-colors text-sm ${
           currentLocale === "ja"
-            ? "bg-gray-900 text-white font-bold"
-            : "text-gray-500 hover:text-gray-700"
+            ? "bg-blue-100 text-blue-700 font-medium border border-blue-200"
+            : "text-gray-400 hover:text-gray-600 border border-transparent"
         }`}
         aria-label="日本語に切り替え"
       >
         🇯🇵 JP
       </button>
-      <span className="text-gray-300">|</span>
+      <span className="text-gray-300 text-xs">|</span>
       <button
         onClick={switchToEn}
-        className={`px-2 py-1 rounded transition-colors ${
+        className={`px-2 py-1 rounded transition-colors text-sm ${
           currentLocale === "en"
-            ? "bg-gray-900 text-white font-bold"
-            : "text-gray-500 hover:text-gray-700"
+            ? "bg-blue-100 text-blue-700 font-medium border border-blue-200"
+            : "text-gray-400 hover:text-gray-600 border border-transparent"
         }`}
         aria-label="Switch to English"
       >
