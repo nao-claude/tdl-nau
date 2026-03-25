@@ -1,0 +1,44 @@
+name: Manual Tweet
+
+on:
+  workflow_dispatch:
+    inputs:
+      text:
+        description: "ツイート本文"
+        required: true
+        type: string
+
+jobs:
+  tweet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Post tweet
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          TWEET_TEXT: ${{ inputs.text }}
+        run: |
+          node -e "
+          import crypto from 'crypto';
+          const enc = s => encodeURIComponent(String(s));
+          function sign(method, url, params, cs, ts) {
+            const sorted = Object.entries(params).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>enc(k)+'='+enc(v)).join('&');
+            const base = [method, enc(url), enc(sorted)].join('&');
+            return crypto.createHmac('sha1', enc(cs)+'&'+enc(ts)).update(base).digest('base64');
+          }
+          const {X_API_KEY:ck, X_API_SECRET:cs, X_ACCESS_TOKEN:at, X_ACCESS_TOKEN_SECRET:ats, TWEET_TEXT:text} = process.env;
+          const url = 'https://api.twitter.com/2/tweets';
+          const nonce = crypto.randomBytes(16).toString('hex');
+          const ts = String(Math.floor(Date.now()/1000));
+          const p = {oauth_consumer_key:ck,oauth_nonce:nonce,oauth_signature_method:'HMAC-SHA1',oauth_timestamp:ts,oauth_token:at,oauth_version:'1.0'};
+          p.oauth_signature = sign('POST', url, p, cs, ats);
+          const auth = 'OAuth ' + Object.entries(p).map(([k,v])=>enc(k)+'=\"'+enc(v)+'\"').join(', ');
+          fetch(url, {method:'POST', headers:{Authorization:auth,'Content-Type':'application/json'}, body:JSON.stringify({text})})
+            .then(r=>r.json()).then(j=>{ if(j.data) console.log('Posted:',j.data.id); else { console.error(JSON.stringify(j)); process.exit(1); } });
+          " --input-type=module
