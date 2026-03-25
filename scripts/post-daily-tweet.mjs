@@ -3,67 +3,20 @@
 // GitHub Actionsから実行される
 // 必要な環境変数: X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET
 
-import crypto from "crypto";
-
-// ── OAuth 1.0a 署名 ─────────────────────────────────────────────
-function oauthSign(method, url, params, consumerKey, consumerSecret, tokenSecret) {
-  const sorted = Object.entries(params)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([k, v]) => `${enc(k)}=${enc(v)}`)
-    .join("&");
-
-  const base = [method, enc(url), enc(sorted)].join("&");
-  const key = `${enc(consumerSecret)}&${enc(tokenSecret)}`;
-  return crypto.createHmac("sha1", key).update(base).digest("base64");
-}
-
-function enc(s) {
-  return encodeURIComponent(String(s));
-}
+import { TwitterApi } from "twitter-api-v2";
 
 async function postTweet(text) {
   const { X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET } = process.env;
   if (!X_API_KEY || !X_API_SECRET || !X_ACCESS_TOKEN || !X_ACCESS_TOKEN_SECRET) {
     throw new Error("X API credentials are not set in environment variables.");
   }
-
-  const url = "https://api.twitter.com/2/tweets";
-  const method = "POST";
-  const nonce = crypto.randomBytes(16).toString("hex");
-  const timestamp = Math.floor(Date.now() / 1000).toString();
-
-  const oauthParams = {
-    oauth_consumer_key: X_API_KEY,
-    oauth_nonce: nonce,
-    oauth_signature_method: "HMAC-SHA1",
-    oauth_timestamp: timestamp,
-    oauth_token: X_ACCESS_TOKEN,
-    oauth_version: "1.0",
-  };
-
-  const sig = oauthSign(method, url, oauthParams, X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN_SECRET);
-  oauthParams.oauth_signature = sig;
-
-  const authHeader =
-    "OAuth " +
-    Object.entries(oauthParams)
-      .map(([k, v]) => `${enc(k)}="${enc(v)}"`)
-      .join(", ");
-
-  const res = await fetch(url, {
-    method,
-    headers: {
-      Authorization: authHeader,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ text }),
+  const client = new TwitterApi({
+    appKey: X_API_KEY,
+    appSecret: X_API_SECRET,
+    accessToken: X_ACCESS_TOKEN,
+    accessSecret: X_ACCESS_TOKEN_SECRET,
   });
-
-  const json = await res.json();
-  if (!res.ok) {
-    throw new Error(`Twitter API error: ${res.status} ${JSON.stringify(json)}`);
-  }
-  return json;
+  return client.v2.tweet(text);
 }
 
 // ── 混雑予測ロジック（crowd-prediction.ts の移植）───────────────
