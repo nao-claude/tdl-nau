@@ -1,0 +1,188 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { ParkId, ParkData } from "@/types";
+import { CurrentWeather } from "@/app/api/weather/current/route";
+
+function weatherEmoji(code: number): string {
+  if (code === 0) return "☀️";
+  if (code <= 2) return "⛅";
+  if (code <= 3) return "☁️";
+  if (code <= 48) return "🌫️";
+  if (code <= 57) return "🌦️";
+  if (code <= 67) return "🌧️";
+  if (code <= 77) return "🌨️";
+  if (code <= 82) return "🌧️";
+  if (code <= 86) return "❄️";
+  return "⛈️";
+}
+
+function isWithinParkHours(open: string, close: string): boolean {
+  const now = new Date();
+  const [oh, om] = open.split(":").map(Number);
+  const [ch, cm] = close.split(":").map(Number);
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  return nowMin >= oh * 60 + om && nowMin < ch * 60 + cm;
+}
+import { getMonthCalendar, CROWD_INFO } from "@/lib/crowd-prediction";
+import { getHolidayName } from "@/lib/holidays";
+import { TodayParkHours } from "@/app/api/park-hours/route";
+
+interface Props {
+  parkId: ParkId;
+}
+
+const SHARE_URL = "https://disneynow.tokyo/en";
+
+const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTHS_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+export function TodaySummaryEn({ parkId }: Props) {
+  const [data, setData] = useState<ParkData | null>(null);
+  const [hours, setHours] = useState<TodayParkHours>({
+    tdl: { open: "9:00", close: "21:00" },
+    tds: { open: "9:00", close: "21:00" },
+  });
+  const [weather, setWeather] = useState<CurrentWeather | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/wait-times/${parkId}`)
+      .then((r) => r.json())
+      .then(setData)
+      .catch(() => {});
+  }, [parkId]);
+
+  useEffect(() => {
+    fetch("/api/park-hours")
+      .then((r) => r.json())
+      .then(setHours)
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/weather/current")
+      .then((r) => r.json())
+      .then(setWeather)
+      .catch(() => {});
+  }, []);
+
+  const today = new Date();
+  const days = getMonthCalendar(today.getFullYear(), today.getMonth() + 1);
+  const todayEntry = days.find((d) => d.date.getDate() === today.getDate());
+  const grade = todayEntry?.grade ?? "C";
+  const info = CROWD_INFO[grade];
+  const holidayName = getHolidayName(today);
+
+  const parkHour = hours[parkId];
+  const isParkOpen = parkHour ? isWithinParkHours(parkHour.open, parkHour.close) : false;
+
+  const openAttractions = isParkOpen ? (data?.attractions.filter((a) => a.is_open) ?? []) : [];
+  const totalCount = data?.attractions.length ?? 0;
+  const maxWait = isParkOpen ? openAttractions.reduce((max, a) => Math.max(max, a.wait_time), 0) : 0;
+  const noWaitCount = isParkOpen ? openAttractions.filter((a) => a.wait_time === 0).length : 0;
+
+  const dateLabel = `${MONTHS_EN[today.getMonth()]} ${today.getDate()} (${WEEKDAYS_EN[today.getDay()]})`;
+
+  const parkName = parkId === "tdl" ? "Tokyo Disneyland" : "Tokyo DisneySea";
+  const shareText = `Today's ${parkName} crowd level: ${grade}! ${maxWait > 0 ? `Max wait ${maxWait} min` : "Many no-wait attractions"} 🏰 #TDLNow @disneynow_tokyo`;
+  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(SHARE_URL)}`;
+  const lineShareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(shareText)}`;
+
+  return (
+    <div className="bg-white border-b border-gray-100">
+      <div className="max-w-4xl mx-auto px-4 py-3">
+        <div className="flex items-center justify-between gap-3">
+          {/* Date / Holiday / Hours */}
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-gray-800">{dateLabel}</p>
+            {holidayName && (
+              <p className="text-xs text-red-500 font-medium">{holidayName}</p>
+            )}
+            <div className="flex flex-col gap-0 mt-0.5">
+              <p className="text-xs text-gray-400 font-medium">Today&apos;s Hours</p>
+              {hours.tdl && (
+                <p className="text-xs text-gray-500">Land: {hours.tdl.open}–{hours.tdl.close}</p>
+              )}
+              {hours.tds && (
+                <p className="text-xs text-gray-500">Sea: {hours.tds.open}–{hours.tds.close}</p>
+              )}
+              {weather && (
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Maihama {weatherEmoji(weather.current.code)} {weather.current.temp}°
+                  <span className="text-gray-400 mx-1">/</span>
+                  Eve {weatherEmoji(weather.evening.code)} {weather.evening.temp}°
+                  {weather.evening.precipProb > 0 && (
+                    <span className="text-blue-400 ml-1">☂{weather.evening.precipProb}%</span>
+                  )}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="flex items-center gap-3 shrink-0">
+            {/* Crowd grade */}
+            <div className={`flex flex-col items-center px-3 py-1.5 rounded-xl ${info.bgColor}`}>
+              <span className="text-xs text-gray-500 leading-none">Crowd</span>
+              <span className={`text-2xl font-extrabold leading-none mt-0.5 ${info.color}`}>{grade}</span>
+            </div>
+
+            {/* Max wait */}
+            <div className="flex flex-col items-center">
+              <span className="text-xs text-gray-400 leading-none">Max Wait</span>
+              {maxWait > 0 ? (
+                <span className="text-xl font-bold text-red-500 leading-none mt-0.5">
+                  {maxWait}<span className="text-xs font-normal text-gray-500">min</span>
+                </span>
+              ) : (
+                <span className="text-sm font-bold text-gray-400 leading-none mt-0.5">−</span>
+              )}
+            </div>
+
+            {/* Open */}
+            <div className="flex flex-col items-center">
+              <span className="text-xs text-gray-400 leading-none">Open</span>
+              <span className="text-xl font-bold text-blue-500 leading-none mt-0.5">
+                {openAttractions.length}<span className="text-xs font-normal text-gray-500">/{totalCount}</span>
+              </span>
+            </div>
+
+            {/* No wait */}
+            <div className="flex flex-col items-center">
+              <span className="text-xs text-gray-400 leading-none">No Wait</span>
+              <span className="text-xl font-bold text-green-500 leading-none mt-0.5">
+                {noWaitCount}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Share buttons */}
+        <div className="flex gap-2 shrink-0 mt-2">
+          <a
+            href={twitterShareUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-black text-white text-xs font-bold hover:bg-gray-800 transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+            Share
+          </a>
+          <a
+            href={lineShareUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#06C755] text-white text-xs font-bold hover:bg-[#05a848] transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+            </svg>
+            LINE
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}

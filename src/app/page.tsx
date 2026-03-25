@@ -1,5 +1,6 @@
 import { MainTabs } from "@/components/MainTabs";
 import { AdBanner } from "@/components/AdBanner";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
               <p className="text-xs text-gray-500">東京ディズニーランド・シー リアルタイム待ち時間</p>
             </div>
           </div>
+          <LocaleSwitcher currentLocale="ja" />
         </div>
       </header>
 
