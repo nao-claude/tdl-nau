@@ -124,6 +124,16 @@ const GRADE_LABELS = {
   S: "超混雑🚨 待ち時間MAXです",
 };
 
+const GRADE_LABELS_EN = {
+  A: "Very Empty 🟢",
+  B: "Quiet 🟢",
+  C: "Moderate 🟡",
+  D: "Somewhat Busy 🟠",
+  E: "Busy 🔴",
+  F: "Very Busy 🔴",
+  S: "Extremely Busy 🚨",
+};
+
 // ── 天気絵文字 ────────────────────────────────────────────────────
 function weatherEmoji(code) {
   if (code === 0) return "☀️";
@@ -138,27 +148,73 @@ function weatherEmoji(code) {
   return "⛈️";
 }
 
-// ── ツイート文生成 ────────────────────────────────────────────────
-async function buildTweetText() {
-  // JSTで今日の日付
+// ── 共通データ取得 ────────────────────────────────────────────────
+async function fetchSharedData() {
   const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
-  const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
-  const dateLabel = `${now.getMonth() + 1}月${now.getDate()}日(${weekdays[now.getDay()]})`;
-
-  // 混雑予測
   const grade = predictCrowd(now);
-  const gradeLabel = GRADE_LABELS[grade];
 
-  // 天気（失敗してもツイートは送る）
-  let weatherLine = "";
-  let weatherAdvice = "";
+  // 天気
+  let weather = null;
   try {
     const res = await fetch("https://disneynow.tokyo/api/weather/current", { signal: AbortSignal.timeout(5000) });
-    const w = await res.json();
+    weather = await res.json();
+  } catch {
+    console.warn("Weather fetch failed, skipping weather line.");
+  }
+
+  // 待ち時間
+  let waitTimes = null;
+  try {
+    const [tdlRes, tdsRes] = await Promise.all([
+      fetch("https://disneynow.tokyo/api/wait-times/tdl", { signal: AbortSignal.timeout(5000) }),
+      fetch("https://disneynow.tokyo/api/wait-times/tds", { signal: AbortSignal.timeout(5000) }),
+    ]);
+    const [tdl, tds] = await Promise.all([tdlRes.json(), tdsRes.json()]);
+    waitTimes = {
+      tdlMax: Math.max(0, ...tdl.attractions.filter(a => a.is_open).map(a => a.wait_time)),
+      tdsMax: Math.max(0, ...tds.attractions.filter(a => a.is_open).map(a => a.wait_time)),
+    };
+  } catch {
+    console.warn("Wait times fetch failed, skipping wait line.");
+  }
+
+  // 営業時間
+  let parkHours = null;
+  try {
+    const res = await fetch("https://disneynow.tokyo/api/park-hours", { signal: AbortSignal.timeout(5000) });
+    const h = await res.json();
+    if (h.tdl && h.tds) {
+      parkHours = { tdl: h.tdl, tds: h.tds };
+    }
+  } catch {
+    console.warn("Park hours fetch failed, skipping hours line.");
+  }
+
+  // 短縮URL（1回だけ取得）
+  let siteUrl = "https://disneynow.tokyo";
+  try {
+    const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(siteUrl)}`, { signal: AbortSignal.timeout(5000) });
+    if (res.ok) siteUrl = await res.text();
+  } catch {
+    console.warn("TinyURL fetch failed, using original URL.");
+  }
+
+  return { now, grade, weather, waitTimes, parkHours, siteUrl };
+}
+
+// ── 日本語ツイート文生成 ──────────────────────────────────────────
+function buildTweetText({ now, grade, weather, waitTimes, parkHours, siteUrl }) {
+  const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+  const dateLabel = `${now.getMonth() + 1}月${now.getDate()}日(${weekdays[now.getDay()]})`;
+  const gradeLabel = GRADE_LABELS[grade];
+
+  let weatherLine = "";
+  let weatherAdvice = "";
+  if (weather) {
+    const w = weather;
     const eveRain = w.evening.precipProb > 0 ? ` 降水確率${w.evening.precipProb}%` : "";
     weatherLine = `🌡 現在${weatherEmoji(w.current.code)}${w.current.temp}° / 夕方${weatherEmoji(w.evening.code)}${w.evening.temp}°${eveRain}`;
 
-    // 雨アドバイス
     const isRainy = [51,53,55,56,57,61,63,65,66,67,80,81,82].includes(w.current.code)
       || [51,53,55,56,57,61,63,65,66,67,80,81,82].includes(w.evening.code);
     const rainLikely = w.evening.precipProb >= 50;
@@ -168,7 +224,6 @@ async function buildTweetText() {
       weatherAdvice = `🌂 夕方から雨の可能性あり（${w.evening.precipProb}%）。折りたたみ傘があると安心です。`;
     }
 
-    // 気温アドバイス（雨アドバイスがない場合のみ）
     if (!weatherAdvice) {
       const maxTemp = Math.max(w.current.temp, w.evening.temp);
       const minTemp = Math.min(w.current.temp, w.evening.temp);
@@ -184,45 +239,15 @@ async function buildTweetText() {
         weatherAdvice = "👕 朝晩と昼間で気温差があります。脱ぎ着しやすい服装がおすすめ！";
       }
     }
-  } catch {
-    console.warn("Weather fetch failed, skipping weather line.");
   }
 
-  // 待ち時間
-  let waitLine = "";
-  try {
-    const [tdlRes, tdsRes] = await Promise.all([
-      fetch("https://disneynow.tokyo/api/wait-times/tdl", { signal: AbortSignal.timeout(5000) }),
-      fetch("https://disneynow.tokyo/api/wait-times/tds", { signal: AbortSignal.timeout(5000) }),
-    ]);
-    const [tdl, tds] = await Promise.all([tdlRes.json(), tdsRes.json()]);
-    const tdlMax = Math.max(0, ...tdl.attractions.filter(a => a.is_open).map(a => a.wait_time));
-    const tdsMax = Math.max(0, ...tds.attractions.filter(a => a.is_open).map(a => a.wait_time));
-    waitLine = `🎢 ランド 待ち時間最長${tdlMax}分 / シー 待ち時間最長${tdsMax}分`;
-  } catch {
-    console.warn("Wait times fetch failed, skipping wait line.");
-  }
+  const waitLine = waitTimes
+    ? `🎢 ランド 待ち時間最長${waitTimes.tdlMax}分 / シー 待ち時間最長${waitTimes.tdsMax}分`
+    : "";
 
-  // 営業時間
-  let hoursLine = "";
-  try {
-    const res = await fetch("https://disneynow.tokyo/api/park-hours", { signal: AbortSignal.timeout(5000) });
-    const h = await res.json();
-    if (h.tdl && h.tds) {
-      hoursLine = `🕘 ランド ${h.tdl.open}〜${h.tdl.close} / シー ${h.tds.open}〜${h.tds.close}`;
-    }
-  } catch {
-    console.warn("Park hours fetch failed, skipping hours line.");
-  }
-
-  // 短縮URL
-  let siteUrl = "https://disneynow.tokyo";
-  try {
-    const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(siteUrl)}`, { signal: AbortSignal.timeout(5000) });
-    if (res.ok) siteUrl = await res.text();
-  } catch {
-    console.warn("TinyURL fetch failed, using original URL.");
-  }
+  const hoursLine = parkHours
+    ? `🕘 ランド ${parkHours.tdl.open}〜${parkHours.tdl.close} / シー ${parkHours.tds.open}〜${parkHours.tds.close}`
+    : "";
 
   const allLines = [
     `🏰 ${dateLabel} 現在のディズニーランド情報`,
@@ -241,19 +266,113 @@ async function buildTweetText() {
   return allLines.join("\n");
 }
 
+// ── 英語ツイート文生成 ────────────────────────────────────────────
+function buildEnglishTweetText({ now, grade, weather, waitTimes, parkHours, siteUrl }) {
+  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const weekdayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const dateLabel = `${monthNames[now.getMonth()]} ${now.getDate()} (${weekdayNames[now.getDay()]})`;
+  const gradeLabel = GRADE_LABELS_EN[grade];
+
+  let weatherLine = "";
+  let weatherAdvice = "";
+  if (weather) {
+    const w = weather;
+    const eveRain = w.evening.precipProb > 0 ? ` Rain ${w.evening.precipProb}%` : "";
+    weatherLine = `🌡 Now ${weatherEmoji(w.current.code)}${w.current.temp}° / Eve ${weatherEmoji(w.evening.code)}${w.evening.temp}°${eveRain}`;
+
+    const isRainy = [51,53,55,56,57,61,63,65,66,67,80,81,82].includes(w.current.code)
+      || [51,53,55,56,57,61,63,65,66,67,80,81,82].includes(w.evening.code);
+    const rainLikely = w.evening.precipProb >= 50;
+    if (isRainy) {
+      weatherAdvice = "☔ Rain today! Don't forget a raincoat or umbrella.";
+    } else if (rainLikely) {
+      weatherAdvice = `🌂 Rain possible in the evening (${w.evening.precipProb}%). A folding umbrella is recommended.`;
+    }
+
+    if (!weatherAdvice) {
+      const maxTemp = Math.max(w.current.temp, w.evening.temp);
+      const minTemp = Math.min(w.current.temp, w.evening.temp);
+      if (maxTemp >= 30) {
+        weatherAdvice = "🥵 Very hot today! Stay hydrated and wear a hat.";
+      } else if (maxTemp >= 25) {
+        weatherAdvice = "😎 It'll be warm. Don't forget sunscreen and water!";
+      } else if (minTemp <= 5) {
+        weatherAdvice = "🥶 Very cold! Bring a heavy coat and gloves.";
+      } else if (minTemp <= 10) {
+        weatherAdvice = "🧥 Chilly today. Pack a jacket.";
+      } else if (maxTemp >= 20 && minTemp <= 12) {
+        weatherAdvice = "👕 Big temp swing today. Dress in layers!";
+      }
+    }
+  }
+
+  const waitLine = waitTimes
+    ? `🎢 Land: Max wait ${waitTimes.tdlMax} min / Sea: Max wait ${waitTimes.tdsMax} min`
+    : "";
+
+  const hoursLine = parkHours
+    ? `🕘 Land ${parkHours.tdl.open}–${parkHours.tdl.close} / Sea ${parkHours.tds.open}–${parkHours.tds.close}`
+    : "";
+
+  const allLines = [
+    `🏰 Tokyo Disney Resort - ${dateLabel}`,
+    ``,
+    `📊 Today's crowd: ${gradeLabel}`,
+    waitLine,
+    weatherLine,
+    hoursLine,
+    weatherAdvice,
+    ``,
+    `Real-time wait times 👇`,
+    siteUrl,
+    ``,
+  ].filter(Boolean);
+
+  return allLines.join("\n");
+}
+
+// ── sleep ─────────────────────────────────────────────────────────
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 // ── メイン ─────────────────────────────────────────────────────────
 async function main() {
-  const text = await buildTweetText();
-  console.log("Tweet text:\n" + text);
-  console.log(`\nLength: ${text.length} chars`);
+  const shared = await fetchSharedData();
+
+  // 日本語ツイート
+  const jaText = buildTweetText(shared);
+  console.log("=== Japanese Tweet ===\n" + jaText);
+  console.log(`Length: ${jaText.length} chars\n`);
+
+  // 英語ツイート
+  const enText = buildEnglishTweetText(shared);
+  console.log("=== English Tweet ===\n" + enText);
+  console.log(`Length: ${enText.length} chars\n`);
 
   if (process.env.DRY_RUN === "true") {
-    console.log("\n[DRY RUN] Not posting.");
+    console.log("[DRY RUN] Not posting.");
     return;
   }
 
-  const result = await postTweet(text);
-  console.log("Posted:", result.data?.id);
+  // 日本語投稿
+  try {
+    const jaResult = await postTweet(jaText);
+    console.log("Posted (JA):", jaResult.data?.id);
+  } catch (e) {
+    console.error("Failed to post Japanese tweet:", e);
+  }
+
+  // 少し間隔を空ける
+  await sleep(1500);
+
+  // 英語投稿
+  try {
+    const enResult = await postTweet(enText);
+    console.log("Posted (EN):", enResult.data?.id);
+  } catch (e) {
+    console.error("Failed to post English tweet:", e);
+  }
 }
 
 main().catch((e) => {
