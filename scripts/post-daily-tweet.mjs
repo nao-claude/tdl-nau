@@ -198,7 +198,7 @@ async function buildTweetText() {
     const [tdl, tds] = await Promise.all([tdlRes.json(), tdsRes.json()]);
     const tdlMax = Math.max(0, ...tdl.attractions.filter(a => a.is_open).map(a => a.wait_time));
     const tdsMax = Math.max(0, ...tds.attractions.filter(a => a.is_open).map(a => a.wait_time));
-    waitLine = `🎢 ランド 待ち最長${tdlMax}分 / シー 待ち最長${tdsMax}分`;
+    waitLine = `🎢 ランド 待ち時間最長${tdlMax}分 / シー 待ち時間最長${tdsMax}分`;
   } catch {
     console.warn("Wait times fetch failed, skipping wait line.");
   }
