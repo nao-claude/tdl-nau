@@ -216,7 +216,7 @@ async function buildTweetText() {
   }
 
   const allLines = [
-    `🏰 ${dateLabel} のディズニーランド情報`,
+    `🏰 ${dateLabel} 現在のディズニーランド情報`,
     ``,
     `📊 本日の混雑: ${gradeLabel}`,
     waitLine,
@@ -227,7 +227,7 @@ async function buildTweetText() {
     `詳細・リアルタイム待ち時間はこちら👇`,
     `https://disneynow.tokyo`,
     ``,
-    `#TDL #TDS #ディズニー`,
+    `#TDL #TDS #ディズニー #ディズニーランド`,
   ].filter(Boolean);
 
   return allLines.join("\n");
