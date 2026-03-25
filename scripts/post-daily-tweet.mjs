@@ -224,8 +224,6 @@ async function buildTweetText() {
     hoursLine,
     weatherAdvice,
     ``,
-    `詳細・リアルタイム待ち時間はこちら👇`,
-    `https://disneynow.tokyo`,
     ``,
     `#TDL #TDS #ディズニーランド`,
   ].filter(Boolean);
