@@ -162,8 +162,13 @@ function predictCrowd(date) {
 }
 
 const GRADE_LABELS = {
-  A: "かなり空き🟢", B: "やや空き🟢", C: "普通🟡",
-  D: "やや混雑🟠", E: "混雑🔴", F: "かなり混雑🔴", S: "超混雑🚨",
+  A: "ガラガラ🟢 待ち時間ほぼなし！",
+  B: "空いてます🟢 狙い目な日です",
+  C: "まあまあ混んでます🟡",
+  D: "やや混雑🟠 人気アトラクションは並びます",
+  E: "混雑してます🔴 待ち時間長めです",
+  F: "かなり混雑🔴 覚悟して行きましょう",
+  S: "超混雑🚨 待ち時間MAXです",
 };
 
 // ── 天気絵文字 ────────────────────────────────────────────────────
@@ -193,11 +198,39 @@ async function buildTweetText() {
 
   // 天気（失敗してもツイートは送る）
   let weatherLine = "";
+  let weatherAdvice = "";
   try {
     const res = await fetch("https://disneynow.tokyo/api/weather/current", { signal: AbortSignal.timeout(5000) });
     const w = await res.json();
-    const eveRain = w.evening.precipProb > 0 ? ` ☂${w.evening.precipProb}%` : "";
-    weatherLine = `🌡 ${weatherEmoji(w.current.code)}${w.current.temp}° / 夕方${weatherEmoji(w.evening.code)}${w.evening.temp}°${eveRain}`;
+    const eveRain = w.evening.precipProb > 0 ? ` 降水確率${w.evening.precipProb}%` : "";
+    weatherLine = `🌡 現在${weatherEmoji(w.current.code)}${w.current.temp}° / 夕方${weatherEmoji(w.evening.code)}${w.evening.temp}°${eveRain}`;
+
+    // 雨アドバイス
+    const isRainy = [51,53,55,56,57,61,63,65,66,67,80,81,82].includes(w.current.code)
+      || [51,53,55,56,57,61,63,65,66,67,80,81,82].includes(w.evening.code);
+    const rainLikely = w.evening.precipProb >= 50;
+    if (isRainy) {
+      weatherAdvice = "☔ 今日は雨です。カッパか折りたたみ傘を忘れずに！";
+    } else if (rainLikely) {
+      weatherAdvice = `🌂 夕方から雨の可能性あり（${w.evening.precipProb}%）。折りたたみ傘があると安心です。`;
+    }
+
+    // 気温アドバイス（雨アドバイスがない場合のみ）
+    if (!weatherAdvice) {
+      const maxTemp = Math.max(w.current.temp, w.evening.temp);
+      const minTemp = Math.min(w.current.temp, w.evening.temp);
+      if (maxTemp >= 30) {
+        weatherAdvice = "🥵 かなり暑いです！熱中症対策に飲み物・帽子をお忘れなく。";
+      } else if (maxTemp >= 25) {
+        weatherAdvice = "😎 暑くなります。日焼け止め・水分補給をしっかりと！";
+      } else if (minTemp <= 5) {
+        weatherAdvice = "🥶 かなり寒いです！厚手のコートや手袋を忘れずに。";
+      } else if (minTemp <= 10) {
+        weatherAdvice = "🧥 肌寒いです。上着を1枚持って行きましょう。";
+      } else if (maxTemp >= 20 && minTemp <= 12) {
+        weatherAdvice = "👕 朝晩と昼間で気温差があります。脱ぎ着しやすい服装がおすすめ！";
+      }
+    }
   } catch {
     console.warn("Weather fetch failed, skipping weather line.");
   }
@@ -217,9 +250,10 @@ async function buildTweetText() {
   const allLines = [
     `🏰 ${dateLabel} のディズニー情報`,
     ``,
-    `📊 混雑予想: ${grade} ${gradeLabel}`,
+    `📊 混雑予想: ${gradeLabel}`,
     weatherLine,
     hoursLine,
+    weatherAdvice,
     ``,
     `詳細・リアルタイム待ち時間はこちら👇`,
     `https://disneynow.tokyo`,
