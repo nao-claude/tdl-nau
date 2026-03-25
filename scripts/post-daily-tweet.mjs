@@ -188,6 +188,21 @@ async function buildTweetText() {
     console.warn("Weather fetch failed, skipping weather line.");
   }
 
+  // 待ち時間
+  let waitLine = "";
+  try {
+    const [tdlRes, tdsRes] = await Promise.all([
+      fetch("https://disneynow.tokyo/api/wait-times/tdl", { signal: AbortSignal.timeout(5000) }),
+      fetch("https://disneynow.tokyo/api/wait-times/tds", { signal: AbortSignal.timeout(5000) }),
+    ]);
+    const [tdl, tds] = await Promise.all([tdlRes.json(), tdsRes.json()]);
+    const tdlMax = Math.max(0, ...tdl.attractions.filter(a => a.is_open).map(a => a.wait_time));
+    const tdsMax = Math.max(0, ...tds.attractions.filter(a => a.is_open).map(a => a.wait_time));
+    waitLine = `🎢 ランド 最長${tdlMax}分 / シー 最長${tdsMax}分`;
+  } catch {
+    console.warn("Wait times fetch failed, skipping wait line.");
+  }
+
   // 営業時間
   let hoursLine = "";
   try {
@@ -203,7 +218,8 @@ async function buildTweetText() {
   const allLines = [
     `🏰 ${dateLabel} のディズニー情報`,
     ``,
-    `📊 混雑予想: ${gradeLabel}`,
+    `📊 本日の混雑: ${gradeLabel}`,
+    waitLine,
     weatherLine,
     hoursLine,
     weatherAdvice,
