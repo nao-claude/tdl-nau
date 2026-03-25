@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { ParkId, ParkData } from "@/types";
-import { WaitTimeCard } from "@/components/WaitTimeCard";
+import { WaitTimeCardEn } from "@/components/en/WaitTimeCardEn";
 import { RefreshCw } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { ShowSchedule } from "@/components/ShowSchedule";
@@ -124,7 +124,7 @@ export function ParkPanelEn({ parkId, parkName }: Props) {
       ) : (
         <div className="flex flex-col gap-2">
           {effectiveAttractions.map((attraction) => (
-            <WaitTimeCard
+            <WaitTimeCardEn
               key={attraction.id}
               attraction={attraction}
               isFavorite={isFavorite(attraction.id)}
