@@ -236,7 +236,7 @@ async function buildTweetText() {
     `詳細・リアルタイム待ち時間はこちら👇`,
     siteUrl,
     ``,
-    `#TDL #TDS #ディズニーランド`,
+    `#ディズニーランド`,
   ].filter(Boolean);
 
   return allLines.join("\n");
