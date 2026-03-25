@@ -227,7 +227,7 @@ async function buildTweetText() {
     `詳細・リアルタイム待ち時間はこちら👇`,
     `https://disneynow.tokyo`,
     ``,
-    `#TDL #TDS #ディズニー #ディズニーランド`,
+    `#TDL #TDS #ディズニーランド`,
   ].filter(Boolean);
 
   return allLines.join("\n");
