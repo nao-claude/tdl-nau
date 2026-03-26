@@ -50,6 +50,17 @@ const TDS_POPULAR_IDS = [
   247, // ニモ＆フレンズ・シーライダー
 ];
 
+// ===== 混雑グレード英語ラベル =====
+const CROWD_LABEL_EN: Record<string, string> = {
+  A: "Very Light",
+  B: "Light",
+  C: "Moderate",
+  D: "Somewhat Busy",
+  E: "Busy",
+  F: "Very Busy",
+  S: "Extremely Busy",
+};
+
 // ===== 時間帯判定 =====
 function getTimeSlot(now: Date, open: string, close: string): TimeSlot {
   const [oh, om] = open.split(":").map(Number);
@@ -65,7 +76,23 @@ function getTimeSlot(now: Date, open: string, close: string): TimeSlot {
 }
 
 // ===== 待ち時間コメント =====
-function waitComment(waitTime: number, slot: TimeSlot, isPopular: boolean): string {
+function waitComment(waitTime: number, slot: TimeSlot, isPopular: boolean, locale: "ja" | "en" = "ja"): string {
+  if (locale === "en") {
+    if (waitTime === 0) return "No wait — ride now!";
+    if (slot === "morning") {
+      if (isPopular && waitTime <= 30) return "Great time to go!";
+      if (isPopular) return "Hurry before it gets busy!";
+      return "Perfect for opening rush!";
+    }
+    if (slot === "afternoon") {
+      if (waitTime <= 20) return "Short wait — seize the chance!";
+      if (waitTime <= 40) return "Relatively short wait";
+      return "Worth the wait!";
+    }
+    if (waitTime <= 20) return "Evening gem — low wait!";
+    if (waitTime <= 40) return "Settling down in the evening";
+    return "Jump in line when it opens up!";
+  }
   if (waitTime === 0) return "今すぐ乗れる！";
   if (slot === "morning") {
     if (isPopular && waitTime <= 30) return "今が狙い目！";
@@ -88,7 +115,8 @@ function buildCourse(
   attractions: Attraction[],
   parkId: ParkId,
   slot: TimeSlot,
-  crowdGrade: string
+  crowdGrade: string,
+  locale: "ja" | "en" = "ja"
 ): Course {
   const popularIds = parkId === "tdl" ? TDL_POPULAR_IDS : TDS_POPULAR_IDS;
   const open = attractions.filter((a) => a.is_open);
@@ -111,7 +139,7 @@ function buildCourse(
     const merged = [...popular, ...remaining].slice(0, 5);
     items = merged.map((a) => ({
       attraction: a,
-      comment: waitComment(a.wait_time, slot, popularIds.includes(a.id)),
+      comment: waitComment(a.wait_time, slot, popularIds.includes(a.id), locale),
     }));
   } else if (slot === "afternoon") {
     // 待ち時間30分以下を中心に、短い順
@@ -131,7 +159,7 @@ function buildCourse(
 
     items = shortWait.map((a) => ({
       attraction: a,
-      comment: waitComment(a.wait_time, slot, popularIds.includes(a.id)),
+      comment: waitComment(a.wait_time, slot, popularIds.includes(a.id), locale),
     }));
   } else {
     // evening: 待ち時間が短いもの 3〜4本
@@ -142,12 +170,12 @@ function buildCourse(
 
     items = short.map((a) => ({
       attraction: a,
-      comment: waitComment(a.wait_time, slot, popularIds.includes(a.id)),
+      comment: waitComment(a.wait_time, slot, popularIds.includes(a.id), locale),
     }));
   }
 
   // アドバイス
-  const adviceMap: Record<string, Record<TimeSlot, string>> = {
+  const adviceMapJa: Record<string, Record<TimeSlot, string>> = {
     A: {
       morning:   "今日はかなり空いています！人気アトラクションも余裕で楽しめそう。",
       afternoon: "空き日ならでは！人気エリアも午後からゆっくり回れます。",
@@ -192,14 +220,68 @@ function buildCourse(
     },
   };
 
+  const adviceMapEn: Record<string, Record<TimeSlot, string>> = {
+    A: {
+      morning:   "Super light crowds today! Even the most popular rides should be easy to enjoy.",
+      afternoon: "A rare light day! Take it easy and explore popular areas in the afternoon.",
+      evening:   "Still quiet in the evening. Sprint to the finish before closing!",
+      closed:    "",
+    },
+    B: {
+      morning:   "Relatively light — make the most of opening rush to tackle top attractions!",
+      afternoon: "Moderate crowds in the afternoon. Strike while wait times are short!",
+      evening:   "Waits ease up in the evening. Keep it compact and enjoy.",
+      closed:    "",
+    },
+    C: {
+      morning:   "Average crowds. Head to the gate early — it's calmer right at opening!",
+      afternoon: "When crowds build, pivot to attractions with shorter waits.",
+      evening:   "Waits ease slightly in the evening. Plan your route wisely.",
+      closed:    "",
+    },
+    D: {
+      morning:   "Slightly busy. The opening moments are your best shot at top rides!",
+      afternoon: "Waits can run long — stick to shorter queues for smarter touring.",
+      evening:   "Waits may ease toward closing. Evening is your window!",
+      closed:    "",
+    },
+    E: {
+      morning:   "Busy day! Line up before opening to be first through the gates.",
+      afternoon: "Significant wait times building. Focus on rides under 15 minutes.",
+      evening:   "Late evening is your golden hour. Prioritize short-wait rides.",
+      closed:    "",
+    },
+    F: {
+      morning:   "Very crowded! Opening dash is a must. Lock in DPA passes immediately.",
+      afternoon: "Expect long lines everywhere. Stay calm and chase short waits.",
+      evening:   "Things may ease slightly. The last 1–2 hours are your best bet.",
+      closed:    "",
+    },
+    S: {
+      morning:   "Extreme crowds! Come prepared. Right at opening is your only real chance.",
+      afternoon: "Nearly every attraction has a long line. Only target the shortest waits.",
+      evening:   "It might ease up before closing. Use your remaining time on the best rides.",
+      closed:    "",
+    },
+  };
+
+  const adviceMap = locale === "en" ? adviceMapEn : adviceMapJa;
   const gradeInfo = (adviceMap[crowdGrade] ?? adviceMap["C"]);
   const advice = gradeInfo[slot] ?? "";
 
-  const slotMeta: Record<Exclude<TimeSlot, "closed">, { label: string; title: string }> = {
+  const slotMetaJa: Record<Exclude<TimeSlot, "closed">, { label: string; title: string }> = {
     morning:   { label: "午前",   title: "人気を制覇！午前の王道コース" },
     afternoon: { label: "午後",   title: "待ち時間短め！午後のおすすめコース" },
     evening:   { label: "夕方",   title: "閉園前ラストスパート！夕方コンパクトコース" },
   };
+
+  const slotMetaEn: Record<Exclude<TimeSlot, "closed">, { label: string; title: string }> = {
+    morning:   { label: "Morning",   title: "Conquer the hits — Morning Classic Course" },
+    afternoon: { label: "Afternoon", title: "Short waits — Afternoon Recommended Course" },
+    evening:   { label: "Evening",   title: "Final sprint — Evening Compact Course" },
+  };
+
+  const slotMeta = locale === "en" ? slotMetaEn : slotMetaJa;
 
   const meta = slotMeta[slot as Exclude<TimeSlot, "closed">];
 
@@ -251,7 +333,7 @@ interface TomorrowCourse {
 }
 
 // ===== 明日のコース生成（固定リストベース） =====
-function buildTomorrowCourse(parkId: ParkId, grade: string): TomorrowCourse {
+function buildTomorrowCourse(parkId: ParkId, grade: string, locale: "ja" | "en" = "ja"): TomorrowCourse {
   const list = parkId === "tdl" ? TDL_FIXED_ATTRACTIONS : TDS_FIXED_ATTRACTIONS;
 
   let morningItems: string[];
@@ -259,23 +341,27 @@ function buildTomorrowCourse(parkId: ParkId, grade: string): TomorrowCourse {
   let advice: string;
 
   if (grade === "A" || grade === "B") {
-    // 空いている日: 人気順に全部回れる
     morningItems = list.slice(0, 4).map((a) => a.name);
     afternoonItems = list.slice(4, 8).map((a) => a.name);
-    advice = "明日は比較的空いています。人気アトラクションもじっくり楽しめそう！開園に合わせて到着でOK。";
+    advice = locale === "en"
+      ? "Tomorrow looks relatively uncrowded. You should be able to enjoy top attractions at a relaxed pace! Arriving at opening time is fine."
+      : "明日は比較的空いています。人気アトラクションもじっくり楽しめそう！開園に合わせて到着でOK。";
   } else if (grade === "C" || grade === "D") {
-    // 普通〜やや混雑: 午前に人気を、午後に中堅を
     morningItems = list.slice(0, 3).map((a) => a.name);
     afternoonItems = list.slice(5, 8).map((a) => a.name);
-    advice = "明日は混雑が予想されます。開園30分前の到着がおすすめです。午前中に人気アトラクションを優先しましょう。";
+    advice = locale === "en"
+      ? "Moderate crowds expected tomorrow. Arriving 30 minutes before opening is recommended. Prioritize popular attractions in the morning."
+      : "明日は混雑が予想されます。開園30分前の到着がおすすめです。午前中に人気アトラクションを優先しましょう。";
   } else {
-    // E〜S: 朝一番勝負、DPA優先の戦略コース
     morningItems = list.slice(0, 2).map((a) => a.name);
     afternoonItems = list.slice(6, 9).map((a) => a.name);
-    advice =
-      grade === "S"
+    advice = locale === "en"
+      ? (grade === "S"
+        ? "Extreme crowds expected tomorrow! Arrive 1 hour before opening for the best shot. Securing DPA passes immediately is essential."
+        : "Heavy crowds expected tomorrow. Arrival 45 minutes before opening is recommended. Lock in 2–3 morning rides, then shift to short-wait attractions in the afternoon.")
+      : (grade === "S"
         ? "明日は超混雑が予想されます！開園1時間前の到着で朝一番勝負。DPA対象アトラクションは即確保が必須です。"
-        : "明日はかなり混雑する見込みです。開園45分前の到着を推奨。午前の2〜3本を押さえたら午後は待ち時間の短いものへ。";
+        : "明日はかなり混雑する見込みです。開園45分前の到着を推奨。午前の2〜3本を押さえたら午後は待ち時間の短いものへ。");
   }
 
   const items: TomorrowCourseItem[] = [
@@ -327,6 +413,7 @@ interface Props {
   /** MainTabs から渡される場合は自前フェッチをスキップ */
   data?: ParkData | null;
   parkHours?: TodayParkHours | null;
+  locale?: "ja" | "en";
 }
 
 const DEFAULT_HOURS: TodayParkHours = {
@@ -334,7 +421,7 @@ const DEFAULT_HOURS: TodayParkHours = {
   tds: { open: "9:00", close: "21:00" },
 };
 
-export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHoursProp }: Props) {
+export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHoursProp, locale = "ja" }: Props) {
   const [dataInternal, setDataInternal] = useState<ParkData | null>(null);
   const [hoursInternal, setHoursInternal] = useState<TodayParkHours>(DEFAULT_HOURS);
   const [loading, setLoading] = useState(dataProp === undefined);
@@ -413,7 +500,7 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowGrade = predictCrowd(tomorrow);
     const tomorrowCrowdInfo = CROWD_INFO[tomorrowGrade];
-    const tomorrowCourse = buildTomorrowCourse(parkId, tomorrowGrade);
+    const tomorrowCourse = buildTomorrowCourse(parkId, tomorrowGrade, locale);
 
     const tomorrowMorning = tomorrowCourse.items.filter((i) => i.section === "morning");
     const tomorrowAfternoon = tomorrowCourse.items.filter((i) => i.section === "afternoon");
@@ -424,14 +511,18 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
         <div className="px-4 py-3 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-2">
             <span className="text-base">🗺️</span>
-            <span className="text-white font-bold text-sm">明日のおすすめコース予報</span>
+            <span className="text-white font-bold text-sm">
+              {locale === "en" ? "Tomorrow's Recommended Course" : "明日のおすすめコース予報"}
+            </span>
           </div>
           <div className="flex items-center gap-1.5 bg-white/15 rounded-full px-2.5 py-1">
-            <span className="text-white/80 text-xs">混雑予測</span>
+            <span className="text-white/80 text-xs">{locale === "en" ? "Crowd" : "混雑予測"}</span>
             <span className={`text-xs font-extrabold px-1.5 py-0.5 rounded ${tomorrowCrowdInfo.bgColor} ${tomorrowCrowdInfo.color}`}>
               {tomorrowGrade}
             </span>
-            <span className="text-white/80 text-xs">{tomorrowCrowdInfo.label}</span>
+            <span className="text-white/80 text-xs">
+              {locale === "en" ? CROWD_LABEL_EN[tomorrowGrade] : tomorrowCrowdInfo.label}
+            </span>
           </div>
         </div>
 
@@ -439,7 +530,9 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
         <div className="p-4 space-y-4">
           {/* 午前セクション */}
           <div>
-            <p className="text-xs font-bold text-indigo-200 mb-2">【午前】人気アトラクションを早めに押さえよう</p>
+            <p className="text-xs font-bold text-indigo-200 mb-2">
+              {locale === "en" ? "[Morning] Secure popular attractions early" : "【午前】人気アトラクションを早めに押さえよう"}
+            </p>
             <div className="space-y-2">
               {tomorrowMorning.map((item, index) => (
                 <div key={index} className="flex items-center gap-2.5">
@@ -454,7 +547,9 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
 
           {/* 午後セクション */}
           <div>
-            <p className="text-xs font-bold text-purple-200 mb-2">【午後】混雑が落ち着いたら</p>
+            <p className="text-xs font-bold text-purple-200 mb-2">
+              {locale === "en" ? "[Afternoon] When crowds settle down" : "【午後】混雑が落ち着いたら"}
+            </p>
             <div className="space-y-2">
               {tomorrowAfternoon.map((item, index) => (
                 <div key={index} className="flex items-center gap-2.5">
@@ -486,29 +581,39 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
   const grade = todayEntry?.grade ?? "C";
   const crowdInfo = CROWD_INFO[grade];
 
-  const course = buildCourse(data.attractions, parkId, slot, grade);
+  const course = buildCourse(data.attractions, parkId, slot, grade, locale);
   const colors = SLOT_COLORS[slot];
 
   return (
     <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm">
       {/* ヘッダー */}
-      <div className={`bg-gradient-to-r ${colors.header} px-4 py-3 flex items-center justify-between`}>
+      <div className={`bg-gradient-to-r ${colors.header} px-4 py-3`}>
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-1.5">
+            <span className="text-base">🗺️</span>
+            <span className="text-white font-bold text-sm">
+              {locale === "en" ? "Today's Recommended Course" : "本日のおすすめコース"}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-white/20 text-white">
+            <span>{locale === "en" ? "Crowd" : "混雑"}</span>
+            <span className={`font-extrabold ${crowdInfo.color} bg-white px-1.5 rounded text-sm`}>{grade}</span>
+          </div>
+        </div>
         <div>
           <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${colors.badge} mr-2`}>
-            {course.label}コース
+            {locale === "en" ? course.label : `${course.label}コース`}
           </span>
-          <span className="text-white font-bold text-sm">{course.title}</span>
-        </div>
-        <div className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-white/20 text-white`}>
-          <span>混雑</span>
-          <span className={`font-extrabold ${crowdInfo.color} bg-white px-1.5 rounded text-sm`}>{grade}</span>
+          <span className="text-white/90 text-xs">{course.title}</span>
         </div>
       </div>
 
       {/* アトラクションリスト */}
       <div className="p-4 space-y-2.5">
         {course.items.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-2">現在営業中のアトラクションがありません</p>
+          <p className="text-sm text-gray-400 text-center py-2">
+            {locale === "en" ? "No attractions currently in operation" : "現在営業中のアトラクションがありません"}
+          </p>
         ) : (
           course.items.map((item, index) => (
             <div key={item.attraction.id} className="flex items-center gap-3">
@@ -520,7 +625,7 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
               {/* アトラクション名・コメント */}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-gray-800 truncate leading-tight">
-                  {item.attraction.nameJa}
+                  {locale === "en" ? (item.attraction.name || item.attraction.nameJa) : item.attraction.nameJa}
                 </p>
                 <p className="text-xs text-gray-500 leading-tight">{item.comment}</p>
               </div>
@@ -528,11 +633,11 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
               {/* 待ち時間バッジ */}
               <div className={`flex items-center gap-0.5 px-2 py-1 rounded-full text-xs font-bold shrink-0 ${waitBadgeClass(item.attraction.wait_time)}`}>
                 {item.attraction.wait_time === 0 ? (
-                  <span>待ちなし</span>
+                  <span>{locale === "en" ? "No wait" : "待ちなし"}</span>
                 ) : (
                   <>
                     <Clock className="w-3 h-3" />
-                    <span>{item.attraction.wait_time}分</span>
+                    <span>{item.attraction.wait_time}{locale === "en" ? " min" : "分"}</span>
                   </>
                 )}
               </div>

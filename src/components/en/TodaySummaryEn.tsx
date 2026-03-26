@@ -34,6 +34,16 @@ interface Props {
 
 const SHARE_URL = "https://disneynow.tokyo/en";
 
+const CROWD_LABEL_EN: Record<string, string> = {
+  A: "Very Light",
+  B: "Light",
+  C: "Moderate",
+  D: "Somewhat Busy",
+  E: "Busy",
+  F: "Very Busy",
+  S: "Extremely Busy",
+};
+
 const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -125,6 +135,7 @@ export function TodaySummaryEn({ parkId }: Props) {
             <div className={`flex flex-col items-center px-3 py-1.5 rounded-xl ${info.bgColor}`}>
               <span className="text-xs text-gray-500 leading-none">Crowd</span>
               <span className={`text-2xl font-extrabold leading-none mt-0.5 ${info.color}`}>{grade}</span>
+              <span className={`text-xs font-bold leading-none mt-0.5 ${info.color}`}>{CROWD_LABEL_EN[grade]}</span>
             </div>
 
             {/* Max wait */}

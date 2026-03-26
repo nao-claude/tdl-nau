@@ -125,6 +125,7 @@ export function TodaySummary({ parkId }: Props) {
             <div className={`flex flex-col items-center px-3 py-1.5 rounded-xl ${info.bgColor}`}>
               <span className="text-xs text-gray-500 leading-none">今日の混雑</span>
               <span className={`text-2xl font-extrabold leading-none mt-0.5 ${info.color}`}>{grade}</span>
+              <span className={`text-xs font-bold leading-none mt-0.5 ${info.color}`}>{info.label}</span>
             </div>
 
             {/* 最長待ち */}

@@ -73,11 +73,11 @@ export function MainTabsEn() {
 
       {/* Today's recommended course (always visible regardless of active tab) */}
       <div className="max-w-4xl mx-auto px-4 pt-4">
-        <h2 className="text-sm font-bold text-gray-700 mb-2">Today&apos;s Recommended Course</h2>
         <RecommendedCourse
           parkId={park}
           data={waitData}
           parkHours={parkHours}
+          locale="en"
         />
       </div>
 
