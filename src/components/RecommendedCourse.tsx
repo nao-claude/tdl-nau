@@ -338,15 +338,18 @@ export function RecommendedCourse({ parkId }: Props) {
   useEffect(() => {
     setLoading(true);
     setError(false);
+    const defaultHours: TodayParkHours = {
+      tdl: { open: "9:00", close: "21:00" },
+      tds: { open: "9:00", close: "21:00" },
+    };
     Promise.all([
       fetch(`/api/wait-times/${parkId}`).then((r) => {
         if (!r.ok) throw new Error("wait-times error");
         return r.json() as Promise<ParkData>;
       }),
-      fetch("/api/park-hours").then((r) => {
-        if (!r.ok) throw new Error("park-hours error");
-        return r.json() as Promise<TodayParkHours>;
-      }),
+      fetch("/api/park-hours")
+        .then((r) => (r.ok ? (r.json() as Promise<TodayParkHours>) : defaultHours))
+        .catch(() => defaultHours),
     ])
       .then(([pd, ph]) => {
         setData(pd);
