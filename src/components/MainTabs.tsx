@@ -38,10 +38,8 @@ export function MainTabs() {
   const [waitData, setWaitData] = useState<ParkData | null>(null);
   const [parkHours, setParkHours] = useState<TodayParkHours | null>(null);
 
-  // ランキングタブが選ばれているときにデータを取得
+  // タブに関わらず常時データを取得
   useEffect(() => {
-    if (tab !== "realtime") return;
-
     let cancelled = false;
 
     async function fetchData() {
@@ -69,12 +67,22 @@ export function MainTabs() {
       cancelled = true;
       clearInterval(interval);
     };
-  }, [tab, park]);
+  }, [park]);
 
   return (
     <div>
       {/* 今日のサマリー */}
       <TodaySummary parkId={park} />
+
+      {/* 本日のおすすめコース（タブに関わらず常時表示） */}
+      <div className="max-w-4xl mx-auto px-4 pt-4">
+        <h2 className="text-sm font-bold text-gray-700 mb-2">本日のおすすめコース</h2>
+        <RecommendedCourse
+          parkId={park}
+          data={waitData}
+          parkHours={parkHours}
+        />
+      </div>
 
       {/* タブナビ */}
       <div className="max-w-4xl mx-auto px-4 pt-4">
@@ -114,24 +122,12 @@ export function MainTabs() {
       {/* コンテンツ */}
       <div className="max-w-4xl mx-auto px-4 py-4">
         {tab === "realtime" && (
-          <>
-            {/* 本日のおすすめコース */}
-            <div className="mb-4">
-              <h2 className="text-sm font-bold text-gray-700 mb-2">本日のおすすめコース</h2>
-              <RecommendedCourse
-                parkId={park}
-                data={waitData}
-                parkHours={parkHours}
-              />
-            </div>
-
-            <ParkPanel
-              parkId={park}
-              parkName={park === "tdl" ? "東京ディズニーランド" : "東京ディズニーシー"}
-              data={waitData}
-              parkHours={parkHours}
-            />
-          </>
+          <ParkPanel
+            parkId={park}
+            parkName={park === "tdl" ? "東京ディズニーランド" : "東京ディズニーシー"}
+            data={waitData}
+            parkHours={parkHours}
+          />
         )}
 
         {tab === "calendar" && (
