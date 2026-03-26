@@ -13,7 +13,7 @@ function getLocaleFromPath(pathname: string): "en" | "ja" {
   return pathname.startsWith(ENGLISH_PATH_PREFIX) ? "en" : "ja";
 }
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Determine current locale from path
