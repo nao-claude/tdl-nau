@@ -6,6 +6,7 @@ import { ParkPanel } from "./ParkPanel";
 import { CrowdCalendar } from "./CrowdCalendar";
 import { AreaMap } from "./AreaMap";
 import { TodaySummary } from "./TodaySummary";
+import { RecommendedCourse } from "./RecommendedCourse";
 import { ParkId } from "@/types";
 
 type Tab = "realtime" | "calendar" | "map";
@@ -70,6 +71,12 @@ export function MainTabs() {
       <div className="max-w-4xl mx-auto px-4 py-4">
         {tab === "realtime" && (
           <>
+            {/* 本日のおすすめコース */}
+            <div className="mb-4">
+              <h2 className="text-sm font-bold text-gray-700 mb-2">本日のおすすめコース</h2>
+              <RecommendedCourse parkId={park} />
+            </div>
+
             <ParkPanel
               parkId={park}
               parkName={park === "tdl" ? "東京ディズニーランド" : "東京ディズニーシー"}
