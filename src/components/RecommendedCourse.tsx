@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ParkId, ParkData, Attraction } from "@/types";
 import { TodayParkHours } from "@/app/api/park-hours/route";
-import { getMonthCalendar, CROWD_INFO } from "@/lib/crowd-prediction";
+import { getMonthCalendar, predictCrowd, CROWD_INFO } from "@/lib/crowd-prediction";
 import { MapPin, Clock } from "lucide-react";
 
 // ===== 型定義 =====
@@ -212,6 +212,80 @@ function buildCourse(
   };
 }
 
+// ===== TDL 固定アトラクションリスト（明日のコース用） =====
+const TDL_FIXED_ATTRACTIONS = [
+  { id: 197, name: "美女と野獣・魔法のものがたり" },
+  { id: 196, name: "ベイマックスのハッピーライド" },
+  { id: 174, name: "プーさんのハニーハント" },
+  { id: 164, name: "ピーター・パン空の旅" },
+  { id: 160, name: "ビッグサンダー・マウンテン" },
+  { id: 171, name: "ホーンテッドマンション" },
+  { id: 162, name: "スプラッシュ・マウンテン" },
+  { id: 189, name: "モンスターズ・インク" },
+  { id: 183, name: "スター・ツアーズ" },
+  { id: 167, name: "ミッキーのフィルハーマジック" },
+];
+
+// ===== TDS 固定アトラクションリスト（明日のコース用） =====
+const TDS_FIXED_ATTRACTIONS = [
+  { id: 219, name: "ソアリン：ファンタスティック・フライト" },
+  { id: 255, name: "アナとエルサのフローズンジャーニー" },
+  { id: 256, name: "ラプンツェルのランタンフェスティバル" },
+  { id: 257, name: "ピーター・パンのネバーランドアドベンチャー" },
+  { id: 243, name: "タワー・オブ・テラー" },
+  { id: 222, name: "インディ・ジョーンズ・アドベンチャー" },
+  { id: 223, name: "センター・オブ・ジ・アース" },
+  { id: 218, name: "トイ・ストーリー・マニア！" },
+  { id: 242, name: "レイジングスピリッツ" },
+  { id: 247, name: "ニモ＆フレンズ・シーライダー" },
+];
+
+interface TomorrowCourseItem {
+  name: string;
+  section: "morning" | "afternoon";
+}
+
+interface TomorrowCourse {
+  items: TomorrowCourseItem[];
+  advice: string;
+}
+
+// ===== 明日のコース生成（固定リストベース） =====
+function buildTomorrowCourse(parkId: ParkId, grade: string): TomorrowCourse {
+  const list = parkId === "tdl" ? TDL_FIXED_ATTRACTIONS : TDS_FIXED_ATTRACTIONS;
+
+  let morningItems: string[];
+  let afternoonItems: string[];
+  let advice: string;
+
+  if (grade === "A" || grade === "B") {
+    // 空いている日: 人気順に全部回れる
+    morningItems = list.slice(0, 4).map((a) => a.name);
+    afternoonItems = list.slice(4, 8).map((a) => a.name);
+    advice = "明日は比較的空いています。人気アトラクションもじっくり楽しめそう！開園に合わせて到着でOK。";
+  } else if (grade === "C" || grade === "D") {
+    // 普通〜やや混雑: 午前に人気を、午後に中堅を
+    morningItems = list.slice(0, 3).map((a) => a.name);
+    afternoonItems = list.slice(5, 8).map((a) => a.name);
+    advice = "明日は混雑が予想されます。開園30分前の到着がおすすめです。午前中に人気アトラクションを優先しましょう。";
+  } else {
+    // E〜S: 朝一番勝負、DPA優先の戦略コース
+    morningItems = list.slice(0, 2).map((a) => a.name);
+    afternoonItems = list.slice(6, 9).map((a) => a.name);
+    advice =
+      grade === "S"
+        ? "明日は超混雑が予想されます！開園1時間前の到着で朝一番勝負。DPA対象アトラクションは即確保が必須です。"
+        : "明日はかなり混雑する見込みです。開園45分前の到着を推奨。午前の2〜3本を押さえたら午後は待ち時間の短いものへ。";
+  }
+
+  const items: TomorrowCourseItem[] = [
+    ...morningItems.map((name): TomorrowCourseItem => ({ name, section: "morning" })),
+    ...afternoonItems.map((name): TomorrowCourseItem => ({ name, section: "afternoon" })),
+  ];
+
+  return { items, advice };
+}
+
 // ===== 待ち時間バッジ色 =====
 function waitBadgeClass(minutes: number): string {
   if (minutes === 0) return "bg-green-100 text-green-700";
@@ -293,23 +367,71 @@ export function RecommendedCourse({ parkId }: Props) {
   const slot = getTimeSlot(now, parkHour.open, parkHour.close);
 
   if (slot === "closed") {
-    // 開園前・閉園後はプレースホルダー
-    const [oh] = parkHour.open.split(":").map(Number);
-    const nowMin = now.getHours() * 60 + now.getMinutes();
-    const openMin = oh * 60;
-    const isBefore = nowMin < openMin;
+    // 開園前・閉園後は「明日のおすすめコース予報」を表示
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowGrade = predictCrowd(tomorrow);
+    const tomorrowCrowdInfo = CROWD_INFO[tomorrowGrade];
+    const tomorrowCourse = buildTomorrowCourse(parkId, tomorrowGrade);
+
+    const tomorrowMorning = tomorrowCourse.items.filter((i) => i.section === "morning");
+    const tomorrowAfternoon = tomorrowCourse.items.filter((i) => i.section === "afternoon");
 
     return (
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 text-center text-gray-400">
-        <p className="text-2xl mb-1">🏰</p>
-        <p className="font-semibold text-gray-600 text-sm">
-          {isBefore ? "本日の開園に向けて準備中です" : "本日の営業は終了しました"}
-        </p>
-        <p className="text-xs mt-1">
-          {isBefore
-            ? `開園 ${parkHour.open} にコースをご案内します`
-            : `また明日のご来園をお待ちしています`}
-        </p>
+      <div className="rounded-2xl overflow-hidden shadow-sm" style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%)" }}>
+        {/* ヘッダー */}
+        <div className="px-4 py-3 flex items-center justify-between border-b border-white/10">
+          <div className="flex items-center gap-2">
+            <span className="text-base">🗺️</span>
+            <span className="text-white font-bold text-sm">明日のおすすめコース予報</span>
+          </div>
+          <div className="flex items-center gap-1.5 bg-white/15 rounded-full px-2.5 py-1">
+            <span className="text-white/80 text-xs">混雑予測</span>
+            <span className={`text-xs font-extrabold px-1.5 py-0.5 rounded ${tomorrowCrowdInfo.bgColor} ${tomorrowCrowdInfo.color}`}>
+              {tomorrowGrade}
+            </span>
+            <span className="text-white/80 text-xs">{tomorrowCrowdInfo.label}</span>
+          </div>
+        </div>
+
+        {/* コース本体 */}
+        <div className="p-4 space-y-4">
+          {/* 午前セクション */}
+          <div>
+            <p className="text-xs font-bold text-indigo-200 mb-2">【午前】人気アトラクションを早めに押さえよう</p>
+            <div className="space-y-2">
+              {tomorrowMorning.map((item, index) => (
+                <div key={index} className="flex items-center gap-2.5">
+                  <div className="w-5 h-5 rounded-full bg-indigo-400/60 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                    {index + 1}
+                  </div>
+                  <p className="text-sm text-white/90 leading-tight">{item.name}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 午後セクション */}
+          <div>
+            <p className="text-xs font-bold text-purple-200 mb-2">【午後】混雑が落ち着いたら</p>
+            <div className="space-y-2">
+              {tomorrowAfternoon.map((item, index) => (
+                <div key={index} className="flex items-center gap-2.5">
+                  <div className="w-5 h-5 rounded-full bg-purple-400/60 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                    {tomorrowMorning.length + index + 1}
+                  </div>
+                  <p className="text-sm text-white/90 leading-tight">{item.name}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* アドバイス */}
+          <div className="rounded-xl bg-white/10 px-3 py-2.5 flex items-start gap-2">
+            <span className="text-sm shrink-0">💡</span>
+            <p className="text-xs text-white/80 leading-relaxed">{tomorrowCourse.advice}</p>
+          </div>
+        </div>
       </div>
     );
   }
