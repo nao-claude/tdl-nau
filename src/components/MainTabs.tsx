@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Clock, CalendarDays, Map } from "lucide-react";
 import { ParkPanel } from "./ParkPanel";
 import { CrowdCalendar } from "./CrowdCalendar";
 import { AreaMap } from "./AreaMap";
 import { TodaySummary } from "./TodaySummary";
 import { RecommendedCourse } from "./RecommendedCourse";
-import { ParkId } from "@/types";
+import { ParkId, ParkData } from "@/types";
+import { TodayParkHours } from "@/app/api/park-hours/route";
 
 type Tab = "realtime" | "calendar" | "map";
 type Park = ParkId;
@@ -23,9 +24,52 @@ const PARKS: { id: Park; label: string }[] = [
   { id: "tds", label: "シー" },
 ];
 
+const DEFAULT_HOURS: TodayParkHours = {
+  tdl: { open: "9:00", close: "21:00" },
+  tds: { open: "9:00", close: "21:00" },
+};
+
 export function MainTabs() {
   const [tab, setTab]   = useState<Tab>("map");
   const [park, setPark] = useState<Park>("tdl");
+
+  // ランキングタブ用の一元データ管理
+  // null = 未取得またはフェッチ中, ParkData = 取得済み
+  const [waitData, setWaitData] = useState<ParkData | null>(null);
+  const [parkHours, setParkHours] = useState<TodayParkHours | null>(null);
+
+  // ランキングタブが選ばれているときにデータを取得
+  useEffect(() => {
+    if (tab !== "realtime") return;
+
+    let cancelled = false;
+
+    async function fetchData() {
+      // park が切り替わったらデータをクリア（null = ローディング中を示す）
+      setWaitData(null);
+      try {
+        const [waitRes, hoursRes] = await Promise.all([
+          fetch(`/api/wait-times/${park}`, { signal: AbortSignal.timeout(10000) }),
+          fetch("/api/park-hours", { signal: AbortSignal.timeout(10000) }),
+        ]);
+        if (cancelled) return;
+        const waitJson: ParkData = waitRes.ok ? await waitRes.json() : await Promise.reject();
+        const hoursJson: TodayParkHours = hoursRes.ok ? await hoursRes.json() : DEFAULT_HOURS;
+        if (cancelled) return;
+        setWaitData(waitJson);
+        setParkHours(hoursJson);
+      } catch {
+        // フェッチ失敗時: null のままにして子コンポーネントの表示に任せる
+      }
+    }
+
+    fetchData();
+    const interval = setInterval(fetchData, 5 * 60 * 1000); // 5分毎に自動更新
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [tab, park]);
 
   return (
     <div>
@@ -74,12 +118,18 @@ export function MainTabs() {
             {/* 本日のおすすめコース */}
             <div className="mb-4">
               <h2 className="text-sm font-bold text-gray-700 mb-2">本日のおすすめコース</h2>
-              <RecommendedCourse parkId={park} />
+              <RecommendedCourse
+                parkId={park}
+                data={waitData}
+                parkHours={parkHours}
+              />
             </div>
 
             <ParkPanel
               parkId={park}
               parkName={park === "tdl" ? "東京ディズニーランド" : "東京ディズニーシー"}
+              data={waitData}
+              parkHours={parkHours}
             />
           </>
         )}

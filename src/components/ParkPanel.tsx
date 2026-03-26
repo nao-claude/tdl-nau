@@ -11,6 +11,9 @@ import { TodayParkHours } from "@/app/api/park-hours/route";
 interface Props {
   parkId: ParkId;
   parkName: string;
+  /** MainTabs から渡される場合は自前フェッチをスキップ */
+  data?: ParkData | null;
+  parkHours?: TodayParkHours | null;
 }
 
 function isWithinParkHours(open: string, close: string): boolean {
@@ -23,40 +26,60 @@ function isWithinParkHours(open: string, close: string): boolean {
   return nowMin >= openMin && nowMin < closeMin;
 }
 
-export function ParkPanel({ parkId, parkName }: Props) {
-  const [data, setData] = useState<ParkData | null>(null);
-  const [loading, setLoading] = useState(true);
+const DEFAULT_HOURS_PP: TodayParkHours = {
+  tdl: { open: "9:00", close: "21:00" },
+  tds: { open: "9:00", close: "21:00" },
+};
+
+export function ParkPanel({ parkId, parkName, data: dataProp, parkHours: parkHoursProp }: Props) {
+  const [dataInternal, setDataInternal] = useState<ParkData | null>(null);
+  const [loading, setLoading] = useState(!dataProp);
   const [lastUpdated, setLastUpdated] = useState<string>("");
-  const [hours, setHours] = useState<TodayParkHours>({
-    tdl: { open: "9:00", close: "21:00" },
-    tds: { open: "9:00", close: "21:00" },
-  });
+  const [hoursInternal, setHoursInternal] = useState<TodayParkHours>(DEFAULT_HOURS_PP);
   const { isFavorite, toggle } = useFavorites();
 
+  // props からデータが渡されていない場合のみ park-hours を自分でフェッチ
   useEffect(() => {
+    if (parkHoursProp !== undefined) return;
     fetch("/api/park-hours")
       .then((r) => r.json())
-      .then(setHours)
+      .then(setHoursInternal)
       .catch(() => {});
-  }, []);
+  }, [parkHoursProp]);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/wait-times/${parkId}`);
+      const res = await fetch(`/api/wait-times/${parkId}`, {
+        signal: AbortSignal.timeout(10000),
+      });
       const json: ParkData = await res.json();
-      setData(json);
+      setDataInternal(json);
       setLastUpdated(new Date().toLocaleTimeString("ja-JP"));
     } finally {
       setLoading(false);
     }
   }, [parkId]);
 
+  // props からデータが渡されていない場合のみ自前フェッチ
   useEffect(() => {
+    if (dataProp !== undefined) return;
     load();
     const interval = setInterval(load, 5 * 60 * 1000); // 5分毎に自動更新
     return () => clearInterval(interval);
-  }, [load]);
+  }, [load, dataProp]);
+
+  // dataProp が更新されたら lastUpdated を更新
+  useEffect(() => {
+    if (dataProp !== undefined && dataProp !== null) {
+      setLastUpdated(new Date().toLocaleTimeString("ja-JP"));
+    }
+  }, [dataProp]);
+
+  const data = dataProp !== undefined ? dataProp : dataInternal;
+  const hours = parkHoursProp !== undefined && parkHoursProp !== null ? parkHoursProp : hoursInternal;
+  // dataProp が渡されていて null（ローディング中）の場合もローディング扱い
+  const isLoadingEffective = dataProp !== undefined ? dataProp === null : loading;
 
   const parkHour = hours[parkId];
   const isClosed = parkHour ? !isWithinParkHours(parkHour.open, parkHour.close) : false;
@@ -82,10 +105,10 @@ export function ParkPanel({ parkId, parkName }: Props) {
         </div>
         <button
           onClick={load}
-          disabled={loading}
+          disabled={isLoadingEffective}
           className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600 disabled:opacity-50"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+          <RefreshCw className={`w-4 h-4 ${isLoadingEffective ? "animate-spin" : ""}`} />
           更新
         </button>
       </div>
@@ -117,7 +140,7 @@ export function ParkPanel({ parkId, parkName }: Props) {
       })()}
 
       {/* アトラクション一覧 */}
-      {loading && !data ? (
+      {isLoadingEffective && !data ? (
         <div className="flex justify-center py-12">
           <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
         </div>

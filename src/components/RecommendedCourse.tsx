@@ -324,6 +324,9 @@ function Skeleton() {
 // ===== メインコンポーネント =====
 interface Props {
   parkId: ParkId;
+  /** MainTabs から渡される場合は自前フェッチをスキップ */
+  data?: ParkData | null;
+  parkHours?: TodayParkHours | null;
 }
 
 const DEFAULT_HOURS: TodayParkHours = {
@@ -331,46 +334,68 @@ const DEFAULT_HOURS: TodayParkHours = {
   tds: { open: "9:00", close: "21:00" },
 };
 
-export function RecommendedCourse({ parkId }: Props) {
-  const [data, setData] = useState<ParkData | null>(null);
-  const [hours, setHours] = useState<TodayParkHours>(DEFAULT_HOURS);
-  const [loading, setLoading] = useState(true);
+export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHoursProp }: Props) {
+  const [dataInternal, setDataInternal] = useState<ParkData | null>(null);
+  const [hoursInternal, setHoursInternal] = useState<TodayParkHours>(DEFAULT_HOURS);
+  const [loading, setLoading] = useState(dataProp === undefined);
   const [error, setError] = useState(false);
 
-  // デフォルト時間で即座に時間帯を判定
+  // デフォルト時間で即座に時間帯を判定（DEFAULT_HOURS は必ず値があるが型上は null の可能性があるためフォールバック）
   const now = new Date();
-  const initialSlot = getTimeSlot(now, DEFAULT_HOURS[parkId].open, DEFAULT_HOURS[parkId].close);
+  const defaultParkHour = DEFAULT_HOURS[parkId];
+  const initialSlot = defaultParkHour
+    ? getTimeSlot(now, defaultParkHour.open, defaultParkHour.close)
+    : "closed";
 
   useEffect(() => {
+    // props からデータが渡されていれば自前フェッチをスキップ
+    if (dataProp !== undefined) {
+      setLoading(false);
+      return;
+    }
+
     // 閉園後・開園前は wait-times 不要 → park-hours だけ取得して即表示
     if (initialSlot === "closed") {
-      fetch("/api/park-hours")
+      if (parkHoursProp !== undefined) {
+        setLoading(false);
+        return;
+      }
+      fetch("/api/park-hours", { signal: AbortSignal.timeout(10000) })
         .then((r) => (r.ok ? (r.json() as Promise<TodayParkHours>) : DEFAULT_HOURS))
         .catch(() => DEFAULT_HOURS)
-        .then((ph) => setHours(ph))
+        .then((ph) => setHoursInternal(ph))
         .finally(() => setLoading(false));
       return;
     }
 
-    // 開園中は wait-times + park-hours を並列取得
+    // 開園中は wait-times + park-hours を並列取得（park-hours が props になければ）
     setLoading(true);
     setError(false);
+    const fetchParkHours =
+      parkHoursProp !== undefined
+        ? Promise.resolve(null)
+        : fetch("/api/park-hours", { signal: AbortSignal.timeout(10000) })
+            .then((r) => (r.ok ? (r.json() as Promise<TodayParkHours>) : DEFAULT_HOURS))
+            .catch(() => DEFAULT_HOURS);
+
     Promise.all([
-      fetch(`/api/wait-times/${parkId}`).then((r) => {
+      fetch(`/api/wait-times/${parkId}`, { signal: AbortSignal.timeout(10000) }).then((r) => {
         if (!r.ok) throw new Error("wait-times error");
         return r.json() as Promise<ParkData>;
       }),
-      fetch("/api/park-hours")
-        .then((r) => (r.ok ? (r.json() as Promise<TodayParkHours>) : DEFAULT_HOURS))
-        .catch(() => DEFAULT_HOURS),
+      fetchParkHours,
     ])
       .then(([pd, ph]) => {
-        setData(pd);
-        setHours(ph);
+        setDataInternal(pd);
+        if (ph !== null) setHoursInternal(ph);
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
-  }, [parkId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [parkId, dataProp, parkHoursProp]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const data = dataProp !== undefined ? dataProp : dataInternal;
+  const hours =
+    parkHoursProp !== undefined && parkHoursProp !== null ? parkHoursProp : hoursInternal;
 
   if (error) return null;
 
@@ -451,6 +476,9 @@ export function RecommendedCourse({ parkId }: Props) {
       </div>
     );
   }
+
+  // data が null の場合（開園中だがまだ取得できていない等）はスケルトンを返す
+  if (!data) return <Skeleton />;
 
   const today = new Date();
   const days = getMonthCalendar(today.getFullYear(), today.getMonth() + 1);
