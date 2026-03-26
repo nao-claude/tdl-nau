@@ -326,30 +326,43 @@ interface Props {
   parkId: ParkId;
 }
 
+const DEFAULT_HOURS: TodayParkHours = {
+  tdl: { open: "9:00", close: "21:00" },
+  tds: { open: "9:00", close: "21:00" },
+};
+
 export function RecommendedCourse({ parkId }: Props) {
   const [data, setData] = useState<ParkData | null>(null);
-  const [hours, setHours] = useState<TodayParkHours>({
-    tdl: { open: "9:00", close: "21:00" },
-    tds: { open: "9:00", close: "21:00" },
-  });
+  const [hours, setHours] = useState<TodayParkHours>(DEFAULT_HOURS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  // デフォルト時間で即座に時間帯を判定
+  const now = new Date();
+  const initialSlot = getTimeSlot(now, DEFAULT_HOURS[parkId].open, DEFAULT_HOURS[parkId].close);
+
   useEffect(() => {
+    // 閉園後・開園前は wait-times 不要 → park-hours だけ取得して即表示
+    if (initialSlot === "closed") {
+      fetch("/api/park-hours")
+        .then((r) => (r.ok ? (r.json() as Promise<TodayParkHours>) : DEFAULT_HOURS))
+        .catch(() => DEFAULT_HOURS)
+        .then((ph) => setHours(ph))
+        .finally(() => setLoading(false));
+      return;
+    }
+
+    // 開園中は wait-times + park-hours を並列取得
     setLoading(true);
     setError(false);
-    const defaultHours: TodayParkHours = {
-      tdl: { open: "9:00", close: "21:00" },
-      tds: { open: "9:00", close: "21:00" },
-    };
     Promise.all([
       fetch(`/api/wait-times/${parkId}`).then((r) => {
         if (!r.ok) throw new Error("wait-times error");
         return r.json() as Promise<ParkData>;
       }),
       fetch("/api/park-hours")
-        .then((r) => (r.ok ? (r.json() as Promise<TodayParkHours>) : defaultHours))
-        .catch(() => defaultHours),
+        .then((r) => (r.ok ? (r.json() as Promise<TodayParkHours>) : DEFAULT_HOURS))
+        .catch(() => DEFAULT_HOURS),
     ])
       .then(([pd, ph]) => {
         setData(pd);
@@ -357,17 +370,17 @@ export function RecommendedCourse({ parkId }: Props) {
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
-  }, [parkId]);
+  }, [parkId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (error) return null;
-  if (loading) return <Skeleton />;
-  if (!data) return null;
 
   const parkHour = hours[parkId];
   if (!parkHour) return null;
 
-  const now = new Date();
   const slot = getTimeSlot(now, parkHour.open, parkHour.close);
+
+  // 開園中でロード中はスケルトン
+  if (loading && slot !== "closed") return <Skeleton />;
 
   if (slot === "closed") {
     // 開園前・閉園後は「明日のおすすめコース予報」を表示
