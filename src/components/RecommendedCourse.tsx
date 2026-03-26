@@ -297,34 +297,35 @@ function buildCourse(
 
 // ===== TDL 固定アトラクションリスト（明日のコース用） =====
 const TDL_FIXED_ATTRACTIONS = [
-  { id: 197, name: "美女と野獣・魔法のものがたり" },
-  { id: 196, name: "ベイマックスのハッピーライド" },
-  { id: 174, name: "プーさんのハニーハント" },
-  { id: 164, name: "ピーター・パン空の旅" },
-  { id: 160, name: "ビッグサンダー・マウンテン" },
-  { id: 171, name: "ホーンテッドマンション" },
-  { id: 162, name: "スプラッシュ・マウンテン" },
-  { id: 189, name: "モンスターズ・インク" },
-  { id: 183, name: "スター・ツアーズ" },
-  { id: 167, name: "ミッキーのフィルハーマジック" },
+  { id: 197, name: "美女と野獣・魔法のものがたり",       nameEn: "Beauty and the Beast: Magical Tale" },
+  { id: 196, name: "ベイマックスのハッピーライド",         nameEn: "Baymax's Happy Ride" },
+  { id: 174, name: "プーさんのハニーハント",               nameEn: "Pooh's Hunny Hunt" },
+  { id: 164, name: "ピーター・パン空の旅",                 nameEn: "Peter Pan's Flight" },
+  { id: 160, name: "ビッグサンダー・マウンテン",           nameEn: "Big Thunder Mountain" },
+  { id: 171, name: "ホーンテッドマンション",               nameEn: "Haunted Mansion" },
+  { id: 162, name: "スプラッシュ・マウンテン",             nameEn: "Splash Mountain" },
+  { id: 189, name: "モンスターズ・インク",                 nameEn: "Monsters, Inc. Ride & Go Seek!" },
+  { id: 183, name: "スター・ツアーズ",                     nameEn: "Star Tours: The Adventures Continue" },
+  { id: 167, name: "ミッキーのフィルハーマジック",         nameEn: "Mickey's PhilharMagic" },
 ];
 
 // ===== TDS 固定アトラクションリスト（明日のコース用） =====
 const TDS_FIXED_ATTRACTIONS = [
-  { id: 219, name: "ソアリン：ファンタスティック・フライト" },
-  { id: 255, name: "アナとエルサのフローズンジャーニー" },
-  { id: 256, name: "ラプンツェルのランタンフェスティバル" },
-  { id: 257, name: "ピーター・パンのネバーランドアドベンチャー" },
-  { id: 243, name: "タワー・オブ・テラー" },
-  { id: 222, name: "インディ・ジョーンズ・アドベンチャー" },
-  { id: 223, name: "センター・オブ・ジ・アース" },
-  { id: 218, name: "トイ・ストーリー・マニア！" },
-  { id: 242, name: "レイジングスピリッツ" },
-  { id: 247, name: "ニモ＆フレンズ・シーライダー" },
+  { id: 219, name: "ソアリン：ファンタスティック・フライト", nameEn: "Soaring: Fantastic Flight" },
+  { id: 255, name: "アナとエルサのフローズンジャーニー",     nameEn: "Anna & Elsa's Frozen Journey" },
+  { id: 256, name: "ラプンツェルのランタンフェスティバル",   nameEn: "Rapunzel's Lantern Festival" },
+  { id: 257, name: "ピーター・パンのネバーランドアドベンチャー", nameEn: "Peter Pan's Neverland Adventure" },
+  { id: 243, name: "タワー・オブ・テラー",                   nameEn: "Tower of Terror" },
+  { id: 222, name: "インディ・ジョーンズ・アドベンチャー",   nameEn: "Indiana Jones Adventure" },
+  { id: 223, name: "センター・オブ・ジ・アース",             nameEn: "Journey to the Center of the Earth" },
+  { id: 218, name: "トイ・ストーリー・マニア！",             nameEn: "Toy Story Mania!" },
+  { id: 242, name: "レイジングスピリッツ",                   nameEn: "Raging Spirits" },
+  { id: 247, name: "ニモ＆フレンズ・シーライダー",           nameEn: "Nemo & Friends SeaRider" },
 ];
 
 interface TomorrowCourseItem {
   name: string;
+  nameEn: string;
   section: "morning" | "afternoon";
 }
 
@@ -337,25 +338,25 @@ interface TomorrowCourse {
 function buildTomorrowCourse(parkId: ParkId, grade: string, locale: "ja" | "en" = "ja"): TomorrowCourse {
   const list = parkId === "tdl" ? TDL_FIXED_ATTRACTIONS : TDS_FIXED_ATTRACTIONS;
 
-  let morningItems: string[];
-  let afternoonItems: string[];
+  let morningItems: typeof list;
+  let afternoonItems: typeof list;
   let advice: string;
 
   if (grade === "A" || grade === "B") {
-    morningItems = list.slice(0, 4).map((a) => a.name);
-    afternoonItems = list.slice(4, 8).map((a) => a.name);
+    morningItems = list.slice(0, 4);
+    afternoonItems = list.slice(4, 8);
     advice = locale === "en"
       ? "Tomorrow looks relatively uncrowded. You should be able to enjoy top attractions at a relaxed pace! Arriving at opening time is fine."
       : "明日は比較的空いています。人気アトラクションもじっくり楽しめそう！開園に合わせて到着でOK。";
   } else if (grade === "C" || grade === "D") {
-    morningItems = list.slice(0, 3).map((a) => a.name);
-    afternoonItems = list.slice(5, 8).map((a) => a.name);
+    morningItems = list.slice(0, 3);
+    afternoonItems = list.slice(5, 8);
     advice = locale === "en"
       ? "Moderate crowds expected tomorrow. Arriving 30 minutes before opening is recommended. Prioritize popular attractions in the morning."
       : "明日は混雑が予想されます。開園30分前の到着がおすすめです。午前中に人気アトラクションを優先しましょう。";
   } else {
-    morningItems = list.slice(0, 2).map((a) => a.name);
-    afternoonItems = list.slice(6, 9).map((a) => a.name);
+    morningItems = list.slice(0, 2);
+    afternoonItems = list.slice(6, 9);
     advice = locale === "en"
       ? (grade === "S"
         ? "Extreme crowds expected tomorrow! Arrive 1 hour before opening for the best shot. Securing DPA passes immediately is essential."
@@ -366,8 +367,8 @@ function buildTomorrowCourse(parkId: ParkId, grade: string, locale: "ja" | "en" 
   }
 
   const items: TomorrowCourseItem[] = [
-    ...morningItems.map((name): TomorrowCourseItem => ({ name, section: "morning" })),
-    ...afternoonItems.map((name): TomorrowCourseItem => ({ name, section: "afternoon" })),
+    ...morningItems.map((a): TomorrowCourseItem => ({ name: a.name, nameEn: a.nameEn, section: "morning" })),
+    ...afternoonItems.map((a): TomorrowCourseItem => ({ name: a.name, nameEn: a.nameEn, section: "afternoon" })),
   ];
 
   return { items, advice };
@@ -533,7 +534,7 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
                   <div className="w-5 h-5 rounded-full bg-indigo-400/60 text-white text-xs font-bold flex items-center justify-center shrink-0">
                     {index + 1}
                   </div>
-                  <p className="text-sm text-white/90 leading-tight">{item.name}</p>
+                  <p className="text-sm text-white/90 leading-tight">{locale === "en" ? item.nameEn : item.name}</p>
                 </div>
               ))}
             </div>
@@ -548,7 +549,7 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
                   <div className="w-5 h-5 rounded-full bg-purple-400/60 text-white text-xs font-bold flex items-center justify-center shrink-0">
                     {todayMorning.length + index + 1}
                   </div>
-                  <p className="text-sm text-white/90 leading-tight">{item.name}</p>
+                  <p className="text-sm text-white/90 leading-tight">{locale === "en" ? item.nameEn : item.name}</p>
                 </div>
               ))}
             </div>
@@ -607,7 +608,7 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
                   <div className="w-5 h-5 rounded-full bg-indigo-400/60 text-white text-xs font-bold flex items-center justify-center shrink-0">
                     {index + 1}
                   </div>
-                  <p className="text-sm text-white/90 leading-tight">{item.name}</p>
+                  <p className="text-sm text-white/90 leading-tight">{locale === "en" ? item.nameEn : item.name}</p>
                 </div>
               ))}
             </div>
@@ -624,7 +625,7 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
                   <div className="w-5 h-5 rounded-full bg-purple-400/60 text-white text-xs font-bold flex items-center justify-center shrink-0">
                     {tomorrowMorning.length + index + 1}
                   </div>
-                  <p className="text-sm text-white/90 leading-tight">{item.name}</p>
+                  <p className="text-sm text-white/90 leading-tight">{locale === "en" ? item.nameEn : item.name}</p>
                 </div>
               ))}
             </div>
