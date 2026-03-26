@@ -7,7 +7,7 @@ import { getMonthCalendar, predictCrowd, CROWD_INFO } from "@/lib/crowd-predicti
 import { MapPin, Clock } from "lucide-react";
 
 // ===== 型定義 =====
-type TimeSlot = "morning" | "afternoon" | "evening" | "closed";
+type TimeSlot = "morning" | "afternoon" | "evening" | "before_open" | "closed";
 
 interface CourseAttraction {
   attraction: Attraction;
@@ -69,9 +69,10 @@ function getTimeSlot(now: Date, open: string, close: string): TimeSlot {
   const openMin = oh * 60 + om;
   const closeMin = ch * 60 + cm;
 
-  if (totalMin < openMin || totalMin >= closeMin) return "closed";
-  if (totalMin < openMin + 240) return "morning"; // 開園〜+4h
-  if (totalMin < openMin + 420) return "afternoon"; // +4h〜+7h
+  if (totalMin < openMin) return "before_open"; // 0:00〜開園前 → 本日の予報
+  if (totalMin >= closeMin) return "closed";     // 閉園後〜24:00 → 明日の予報
+  if (totalMin < openMin + 240) return "morning";
+  if (totalMin < openMin + 420) return "afternoon";
   return "evening";
 }
 
@@ -180,43 +181,43 @@ function buildCourse(
       morning:   "今日はかなり空いています！人気アトラクションも余裕で楽しめそう。",
       afternoon: "空き日ならでは！人気エリアも午後からゆっくり回れます。",
       evening:   "夕方も空いてます。閉園まで走り抜けよう！",
-      closed:    "",
+      closed: "", before_open: "",
     },
     B: {
       morning:   "比較的空いているので、開園ダッシュで人気アトラクションを攻略しよう！",
       afternoon: "午後もほどよく空いています。待ち時間の少ない今のうちに！",
       evening:   "夕方は待ち時間が落ち着いてきます。コンパクトに楽しもう。",
-      closed:    "",
+      closed: "", before_open: "",
     },
     C: {
       morning:   "普通の混雑。開園直後は比較的空いているのでお早めに！",
       afternoon: "混んできたら待ち時間が短いアトラクションへ切り替えを。",
       evening:   "夕方は少し待ちが緩和されます。効率よく回りましょう。",
-      closed:    "",
+      closed: "", before_open: "",
     },
     D: {
       morning:   "やや混雑。人気アトラクションは開園直後が勝負です！",
       afternoon: "待ち時間が長くなりがち。短いものを中心に回るのが賢い選択。",
       evening:   "閉園に向けて待ちが緩和される場合も。夕方は狙い目！",
-      closed:    "",
+      closed: "", before_open: "",
     },
     E: {
       morning:   "混雑日！開園前に並んで一番乗りを狙おう。",
       afternoon: "かなり待ちが発生中。待ち時間15分以下を中心に組み立てて。",
       evening:   "夕方〜閉園前が今日のチャンスタイム！短いもの優先で。",
-      closed:    "",
+      closed: "", before_open: "",
     },
     F: {
       morning:   "超混雑日！開園ダッシュ必須。ファストパス系も即確保を。",
       afternoon: "長蛇の列が予想されます。焦らず待ち時間の短いものへ。",
       evening:   "夕方に少し落ち着くことも。ラスト1〜2時間が狙い目。",
-      closed:    "",
+      closed: "", before_open: "",
     },
     S: {
       morning:   "最上級の混雑！覚悟を持って挑みましょう。開園直後が唯一のチャンス。",
       afternoon: "ほぼ全アトラクションで長蛇の列。待ち時間短めのものだけ狙って。",
       evening:   "閉園前は比較的マシになることも。残り時間で精鋭アトラクションへ。",
-      closed:    "",
+      closed: "", before_open: "",
     },
   };
 
@@ -225,43 +226,43 @@ function buildCourse(
       morning:   "Super light crowds today! Even the most popular rides should be easy to enjoy.",
       afternoon: "A rare light day! Take it easy and explore popular areas in the afternoon.",
       evening:   "Still quiet in the evening. Sprint to the finish before closing!",
-      closed:    "",
+      closed: "", before_open: "",
     },
     B: {
       morning:   "Relatively light — make the most of opening rush to tackle top attractions!",
       afternoon: "Moderate crowds in the afternoon. Strike while wait times are short!",
       evening:   "Waits ease up in the evening. Keep it compact and enjoy.",
-      closed:    "",
+      closed: "", before_open: "",
     },
     C: {
       morning:   "Average crowds. Head to the gate early — it's calmer right at opening!",
       afternoon: "When crowds build, pivot to attractions with shorter waits.",
       evening:   "Waits ease slightly in the evening. Plan your route wisely.",
-      closed:    "",
+      closed: "", before_open: "",
     },
     D: {
       morning:   "Slightly busy. The opening moments are your best shot at top rides!",
       afternoon: "Waits can run long — stick to shorter queues for smarter touring.",
       evening:   "Waits may ease toward closing. Evening is your window!",
-      closed:    "",
+      closed: "", before_open: "",
     },
     E: {
       morning:   "Busy day! Line up before opening to be first through the gates.",
       afternoon: "Significant wait times building. Focus on rides under 15 minutes.",
       evening:   "Late evening is your golden hour. Prioritize short-wait rides.",
-      closed:    "",
+      closed: "", before_open: "",
     },
     F: {
       morning:   "Very crowded! Opening dash is a must. Lock in DPA passes immediately.",
       afternoon: "Expect long lines everywhere. Stay calm and chase short waits.",
       evening:   "Things may ease slightly. The last 1–2 hours are your best bet.",
-      closed:    "",
+      closed: "", before_open: "",
     },
     S: {
       morning:   "Extreme crowds! Come prepared. Right at opening is your only real chance.",
       afternoon: "Nearly every attraction has a long line. Only target the shortest waits.",
       evening:   "It might ease up before closing. Use your remaining time on the best rides.",
-      closed:    "",
+      closed: "", before_open: "",
     },
   };
 
@@ -269,13 +270,13 @@ function buildCourse(
   const gradeInfo = (adviceMap[crowdGrade] ?? adviceMap["C"]);
   const advice = gradeInfo[slot] ?? "";
 
-  const slotMetaJa: Record<Exclude<TimeSlot, "closed">, { label: string; title: string }> = {
+  const slotMetaJa: Record<Exclude<TimeSlot, "closed" | "before_open">, { label: string; title: string }> = {
     morning:   { label: "午前",   title: "人気を制覇！午前の王道コース" },
     afternoon: { label: "午後",   title: "待ち時間短め！午後のおすすめコース" },
     evening:   { label: "夕方",   title: "閉園前ラストスパート！夕方コンパクトコース" },
   };
 
-  const slotMetaEn: Record<Exclude<TimeSlot, "closed">, { label: string; title: string }> = {
+  const slotMetaEn: Record<Exclude<TimeSlot, "closed" | "before_open">, { label: string; title: string }> = {
     morning:   { label: "Morning",   title: "Conquer the hits — Morning Classic Course" },
     afternoon: { label: "Afternoon", title: "Short waits — Afternoon Recommended Course" },
     evening:   { label: "Evening",   title: "Final sprint — Evening Compact Course" },
@@ -283,7 +284,7 @@ function buildCourse(
 
   const slotMeta = locale === "en" ? slotMetaEn : slotMetaJa;
 
-  const meta = slotMeta[slot as Exclude<TimeSlot, "closed">];
+  const meta = slotMeta[slot as Exclude<TimeSlot, "closed" | "before_open">];
 
   return {
     slot,
@@ -382,7 +383,7 @@ function waitBadgeClass(minutes: number): string {
 }
 
 // ===== 時間帯カラー =====
-const SLOT_COLORS: Record<Exclude<TimeSlot, "closed">, { header: string; badge: string; dot: string }> = {
+const SLOT_COLORS: Record<Exclude<TimeSlot, "closed" | "before_open">, { header: string; badge: string; dot: string }> = {
   morning:   { header: "from-blue-500 to-sky-400",    badge: "bg-blue-100 text-blue-700",   dot: "bg-blue-400" },
   afternoon: { header: "from-orange-400 to-amber-400", badge: "bg-orange-100 text-orange-700", dot: "bg-orange-400" },
   evening:   { header: "from-purple-500 to-violet-400", badge: "bg-purple-100 text-purple-700", dot: "bg-purple-400" },
@@ -492,10 +493,77 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
   const slot = getTimeSlot(now, parkHour.open, parkHour.close);
 
   // 開園中でロード中はスケルトン
-  if (loading && slot !== "closed") return <Skeleton />;
+  if (loading && slot !== "closed" && slot !== "before_open") return <Skeleton />;
+
+  if (slot === "before_open") {
+    // 0:00〜開園前は「本日のおすすめコース予報」を表示
+    const todayGrade = predictCrowd(now);
+    const todayCrowdInfo = CROWD_INFO[todayGrade];
+    const todayCourse = buildTomorrowCourse(parkId, todayGrade, locale);
+    const todayMorning = todayCourse.items.filter((i) => i.section === "morning");
+    const todayAfternoon = todayCourse.items.filter((i) => i.section === "afternoon");
+
+    return (
+      <div className="rounded-2xl overflow-hidden shadow-sm" style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%)" }}>
+        <div className="px-4 py-3 flex items-center justify-between border-b border-white/10">
+          <div className="flex items-center gap-2">
+            <span className="text-base">🗺️</span>
+            <span className="text-white font-bold text-sm">
+              {locale === "en" ? "Today's Recommended Course" : "本日のおすすめコース"}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 bg-white/15 rounded-full px-2.5 py-1">
+            <span className="text-white/80 text-xs">{locale === "en" ? "Crowd" : "混雑予測"}</span>
+            <span className={`text-xs font-extrabold px-1.5 py-0.5 rounded ${todayCrowdInfo.bgColor} ${todayCrowdInfo.color}`}>
+              {todayGrade}
+            </span>
+            <span className="text-white/80 text-xs">
+              {locale === "en" ? CROWD_LABEL_EN[todayGrade] : todayCrowdInfo.label}
+            </span>
+          </div>
+        </div>
+        <div className="p-4 space-y-4">
+          <div>
+            <p className="text-xs font-bold text-indigo-200 mb-2">
+              {locale === "en" ? "[Morning] Secure popular attractions early" : "【午前】人気アトラクションを早めに押さえよう"}
+            </p>
+            <div className="space-y-2">
+              {todayMorning.map((item, index) => (
+                <div key={index} className="flex items-center gap-2.5">
+                  <div className="w-5 h-5 rounded-full bg-indigo-400/60 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                    {index + 1}
+                  </div>
+                  <p className="text-sm text-white/90 leading-tight">{item.name}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-xs font-bold text-purple-200 mb-2">
+              {locale === "en" ? "[Afternoon] When crowds settle down" : "【午後】混雑が落ち着いたら"}
+            </p>
+            <div className="space-y-2">
+              {todayAfternoon.map((item, index) => (
+                <div key={index} className="flex items-center gap-2.5">
+                  <div className="w-5 h-5 rounded-full bg-purple-400/60 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                    {todayMorning.length + index + 1}
+                  </div>
+                  <p className="text-sm text-white/90 leading-tight">{item.name}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-xl bg-white/10 px-3 py-2.5 flex items-start gap-2">
+            <span className="text-sm shrink-0">💡</span>
+            <p className="text-xs text-white/80 leading-relaxed">{todayCourse.advice}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (slot === "closed") {
-    // 開園前・閉園後は「明日のおすすめコース予報」を表示
+    // 閉園後〜24:00は「明日のおすすめコース予報」を表示
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowGrade = predictCrowd(tomorrow);
