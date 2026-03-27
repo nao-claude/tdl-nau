@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Clock, CalendarDays, Map } from "lucide-react";
+import Link from "next/link";
+import { Clock, CalendarDays, Map, BookOpen } from "lucide-react";
 import { ParkPanel } from "./ParkPanel";
 import { CrowdCalendar } from "./CrowdCalendar";
 import { AreaMap } from "./AreaMap";
@@ -97,6 +98,28 @@ export function MainTabs() {
               {t.label}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* 攻略ガイドバナー */}
+      <div className="max-w-4xl mx-auto px-4 pt-3">
+        <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-xl px-3 py-2">
+          <BookOpen className="w-4 h-4 text-blue-500 shrink-0" />
+          <span className="text-xs font-medium text-blue-700 shrink-0">攻略ガイド</span>
+          <div className="flex gap-2 ml-auto">
+            <Link
+              href="/attractions/tdl"
+              className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-white text-gray-700 border border-blue-200 hover:border-blue-400 transition-colors"
+            >
+              🏰 ランド
+            </Link>
+            <Link
+              href="/attractions/tds"
+              className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-white text-gray-700 border border-blue-200 hover:border-blue-400 transition-colors"
+            >
+              ⛵ シー
+            </Link>
+          </div>
         </div>
       </div>
 
