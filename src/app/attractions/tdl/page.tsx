@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Map, Clock, CalendarDays } from "lucide-react";
 import { AttractionGuide } from "@/components/AttractionGuide";
 import { TDL_ATTRACTIONS } from "@/lib/attraction-data";
 import { AdBanner } from "@/components/AdBanner";
@@ -29,14 +30,14 @@ export default function TDLAttractionsPage() {
         {/* タブナビ */}
         <div className="max-w-4xl mx-auto px-4 pb-2">
           <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
-            <Link href="/?tab=map" className="flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-colors">
-              エリア別
+            <Link href="/?tab=map" className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-colors">
+              <Map className="w-4 h-4" />エリア別
             </Link>
-            <Link href="/?tab=realtime" className="flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-colors">
-              ランキング
+            <Link href="/?tab=realtime" className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-colors">
+              <Clock className="w-4 h-4" />ランキング
             </Link>
-            <Link href="/?tab=calendar" className="flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-colors">
-              混雑予想
+            <Link href="/?tab=calendar" className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-colors">
+              <CalendarDays className="w-4 h-4" />混雑予想
             </Link>
           </div>
         </div>
