@@ -65,8 +65,10 @@ export default function Home() {
       {/* フッター */}
       <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
         <p>非公式サイトです。株式会社オリエンタルランドとは無関係です。</p>
-        <p className="mt-1">
+        <p className="mt-1 flex items-center justify-center gap-3">
           <a href="/privacy" className="underline">プライバシーポリシー</a>
+          <span>·</span>
+          <Link href="/faq" className="underline">よくある質問</Link>
         </p>
         <p className="mt-1">
           Powered by{" "}
