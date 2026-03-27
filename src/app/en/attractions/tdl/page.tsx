@@ -49,12 +49,12 @@ export default function TDLAttractionsPageEn() {
 
         {/* Park switcher */}
         <div className="flex gap-2 mb-6">
-          <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-gray-900 text-white">
+          <span className="px-5 py-2.5 rounded-full text-sm font-medium min-h-[44px] flex items-center bg-gray-900 text-white">
             🏰 Disneyland
           </span>
           <Link
             href="/en/attractions/tds"
-            className="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200 hover:border-gray-400 transition-colors"
+            className="px-5 py-2.5 rounded-full text-sm font-medium min-h-[44px] flex items-center bg-white text-gray-600 border border-gray-200 hover:border-gray-400 transition-colors"
           >
             ⛵ DisneySea
           </Link>

@@ -51,11 +51,11 @@ export default function TDSAttractionsPageEn() {
         <div className="flex gap-2 mb-6">
           <Link
             href="/en/attractions/tdl"
-            className="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200 hover:border-gray-400 transition-colors"
+            className="px-5 py-2.5 rounded-full text-sm font-medium min-h-[44px] flex items-center bg-white text-gray-600 border border-gray-200 hover:border-gray-400 transition-colors"
           >
             🏰 Disneyland
           </Link>
-          <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-gray-900 text-white">
+          <span className="px-5 py-2.5 rounded-full text-sm font-medium min-h-[44px] flex items-center bg-gray-900 text-white">
             ⛵ DisneySea
           </span>
         </div>

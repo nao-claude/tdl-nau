@@ -103,23 +103,23 @@ export function MainTabs() {
 
       {/* 攻略ガイドバナー */}
       <div className="max-w-4xl mx-auto px-4 pt-3">
-        <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-xl px-3 py-2">
-          <BookOpen className="w-4 h-4 text-blue-500 shrink-0" />
-          <span className="text-xs font-medium text-blue-700 shrink-0">攻略ガイド</span>
-          <div className="flex gap-2 ml-auto">
-            <Link
-              href="/attractions/tdl"
-              className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-white text-gray-700 border border-blue-200 hover:border-blue-400 transition-colors"
-            >
-              🏰 ランド
-            </Link>
-            <Link
-              href="/attractions/tds"
-              className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-white text-gray-700 border border-blue-200 hover:border-blue-400 transition-colors"
-            >
-              ⛵ シー
-            </Link>
-          </div>
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+          <BookOpen className="w-3.5 h-3.5" />
+          攻略ガイド
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          <Link
+            href="/attractions/tdl"
+            className="flex items-center justify-center gap-2 min-h-[52px] rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-bold shadow-md active:scale-95 transition-transform"
+          >
+            🏰 ランド攻略
+          </Link>
+          <Link
+            href="/attractions/tds"
+            className="flex items-center justify-center gap-2 min-h-[52px] rounded-2xl bg-gradient-to-r from-teal-600 to-teal-500 text-white text-sm font-bold shadow-md active:scale-95 transition-transform"
+          >
+            ⛵ シー攻略
+          </Link>
         </div>
       </div>
 
@@ -131,7 +131,7 @@ export function MainTabs() {
               <button
                 key={p.id}
                 onClick={() => setPark(p.id)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all min-h-[44px] flex items-center
                   ${park === p.id ? "bg-gray-900 text-white" : "bg-white text-gray-600 border border-gray-200 hover:border-gray-400"}`}
               >
                 {p.label}

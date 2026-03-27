@@ -36,7 +36,10 @@ export function WaitTimeCard({ attraction, isFavorite, onToggleFavorite }: Props
   return (
     <div className={`rounded-xl p-3 border ${waitTimeBg(wait_time)} border-gray-200 flex items-center justify-between gap-3`}>
       <div className="flex items-center gap-3 min-w-0">
-        <button onClick={() => onToggleFavorite(attraction.id)} className="shrink-0">
+        <button
+          onClick={() => onToggleFavorite(attraction.id)}
+          className="shrink-0 w-11 h-11 flex items-center justify-center rounded-full hover:bg-red-50 active:bg-red-100 transition-colors"
+        >
           <Heart className={`w-5 h-5 transition-colors ${isFavorite ? "fill-red-400 text-red-400" : "text-gray-300 hover:text-red-300"}`} />
         </button>
         {/* アトラクション画像アイコン */}
@@ -66,17 +69,17 @@ export function WaitTimeCard({ attraction, isFavorite, onToggleFavorite }: Props
         </div>
       </div>
 
-      <div className="flex items-center gap-0.5 shrink-0">
+      <div className="flex items-center shrink-0">
         {is_open ? (
           wait_time > 0 ? (
-            <>
-              <Clock className={`w-3 h-3 ${waitTimeColor(wait_time)}`} />
-              <span className={`text-xs font-bold ${waitTimeColor(wait_time)}`}>
-                {wait_time}分
+            <div className="flex items-baseline gap-0.5">
+              <span className={`text-base font-extrabold tabular-nums leading-none ${waitTimeColor(wait_time)}`}>
+                {wait_time}
               </span>
-            </>
+              <span className="text-xs font-normal text-gray-400 ml-0.5">分</span>
+            </div>
           ) : (
-            <span className="text-xs text-green-600 font-medium">待ちなし</span>
+            <span className="text-sm text-green-600 font-bold">待ちなし</span>
           )
         ) : (
           <span className="text-xs text-gray-400 flex items-center gap-0.5"><XCircle className="w-3 h-3" />運休中</span>
