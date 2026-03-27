@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { MainTabsEn } from "@/components/en/MainTabsEn";
 import { AdBanner } from "@/components/AdBanner";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
@@ -55,7 +56,9 @@ export default function HomeEn() {
         <AdBanner adSlot="1111111111" />
       </div>
 
-      <MainTabsEn />
+      <Suspense>
+        <MainTabsEn />
+      </Suspense>
 
       {/* Ad: below content */}
       <div className="max-w-4xl mx-auto px-4 pb-4">

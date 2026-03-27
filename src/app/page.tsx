@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { MainTabs } from "@/components/MainTabs";
 import { AdBanner } from "@/components/AdBanner";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
@@ -25,7 +26,9 @@ export default function Home() {
         <AdBanner adSlot="1111111111" />
       </div>
 
-      <MainTabs />
+      <Suspense>
+        <MainTabs />
+      </Suspense>
 
       {/* 広告②：コンテンツ下部 */}
       <div className="max-w-4xl mx-auto px-4 pb-4">

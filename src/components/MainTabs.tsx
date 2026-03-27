@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Clock, CalendarDays, Map } from "lucide-react";
 import { ParkPanel } from "./ParkPanel";
@@ -31,7 +32,9 @@ const DEFAULT_HOURS: TodayParkHours = {
 };
 
 export function MainTabs() {
-  const [tab, setTab]   = useState<Tab>("map");
+  const searchParams = useSearchParams();
+  const initialTab = (searchParams.get("tab") as Tab) ?? "map";
+  const [tab, setTab]   = useState<Tab>(initialTab);
   const [park, setPark] = useState<Park>("tdl");
 
   // ランキングタブ用の一元データ管理

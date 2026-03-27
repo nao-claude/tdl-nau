@@ -29,14 +29,14 @@ export default function TDLAttractionsPageEn() {
         {/* Tab nav */}
         <div className="max-w-4xl mx-auto px-4 pb-2">
           <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
-            <Link href="/en" className="flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-colors">
-              Top
+            <Link href="/en?tab=map" className="flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-colors">
+              By Area
             </Link>
-            <span className="flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium bg-white text-gray-900 shadow-sm">
-              Land
-            </span>
-            <Link href="/en/attractions/tds" className="flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-colors">
-              Sea
+            <Link href="/en?tab=realtime" className="flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-colors">
+              Ranking
+            </Link>
+            <Link href="/en?tab=calendar" className="flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-colors">
+              Crowd
             </Link>
           </div>
         </div>
