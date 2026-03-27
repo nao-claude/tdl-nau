@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { MainTabs } from "@/components/MainTabs";
 import { AdBanner } from "@/components/AdBanner";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
@@ -29,6 +30,33 @@ export default function Home() {
       {/* 広告②：コンテンツ下部 */}
       <div className="max-w-4xl mx-auto px-4 pb-4">
         <AdBanner adSlot="2222222222" />
+      </div>
+
+      {/* アトラクション攻略ガイドリンク */}
+      <div className="max-w-4xl mx-auto px-4 pb-6">
+        <h2 className="text-sm font-bold text-gray-700 mb-3">アトラクション攻略ガイド</h2>
+        <div className="grid grid-cols-2 gap-3">
+          <Link
+            href="/attractions/tdl"
+            className="flex items-center gap-2 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:border-gray-400 transition-colors"
+          >
+            <span className="text-2xl">🏰</span>
+            <div>
+              <p className="text-sm font-bold text-gray-900">東京ディズニーランド</p>
+              <p className="text-xs text-gray-500">待ち時間・DPA・身長制限</p>
+            </div>
+          </Link>
+          <Link
+            href="/attractions/tds"
+            className="flex items-center gap-2 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:border-gray-400 transition-colors"
+          >
+            <span className="text-2xl">⛵</span>
+            <div>
+              <p className="text-sm font-bold text-gray-900">東京ディズニーシー</p>
+              <p className="text-xs text-gray-500">待ち時間・DPA・身長制限</p>
+            </div>
+          </Link>
+        </div>
       </div>
 
       {/* フッター */}
