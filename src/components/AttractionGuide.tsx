@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { AttractionInfo, BestTime, WaitTendency } from "@/lib/attraction-data";
+import { getAttractionImageUrl } from "@/lib/attraction-images";
 import { ParkId, ParkData } from "@/types";
 
 // ──────────────────────────────────────────────────────────
@@ -118,7 +120,20 @@ export function AttractionGuide({ parkId, attractions, locale = "ja" }: Props) {
                   <div key={attraction.id} className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
                     {/* ヘッダー行 */}
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        {(() => {
+                          const imgUrl = getAttractionImageUrl(attraction.id);
+                          return imgUrl ? (
+                            <Image
+                              src={imgUrl}
+                              alt={locale === "en" ? attraction.nameEn : attraction.nameJa}
+                              width={56}
+                              height={56}
+                              className="rounded-xl object-cover shrink-0"
+                              unoptimized
+                            />
+                          ) : null;
+                        })()}
                         <h4 className="text-sm font-bold text-gray-900 leading-tight">
                           {locale === "en" ? attraction.nameEn : attraction.nameJa}
                         </h4>

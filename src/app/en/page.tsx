@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { MainTabsEn } from "@/components/en/MainTabsEn";
 import { AdBanner } from "@/components/AdBanner";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
@@ -59,6 +60,33 @@ export default function HomeEn() {
       {/* Ad: below content */}
       <div className="max-w-4xl mx-auto px-4 pb-4">
         <AdBanner adSlot="2222222222" />
+      </div>
+
+      {/* Attraction Guide Links */}
+      <div className="max-w-4xl mx-auto px-4 pb-6">
+        <h2 className="text-sm font-bold text-gray-700 mb-3">Attraction Strategy Guide</h2>
+        <div className="grid grid-cols-2 gap-3">
+          <Link
+            href="/en/attractions/tdl"
+            className="flex items-center gap-2 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:border-gray-400 transition-colors"
+          >
+            <span className="text-2xl">🏰</span>
+            <div>
+              <p className="text-sm font-bold text-gray-900">Tokyo Disneyland</p>
+              <p className="text-xs text-gray-500">Wait times · DPA · Height req.</p>
+            </div>
+          </Link>
+          <Link
+            href="/en/attractions/tds"
+            className="flex items-center gap-2 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:border-gray-400 transition-colors"
+          >
+            <span className="text-2xl">⛵</span>
+            <div>
+              <p className="text-sm font-bold text-gray-900">Tokyo DisneySea</p>
+              <p className="text-xs text-gray-500">Wait times · DPA · Height req.</p>
+            </div>
+          </Link>
+        </div>
       </div>
 
       {/* Footer */}
