@@ -106,14 +106,12 @@ export function MainTabsEn() {
             href="/en/attractions/tdl"
             className="flex flex-col items-center justify-center gap-0.5 min-h-[56px] rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md active:scale-95 transition-transform px-3 py-3 text-center"
           >
-            <span className="text-base">🏰</span>
             <span className="text-xs font-bold leading-tight">Disneyland<br />Attraction Guide</span>
           </Link>
           <Link
             href="/en/attractions/tds"
             className="flex flex-col items-center justify-center gap-0.5 min-h-[56px] rounded-2xl bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md active:scale-95 transition-transform px-3 py-3 text-center"
           >
-            <span className="text-base">⛵</span>
             <span className="text-xs font-bold leading-tight">DisneySea<br />Attraction Guide</span>
           </Link>
         </div>

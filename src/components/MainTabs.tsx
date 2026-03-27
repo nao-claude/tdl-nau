@@ -108,14 +108,12 @@ export function MainTabs() {
             href="/attractions/tdl"
             className="flex flex-col items-center justify-center gap-0.5 min-h-[56px] rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md active:scale-95 transition-transform px-3 py-3 text-center"
           >
-            <span className="text-base">🏰</span>
             <span className="text-xs font-bold leading-tight">ランド<br />アトラクションガイド</span>
           </Link>
           <Link
             href="/attractions/tds"
             className="flex flex-col items-center justify-center gap-0.5 min-h-[56px] rounded-2xl bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md active:scale-95 transition-transform px-3 py-3 text-center"
           >
-            <span className="text-base">⛵</span>
             <span className="text-xs font-bold leading-tight">シー<br />アトラクションガイド</span>
           </Link>
         </div>
