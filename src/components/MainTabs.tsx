@@ -101,24 +101,24 @@ export function MainTabs() {
         </div>
       </div>
 
-      {/* 攻略ガイドバナー */}
+      {/* アトラクションガイドバナー */}
       <div className="max-w-4xl mx-auto px-4 pt-3">
         <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
           <BookOpen className="w-3.5 h-3.5" />
-          攻略ガイド
+          アトラクションガイド
         </p>
         <div className="grid grid-cols-2 gap-2">
           <Link
             href="/attractions/tdl"
             className="flex items-center justify-center gap-2 min-h-[52px] rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-bold shadow-md active:scale-95 transition-transform"
           >
-            🏰 ランド攻略
+            🏰 ランドガイド
           </Link>
           <Link
             href="/attractions/tds"
             className="flex items-center justify-center gap-2 min-h-[52px] rounded-2xl bg-gradient-to-r from-teal-600 to-teal-500 text-white text-sm font-bold shadow-md active:scale-95 transition-transform"
           >
-            ⛵ シー攻略
+            ⛵ シーガイド
           </Link>
         </div>
       </div>

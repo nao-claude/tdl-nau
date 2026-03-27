@@ -32,9 +32,9 @@ export default function Home() {
         <AdBanner adSlot="2222222222" />
       </div>
 
-      {/* アトラクション攻略ガイドリンク */}
+      {/* アトラクションアトラクションガイドリンク */}
       <div className="max-w-4xl mx-auto px-4 pb-6">
-        <h2 className="text-sm font-bold text-gray-700 mb-3">アトラクション攻略ガイド</h2>
+        <h2 className="text-sm font-bold text-gray-700 mb-3">アトラクションアトラクションガイド</h2>
         <div className="grid grid-cols-2 gap-3">
           <Link
             href="/attractions/tdl"

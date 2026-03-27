@@ -6,7 +6,7 @@ import { AdBanner } from "@/components/AdBanner";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 
 export const metadata: Metadata = {
-  title: "東京ディズニーランド アトラクション攻略ガイド | 待ち時間・身長制限・DPA一覧",
+  title: "東京ディズニーランド アトラクションガイド | 待ち時間・身長制限・DPA一覧",
   description: "東京ディズニーランドの全アトラクション情報。リアルタイム待ち時間・身長制限・DPA対象・おすすめ時間帯・スリル度を一覧で確認できます。",
   alternates: { canonical: "https://disneynow.tokyo/attractions/tdl" },
 };
@@ -44,7 +44,7 @@ export default function TDLAttractionsPage() {
             <span className="text-2xl">🏰</span>
             <h2 className="text-xl font-bold text-gray-900">東京ディズニーランド</h2>
           </div>
-          <p className="text-sm text-gray-500">アトラクション攻略ガイド — 身長制限・DPA・おすすめ時間帯</p>
+          <p className="text-sm text-gray-500">アトラクションガイド — 身長制限・DPA・おすすめ時間帯</p>
         </div>
 
         {/* パーク切り替え */}
