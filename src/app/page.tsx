@@ -35,28 +35,43 @@ export default function Home() {
         <AdBanner adSlot="2222222222" />
       </div>
 
-      {/* アトラクションアトラクションガイドリンク */}
-      <div className="max-w-4xl mx-auto px-4 pb-6">
-        <h2 className="text-sm font-bold text-gray-700 mb-3">アトラクションアトラクションガイド</h2>
-        <div className="grid grid-cols-2 gap-3">
+      {/* ガイド・FAQリンク */}
+      <div className="max-w-4xl mx-auto px-4 pb-6 space-y-4">
+        <div>
+          <h2 className="text-sm font-bold text-gray-700 mb-3">アトラクションガイド</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <Link
+              href="/attractions/tdl"
+              className="flex items-center gap-2 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:border-gray-400 transition-colors"
+            >
+              <span className="text-2xl">🏰</span>
+              <div>
+                <p className="text-sm font-bold text-gray-900">東京ディズニーランド</p>
+                <p className="text-xs text-gray-500">待ち時間・DPA・身長制限</p>
+              </div>
+            </Link>
+            <Link
+              href="/attractions/tds"
+              className="flex items-center gap-2 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:border-gray-400 transition-colors"
+            >
+              <span className="text-2xl">⛵</span>
+              <div>
+                <p className="text-sm font-bold text-gray-900">東京ディズニーシー</p>
+                <p className="text-xs text-gray-500">待ち時間・DPA・身長制限</p>
+              </div>
+            </Link>
+          </div>
+        </div>
+        <div>
+          <h2 className="text-sm font-bold text-gray-700 mb-3">お役立ち情報</h2>
           <Link
-            href="/attractions/tdl"
-            className="flex items-center gap-2 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:border-gray-400 transition-colors"
+            href="/faq"
+            className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:border-gray-400 transition-colors"
           >
-            <span className="text-2xl">🏰</span>
+            <span className="text-2xl">❓</span>
             <div>
-              <p className="text-sm font-bold text-gray-900">東京ディズニーランド</p>
-              <p className="text-xs text-gray-500">待ち時間・DPA・身長制限</p>
-            </div>
-          </Link>
-          <Link
-            href="/attractions/tds"
-            className="flex items-center gap-2 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:border-gray-400 transition-colors"
-          >
-            <span className="text-2xl">⛵</span>
-            <div>
-              <p className="text-sm font-bold text-gray-900">東京ディズニーシー</p>
-              <p className="text-xs text-gray-500">待ち時間・DPA・身長制限</p>
+              <p className="text-sm font-bold text-gray-900">よくある質問（FAQ）</p>
+              <p className="text-xs text-gray-500">待ち時間・DPA・チケット・混雑など21問</p>
             </div>
           </Link>
         </div>
