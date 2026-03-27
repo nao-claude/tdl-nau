@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Clock, CalendarDays, Map, BookOpen } from "lucide-react";
+import { Clock, CalendarDays, Map } from "lucide-react";
 import { ParkPanelEn } from "./ParkPanelEn";
 import { CrowdCalendarEn } from "./CrowdCalendarEn";
 import { AreaMapEn } from "./AreaMapEn";
@@ -101,22 +101,20 @@ export function MainTabsEn() {
 
       {/* Attraction Guide Banner */}
       <div className="max-w-4xl mx-auto px-4 pt-3">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-          <BookOpen className="w-3.5 h-3.5" />
-          Strategy Guide
-        </p>
         <div className="grid grid-cols-2 gap-2">
           <Link
             href="/en/attractions/tdl"
-            className="flex items-center justify-center gap-2 min-h-[52px] rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-bold shadow-md active:scale-95 transition-transform"
+            className="flex flex-col items-center justify-center gap-0.5 min-h-[56px] rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md active:scale-95 transition-transform px-3 py-3 text-center"
           >
-            🏰 Land Guide
+            <span className="text-base">🏰</span>
+            <span className="text-xs font-bold leading-tight">Disneyland<br />Attraction Guide</span>
           </Link>
           <Link
             href="/en/attractions/tds"
-            className="flex items-center justify-center gap-2 min-h-[52px] rounded-2xl bg-gradient-to-r from-teal-600 to-teal-500 text-white text-sm font-bold shadow-md active:scale-95 transition-transform"
+            className="flex flex-col items-center justify-center gap-0.5 min-h-[56px] rounded-2xl bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md active:scale-95 transition-transform px-3 py-3 text-center"
           >
-            ⛵ Sea Guide
+            <span className="text-base">⛵</span>
+            <span className="text-xs font-bold leading-tight">DisneySea<br />Attraction Guide</span>
           </Link>
         </div>
       </div>
