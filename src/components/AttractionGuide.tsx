@@ -9,16 +9,6 @@ import { ParkId, ParkData } from "@/types";
 // ──────────────────────────────────────────────────────────
 // ユーティリティ
 // ──────────────────────────────────────────────────────────
-function ThrillStars({ level, locale }: { level: number; locale: "ja" | "en" }) {
-  return (
-    <div className="flex items-center gap-0.5" title={locale === "en" ? `Thrill: ${level}/5` : `スリル度: ${level}/5`}>
-      {[1,2,3,4,5].map(i => (
-        <span key={i} className={`text-xs ${i <= level ? "text-yellow-400" : "text-gray-200"}`}>★</span>
-      ))}
-    </div>
-  );
-}
-
 const BEST_TIME_JA: Record<BestTime, string> = {
   morning: "🌅 朝一番",
   afternoon: "☀️ 午後",
@@ -155,7 +145,6 @@ export function AttractionGuide({ parkId, attractions, locale = "ja" }: Props) {
 
                     {/* バッジ行 */}
                     <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <ThrillStars level={attraction.thrillLevel} locale={locale} />
                       {attraction.isDPA && (
                         <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
                           DPA
