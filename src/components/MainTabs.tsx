@@ -79,11 +79,7 @@ export function MainTabs() {
 
       {/* 本日のおすすめコース（タブに関わらず常時表示） */}
       <div className="max-w-4xl mx-auto px-4 pt-4">
-        <RecommendedCourse
-          parkId={park}
-          data={waitData}
-          parkHours={parkHours}
-        />
+        <RecommendedCourse parkId={park} />
       </div>
 
       {/* タブナビ */}
