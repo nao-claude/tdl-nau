@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Clock, CalendarDays, Map } from "lucide-react";
@@ -9,8 +9,7 @@ import { CrowdCalendar } from "./CrowdCalendar";
 import { AreaMap } from "./AreaMap";
 import { TodaySummary } from "./TodaySummary";
 import { RecommendedCourse } from "./RecommendedCourse";
-import { ParkId, ParkData } from "@/types";
-import { TodayParkHours } from "@/app/api/park-hours/route";
+import { ParkId } from "@/types";
 
 type Tab = "realtime" | "calendar" | "map";
 type Park = ParkId;
@@ -26,10 +25,6 @@ const PARKS: { id: Park; label: string }[] = [
   { id: "tds", label: "シー" },
 ];
 
-const DEFAULT_HOURS: TodayParkHours = {
-  tdl: { open: "9:00", close: "21:00" },
-  tds: { open: "9:00", close: "21:00" },
-};
 
 export function MainTabs() {
   const searchParams = useSearchParams();
@@ -37,40 +32,7 @@ export function MainTabs() {
   const [tab, setTab]   = useState<Tab>(initialTab);
   const [park, setPark] = useState<Park>("tdl");
 
-  // ランキングタブ用の一元データ管理
-  // null = 未取得またはフェッチ中, ParkData = 取得済み
-  const [waitData, setWaitData] = useState<ParkData | null>(null);
-  const [parkHours, setParkHours] = useState<TodayParkHours | null>(null);
-
-  // タブに関わらず常時データを取得
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchData() {
-      // park が切り替わったらデータをクリア（null = ローディング中を示す）
-      setWaitData(null);
-
-      // wait-times と park-hours を独立して取得（片方が失敗しても影響しない）
-      const waitPromise = fetch(`/api/wait-times/${park}`, { signal: AbortSignal.timeout(10000) })
-        .then((r) => (r.ok ? (r.json() as Promise<ParkData>) : Promise.reject()))
-        .then((d) => { if (!cancelled) setWaitData(d); })
-        .catch(() => {});
-
-      const hoursPromise = fetch("/api/park-hours", { signal: AbortSignal.timeout(10000) })
-        .then((r) => (r.ok ? (r.json() as Promise<TodayParkHours>) : DEFAULT_HOURS))
-        .catch(() => DEFAULT_HOURS)
-        .then((h) => { if (!cancelled) setParkHours(h); });
-
-      await Promise.allSettled([waitPromise, hoursPromise]);
-    }
-
-    fetchData();
-    const interval = setInterval(fetchData, 5 * 60 * 1000); // 5分毎に自動更新
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
-  }, [park]);
+  // 各子コンポーネントが独立してデータをフェッチするためここでは不要
 
   return (
     <div>
@@ -141,8 +103,6 @@ export function MainTabs() {
           <ParkPanel
             parkId={park}
             parkName={park === "tdl" ? "東京ディズニーランド" : "東京ディズニーシー"}
-            data={waitData}
-            parkHours={parkHours}
           />
         )}
 
