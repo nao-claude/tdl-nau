@@ -26,6 +26,7 @@ export async function GET() {
           "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
           "Accept-Language": "ja,en;q=0.9",
         },
+        signal: AbortSignal.timeout(8000), // 8秒でタイムアウトしてfallbackを返す
         next: { revalidate: 28800 }, // 8時間キャッシュ（1日3回のみ取得）
       }
     );
