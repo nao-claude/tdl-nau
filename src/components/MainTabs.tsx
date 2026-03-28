@@ -49,20 +49,19 @@ export function MainTabs() {
     async function fetchData() {
       // park が切り替わったらデータをクリア（null = ローディング中を示す）
       setWaitData(null);
-      try {
-        const [waitRes, hoursRes] = await Promise.all([
-          fetch(`/api/wait-times/${park}`, { signal: AbortSignal.timeout(10000) }),
-          fetch("/api/park-hours", { signal: AbortSignal.timeout(10000) }),
-        ]);
-        if (cancelled) return;
-        const waitJson: ParkData = waitRes.ok ? await waitRes.json() : await Promise.reject();
-        const hoursJson: TodayParkHours = hoursRes.ok ? await hoursRes.json() : DEFAULT_HOURS;
-        if (cancelled) return;
-        setWaitData(waitJson);
-        setParkHours(hoursJson);
-      } catch {
-        // フェッチ失敗時: null のままにして子コンポーネントの表示に任せる
-      }
+
+      // wait-times と park-hours を独立して取得（片方が失敗しても影響しない）
+      const waitPromise = fetch(`/api/wait-times/${park}`, { signal: AbortSignal.timeout(10000) })
+        .then((r) => (r.ok ? (r.json() as Promise<ParkData>) : Promise.reject()))
+        .then((d) => { if (!cancelled) setWaitData(d); })
+        .catch(() => {});
+
+      const hoursPromise = fetch("/api/park-hours", { signal: AbortSignal.timeout(10000) })
+        .then((r) => (r.ok ? (r.json() as Promise<TodayParkHours>) : DEFAULT_HOURS))
+        .catch(() => DEFAULT_HOURS)
+        .then((h) => { if (!cancelled) setParkHours(h); });
+
+      await Promise.allSettled([waitPromise, hoursPromise]);
     }
 
     fetchData();
