@@ -24,7 +24,17 @@ function isWithinParkHours(open: string, close: string): boolean {
   const nowMin = now.getHours() * 60 + now.getMinutes();
   return nowMin >= oh * 60 + om && nowMin < ch * 60 + cm;
 }
-import { getMonthCalendar, CROWD_INFO } from "@/lib/crowd-prediction";
+import { getMonthCalendar, CROWD_INFO, CrowdGrade } from "@/lib/crowd-prediction";
+
+function gradeFromMaxWait(maxWait: number): CrowdGrade {
+  if (maxWait >= 160) return "S";
+  if (maxWait >= 130) return "F";
+  if (maxWait >= 110) return "E";
+  if (maxWait >= 90)  return "D";
+  if (maxWait >= 60)  return "C";
+  if (maxWait >= 30)  return "B";
+  return "A";
+}
 import { getHolidayName } from "@/lib/holidays";
 import { TodayParkHours } from "@/app/api/park-hours/route";
 
@@ -68,8 +78,7 @@ export function TodaySummary({ parkId }: Props) {
   const today = new Date();
   const days = getMonthCalendar(today.getFullYear(), today.getMonth() + 1);
   const todayEntry = days.find((d) => d.date.getDate() === today.getDate());
-  const grade = todayEntry?.grade ?? "C";
-  const info = CROWD_INFO[grade];
+  const predictedGrade = todayEntry?.grade ?? "C";
   const holidayName = getHolidayName(today);
 
   const parkHour = hours[parkId];
@@ -80,8 +89,11 @@ export function TodaySummary({ parkId }: Props) {
   const maxWait = isParkOpen ? openAttractions.reduce((max, a) => Math.max(max, a.wait_time), 0) : 0;
   const noWaitCount = isParkOpen ? openAttractions.filter((a) => a.wait_time === 0).length : 0;
 
-  const dateLabel = `${today.getMonth() + 1}月${today.getDate()}日(${WEEKDAYS[today.getDay()]})`;
+  // 開園中かつ待ち時間データあり → 最長待ち時間からリアルタイムグレードを算出
+  const grade = isParkOpen && maxWait > 0 ? gradeFromMaxWait(maxWait) : predictedGrade;
+  const info = CROWD_INFO[grade];
 
+  const dateLabel = `${today.getMonth() + 1}月${today.getDate()}日(${WEEKDAYS[today.getDay()]})`;
 
   const parkName = parkId === "tdl" ? "ランド" : "シー";
   const shareText = `今日の${parkName}は混雑度${grade}！${maxWait > 0 ? `最長待ち${maxWait}分` : "待ちなし多数"}🏰 #TDLなう @disneynow_tokyo`;

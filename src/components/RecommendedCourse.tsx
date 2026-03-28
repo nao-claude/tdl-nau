@@ -444,7 +444,7 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
     }
 
     // 閉園後・開園前は wait-times 不要 → park-hours だけ取得して即表示
-    if (initialSlot === "closed") {
+    if (initialSlot === "closed" || initialSlot === "before_open") {
       if (parkHoursProp !== undefined) {
         setLoading(false);
         return;
