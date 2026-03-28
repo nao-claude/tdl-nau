@@ -12,13 +12,13 @@ export interface CrowdInfo {
 }
 
 export const CROWD_INFO: Record<CrowdGrade, CrowdInfo> = {
-  A: { grade: "A", label: "かなり空き", color: "text-sky-600",    bgColor: "bg-sky-100",    avgWait: "〜29分" },
-  B: { grade: "B", label: "やや空き",   color: "text-green-600",  bgColor: "bg-green-100",  avgWait: "30〜59分" },
-  C: { grade: "C", label: "普通",       color: "text-lime-600",   bgColor: "bg-lime-100",   avgWait: "60〜89分" },
-  D: { grade: "D", label: "やや混雑",   color: "text-yellow-600", bgColor: "bg-yellow-100", avgWait: "90〜109分" },
-  E: { grade: "E", label: "混雑",       color: "text-orange-600", bgColor: "bg-orange-100", avgWait: "110〜129分" },
-  F: { grade: "F", label: "かなり混雑", color: "text-red-600",    bgColor: "bg-red-100",    avgWait: "130〜159分" },
-  S: { grade: "S", label: "超混雑",     color: "text-purple-600", bgColor: "bg-purple-100", avgWait: "160分〜" },
+  A: { grade: "A", label: "かなり空き", color: "text-sky-600",    bgColor: "bg-sky-100",    avgWait: "人気5本平均〜19分" },
+  B: { grade: "B", label: "やや空き",   color: "text-green-600",  bgColor: "bg-green-100",  avgWait: "20〜34分" },
+  C: { grade: "C", label: "普通",       color: "text-lime-600",   bgColor: "bg-lime-100",   avgWait: "35〜54分" },
+  D: { grade: "D", label: "やや混雑",   color: "text-yellow-600", bgColor: "bg-yellow-100", avgWait: "55〜74分" },
+  E: { grade: "E", label: "混雑",       color: "text-orange-600", bgColor: "bg-orange-100", avgWait: "75〜94分" },
+  F: { grade: "F", label: "かなり混雑", color: "text-red-600",    bgColor: "bg-red-100",    avgWait: "95〜119分" },
+  S: { grade: "S", label: "超混雑",     color: "text-purple-600", bgColor: "bg-purple-100", avgWait: "120分〜" },
 };
 
 // 日本の祝日（固定祝日）

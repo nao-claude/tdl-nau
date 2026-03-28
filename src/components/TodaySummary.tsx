@@ -26,13 +26,22 @@ function isWithinParkHours(open: string, close: string): boolean {
 }
 import { getMonthCalendar, CROWD_INFO, CrowdGrade } from "@/lib/crowd-prediction";
 
-function gradeFromMaxWait(maxWait: number): CrowdGrade {
-  if (maxWait >= 160) return "S";
-  if (maxWait >= 130) return "F";
-  if (maxWait >= 110) return "E";
-  if (maxWait >= 90)  return "D";
-  if (maxWait >= 60)  return "C";
-  if (maxWait >= 30)  return "B";
+// 人気上位5本の平均待ち時間からグレードを算出
+// 競合サイト調査より：最長待ちではなく"中心的な人気アトラクションの平均"が業界標準
+function gradeFromWaitData(openAttractions: { wait_time: number }[]): CrowdGrade {
+  const withWait = openAttractions.filter((a) => a.wait_time > 0);
+  if (withWait.length === 0) return "A";
+
+  const sorted = [...withWait].sort((a, b) => b.wait_time - a.wait_time);
+  const top = sorted.slice(0, Math.min(5, sorted.length));
+  const avg = top.reduce((sum, a) => sum + a.wait_time, 0) / top.length;
+
+  if (avg >= 120) return "S";
+  if (avg >= 95)  return "F";
+  if (avg >= 75)  return "E";
+  if (avg >= 55)  return "D";
+  if (avg >= 35)  return "C";
+  if (avg >= 20)  return "B";
   return "A";
 }
 import { getHolidayName } from "@/lib/holidays";
@@ -89,8 +98,8 @@ export function TodaySummary({ parkId }: Props) {
   const maxWait = isParkOpen ? openAttractions.reduce((max, a) => Math.max(max, a.wait_time), 0) : 0;
   const noWaitCount = isParkOpen ? openAttractions.filter((a) => a.wait_time === 0).length : 0;
 
-  // 開園中かつ待ち時間データあり → 最長待ち時間からリアルタイムグレードを算出
-  const grade = isParkOpen && maxWait > 0 ? gradeFromMaxWait(maxWait) : predictedGrade;
+  // 開園中かつ待ち時間データあり → 上位5本平均からリアルタイムグレードを算出
+  const grade = isParkOpen && openAttractions.length > 0 ? gradeFromWaitData(openAttractions) : predictedGrade;
   const info = CROWD_INFO[grade];
 
   const dateLabel = `${today.getMonth() + 1}月${today.getDate()}日(${WEEKDAYS[today.getDay()]})`;
