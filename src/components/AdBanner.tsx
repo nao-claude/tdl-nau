@@ -28,10 +28,10 @@ export function AdBanner({ adSlot, className = "" }: Props) {
   if (!ADSENSE_CLIENT_ID) return null;
 
   return (
-    <div className={`w-full overflow-hidden ${className}`} style={{ maxHeight: 280 }}>
+    <div className={`w-full ${className}`} style={{ maxHeight: 120, overflow: "hidden" }}>
       <ins
         className="adsbygoogle"
-        style={{ display: "block", maxHeight: 280 }}
+        style={{ display: "block", maxHeight: 120, overflow: "hidden" }}
         data-ad-client={ADSENSE_CLIENT_ID}
         data-ad-slot={adSlot}
         data-ad-format="auto"
