@@ -24,3 +24,9 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* AdSenseが高さを上書きしないよう強制制限 */
+.adsbygoogle {
+  max-height: 120px !important;
+  overflow: hidden !important;
+}
