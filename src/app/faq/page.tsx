@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AdBanner } from "@/components/AdBanner";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "よくある質問 | TDLなう — ディズニーリゾート待ち時間・混雑情報",
@@ -160,13 +161,13 @@ export default function FaqPage() {
 
         {/* タイトル */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-1">よくある質問</h2>
+          <h1 className="text-xl font-bold text-gray-900 mb-1">よくある質問（FAQ）</h1>
           <p className="text-sm text-gray-500">
             東京ディズニーランド・ディズニーシーに関するよくあるご質問をまとめました。
           </p>
         </div>
 
-        <AdBanner adSlot="1111111111" />
+        <AdBanner adSlot="1897618790" />
 
         {/* 目次 */}
         <nav className="bg-white rounded-2xl border border-gray-200 p-4 mt-6 mb-6">
@@ -219,7 +220,7 @@ export default function FaqPage() {
         </div>
 
         <div className="mt-8">
-          <AdBanner adSlot="2222222222" />
+          <AdBanner adSlot="2084274874" />
         </div>
 
         {/* 関連ページ */}
@@ -263,6 +264,19 @@ export default function FaqPage() {
           </a>
         </p>
       </footer>
+
+      {/* 構造化データ（FAQPage） */}
+      <Script id="faq-jsonld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": FAQ_ITEMS.flatMap(section =>
+          section.questions.map(({ q, a }) => ({
+            "@type": "Question",
+            "name": q,
+            "acceptedAnswer": { "@type": "Answer", "text": a },
+          }))
+        ),
+      })}} />
     </main>
   );
 }

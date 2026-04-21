@@ -4,6 +4,9 @@ import { Suspense } from "react";
 import { MainTabsEn } from "@/components/en/MainTabsEn";
 import { AdBanner } from "@/components/AdBanner";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { fetchParkData } from "@/lib/api";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://disneynow.tokyo"),
@@ -34,7 +37,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomeEn() {
+export default async function HomeEn() {
+  const [tdlResult, tdsResult] = await Promise.allSettled([
+    fetchParkData("tdl"),
+    fetchParkData("tds"),
+  ]);
+  const initialTdlData = tdlResult.status === "fulfilled" ? tdlResult.value : null;
+  const initialTdsData = tdsResult.status === "fulfilled" ? tdsResult.value : null;
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -53,16 +62,31 @@ export default function HomeEn() {
 
       {/* Ad: above content */}
       <div className="max-w-4xl mx-auto px-4 pt-3">
-        <AdBanner adSlot="1111111111" />
+        <AdBanner adSlot="1897618790" />
       </div>
 
       <Suspense>
-        <MainTabsEn />
+        <MainTabsEn initialTdlData={initialTdlData} initialTdsData={initialTdsData} />
       </Suspense>
 
       {/* Ad: below content */}
       <div className="max-w-4xl mx-auto px-4 pb-4">
-        <AdBanner adSlot="2222222222" />
+        <AdBanner adSlot="2084274874" />
+      </div>
+
+      {/* USJ link */}
+      <div className="max-w-4xl mx-auto px-4 pb-4">
+        <Link
+          href="/en/usj"
+          className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:border-gray-400 transition-colors"
+        >
+          <span className="text-2xl">🎡</span>
+          <div>
+            <p className="text-sm font-bold text-gray-900">Universal Studios Japan (USJ)</p>
+            <p className="text-xs text-gray-500">Real-time wait times · Crowd forecast · Express Pass</p>
+          </div>
+          <span className="ml-auto text-xs text-blue-500">→</span>
+        </Link>
       </div>
 
       {/* Attraction Guide Links */}

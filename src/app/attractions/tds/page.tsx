@@ -9,7 +9,13 @@ import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 export const metadata: Metadata = {
   title: "東京ディズニーシー アトラクションガイド | 待ち時間・身長制限・DPA一覧",
   description: "東京ディズニーシーの全アトラクション情報。リアルタイム待ち時間・身長制限・DPA対象・おすすめ時間帯・スリル度を一覧で確認できます。",
-  alternates: { canonical: "https://disneynow.tokyo/attractions/tds" },
+  alternates: {
+    canonical: "https://disneynow.tokyo/attractions/tds",
+    languages: {
+      ja: "https://disneynow.tokyo/attractions/tds",
+      en: "https://disneynow.tokyo/en/attractions/tds",
+    },
+  },
 };
 
 export default function TDSAttractionsPage() {
@@ -75,14 +81,14 @@ export default function TDSAttractionsPage() {
           </span>
         </div>
 
-        <AdBanner adSlot="1111111111" />
+        <AdBanner adSlot="1897618790" />
 
         <div className="mt-6">
           <AttractionGuide parkId="tds" attractions={TDS_ATTRACTIONS} locale="ja" />
         </div>
 
         <div className="mt-6">
-          <AdBanner adSlot="2222222222" />
+          <AdBanner adSlot="2084274874" />
         </div>
       </div>
 

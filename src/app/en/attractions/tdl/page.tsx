@@ -75,14 +75,14 @@ export default function TDLAttractionsPageEn() {
           </Link>
         </div>
 
-        <AdBanner adSlot="1111111111" />
+        <AdBanner adSlot="1897618790" />
 
         <div className="mt-6">
           <AttractionGuide parkId="tdl" attractions={TDL_ATTRACTIONS} locale="en" />
         </div>
 
         <div className="mt-6">
-          <AdBanner adSlot="2222222222" />
+          <AdBanner adSlot="2084274874" />
         </div>
       </div>
 

@@ -9,7 +9,13 @@ import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 export const metadata: Metadata = {
   title: "東京ディズニーランド アトラクションガイド | 待ち時間・身長制限・DPA一覧",
   description: "東京ディズニーランドの全アトラクション情報。リアルタイム待ち時間・身長制限・DPA対象・おすすめ時間帯・スリル度を一覧で確認できます。",
-  alternates: { canonical: "https://disneynow.tokyo/attractions/tdl" },
+  alternates: {
+    canonical: "https://disneynow.tokyo/attractions/tdl",
+    languages: {
+      ja: "https://disneynow.tokyo/attractions/tdl",
+      en: "https://disneynow.tokyo/en/attractions/tdl",
+    },
+  },
 };
 
 export default function TDLAttractionsPage() {
@@ -75,14 +81,14 @@ export default function TDLAttractionsPage() {
           </Link>
         </div>
 
-        <AdBanner adSlot="1111111111" />
+        <AdBanner adSlot="1897618790" />
 
         <div className="mt-6">
           <AttractionGuide parkId="tdl" attractions={TDL_ATTRACTIONS} locale="ja" />
         </div>
 
         <div className="mt-6">
-          <AdBanner adSlot="2222222222" />
+          <AdBanner adSlot="2084274874" />
         </div>
       </div>
 

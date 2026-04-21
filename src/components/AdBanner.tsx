@@ -13,7 +13,7 @@ interface Props {
 // 2. 各adSlotはAdSenseコンソールの「広告ユニット」で発行
 // 3. layout.tsx の <head> に AdSense スクリプトを追加（コメント参照）
 // ──────────────────────────────────────────────────────────
-const ADSENSE_CLIENT_ID = ""; // 審査通過後に ca-pub-8944633356519670 を入力
+const ADSENSE_CLIENT_ID = "ca-pub-8944633356519670";
 
 export function AdBanner({ adSlot, className = "" }: Props) {
   useEffect(() => {
@@ -24,14 +24,8 @@ export function AdBanner({ adSlot, className = "" }: Props) {
     } catch {}
   }, []);
 
-  // AdSense ID未設定時はプレースホルダーを表示
-  if (!ADSENSE_CLIENT_ID) {
-    return (
-      <div className={`w-full bg-gray-100 border border-dashed border-gray-300 rounded-lg flex items-center justify-center py-4 ${className}`}>
-        <p className="text-xs text-gray-400">広告枠（AdSense審査通過後に有効化）</p>
-      </div>
-    );
-  }
+  // AdSense ID未設定時は非表示
+  if (!ADSENSE_CLIENT_ID) return null;
 
   return (
     <div className={`w-full overflow-hidden ${className}`}>
