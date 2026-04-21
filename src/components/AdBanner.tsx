@@ -7,13 +7,8 @@ interface Props {
   className?: string;
 }
 
-// ── Google AdSense 広告バナー ──────────────────────────────
-// 1. https://www.google.com/adsense/ でアカウント取得・審査通過後に下記を設定:
-//    ADSENSE_CLIENT_ID = "ca-pub-XXXXXXXXXXXXXXXX"（ご自身のID）
-// 2. 各adSlotはAdSenseコンソールの「広告ユニット」で発行
-// 3. layout.tsx の <head> に AdSense スクリプトを追加（コメント参照）
-// ──────────────────────────────────────────────────────────
 const ADSENSE_CLIENT_ID = "ca-pub-8944633356519670";
+const AD_HEIGHT = 90;
 
 export function AdBanner({ adSlot, className = "" }: Props) {
   useEffect(() => {
@@ -24,14 +19,24 @@ export function AdBanner({ adSlot, className = "" }: Props) {
     } catch {}
   }, []);
 
-  // AdSense ID未設定時は非表示
   if (!ADSENSE_CLIENT_ID) return null;
 
   return (
-    <div className={`w-full ${className}`} style={{ maxHeight: 120, overflow: "hidden" }}>
+    /* 固定高さ＋overflow:hidden で AdSense JSによる高さ変更を物理的にクリップ */
+    <div
+      className={`w-full ${className}`}
+      style={{ height: AD_HEIGHT, overflow: "hidden", position: "relative" }}
+    >
       <ins
         className="adsbygoogle"
-        style={{ display: "block", maxHeight: 120, overflow: "hidden" }}
+        style={{
+          display: "block",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+        }}
         data-ad-client={ADSENSE_CLIENT_ID}
         data-ad-slot={adSlot}
         data-ad-format="auto"

@@ -34,7 +34,7 @@ export default async function Home() {
       </header>
 
       {/* 広告①：コンテンツ上部 */}
-      <div className="max-w-4xl mx-auto px-4 pt-3" style={{ maxHeight: 120, overflow: "hidden" }}>
+      <div className="max-w-4xl mx-auto px-4 pt-3" style={{ height: 90, overflow: "hidden" }}>
         <AdBanner adSlot="1897618790" />
       </div>
 
@@ -62,7 +62,7 @@ export default async function Home() {
       </Suspense>
 
       {/* 広告②：コンテンツ下部 */}
-      <div className="max-w-4xl mx-auto px-4 pb-4" style={{ maxHeight: 120, overflow: "hidden" }}>
+      <div className="max-w-4xl mx-auto px-4 pb-4" style={{ height: 90, overflow: "hidden" }}>
         <AdBanner adSlot="2084274874" />
       </div>
 
