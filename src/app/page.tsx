@@ -107,6 +107,36 @@ export default async function Home() {
               </div>
             </Link>
             <Link
+              href="/summer2026"
+              className="flex items-center gap-3 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-2xl p-4 shadow-sm hover:from-orange-500 hover:to-yellow-500 transition-colors"
+            >
+              <span className="text-2xl">☀️</span>
+              <div>
+                <p className="text-sm font-bold text-white">夏休み2026 混雑予想カレンダー</p>
+                <p className="text-xs text-yellow-100">7〜8月 お盆ピーク・平日穴場・攻略ガイド</p>
+              </div>
+            </Link>
+            <Link
+              href="/halloween2026"
+              className="flex items-center gap-3 bg-gradient-to-r from-orange-600 to-purple-600 rounded-2xl p-4 shadow-sm hover:from-orange-700 hover:to-purple-700 transition-colors"
+            >
+              <span className="text-2xl">🎃</span>
+              <div>
+                <p className="text-sm font-bold text-white">ハロウィーン2026 混雑予想</p>
+                <p className="text-xs text-orange-100">9〜10月 仮装ルール・10/31攻略ガイド</p>
+              </div>
+            </Link>
+            <Link
+              href="/christmas2026"
+              className="flex items-center gap-3 bg-gradient-to-r from-red-600 to-green-600 rounded-2xl p-4 shadow-sm hover:from-red-700 hover:to-green-700 transition-colors"
+            >
+              <span className="text-2xl">🎄</span>
+              <div>
+                <p className="text-sm font-bold text-white">クリスマス2026 混雑予想</p>
+                <p className="text-xs text-red-100">11〜12月 イブ・当日混雑・攻略ガイド</p>
+              </div>
+            </Link>
+            <Link
               href="/dpa"
               className="flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-4 shadow-sm hover:from-blue-700 hover:to-blue-600 transition-colors"
             >
