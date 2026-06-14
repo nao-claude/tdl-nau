@@ -4,11 +4,11 @@ import { Map, Clock, CalendarDays } from "lucide-react";
 import { AttractionGuide } from "@/components/AttractionGuide";
 import { TDL_ATTRACTIONS } from "@/lib/attraction-data";
 import { AdBanner } from "@/components/AdBanner";
-import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { SiteHeader } from "@/components/SiteHeader";
 
 export const metadata: Metadata = {
-  title: "東京ディズニーランド アトラクションガイド | 待ち時間・身長制限・DPA一覧",
-  description: "東京ディズニーランドの全アトラクション情報。リアルタイム待ち時間・身長制限・DPA対象・おすすめ時間帯・スリル度を一覧で確認できます。",
+  title: "ディズニーランド アトラクション一覧 2026 | 待ち時間・身長制限・DPA対象【最新】",
+  description: "ディズニーランド全アトラクションの今日のリアルタイム待ち時間・身長制限・DPA対象を無料で一覧表示。美女と野獣・ビッグサンダー等の混雑時間帯も解説。",
   alternates: {
     canonical: "https://disneynow.tokyo/attractions/tdl",
     languages: {
@@ -21,19 +21,7 @@ export const metadata: Metadata = {
 export default function TDLAttractionsPage() {
   return (
     <main className="min-h-screen bg-gray-50">
-      {/* ヘッダー */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Link href="/" className="text-2xl">🏰</Link>
-            <div>
-              <h1 className="text-base font-bold text-gray-900 leading-tight">TDLなう</h1>
-              <p className="text-xs text-gray-500">東京ディズニーランド・シー リアルタイム待ち時間</p>
-            </div>
-          </div>
-          <LocaleSwitcher currentLocale="ja" />
-        </div>
-        {/* タブナビ */}
+      <SiteHeader>
         <div className="max-w-4xl mx-auto px-4 pb-2">
           <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
             <Link href="/?tab=map" className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-colors">
@@ -47,7 +35,7 @@ export default function TDLAttractionsPage() {
             </Link>
           </div>
         </div>
-      </header>
+      </SiteHeader>
 
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* パンくず */}
@@ -87,8 +75,31 @@ export default function TDLAttractionsPage() {
           <AttractionGuide parkId="tdl" attractions={TDL_ATTRACTIONS} locale="ja" />
         </div>
 
+        <AdBanner adSlot="2084274874" containerClassName="mt-6" />
+
+        {/* エリア別ガイドリンク */}
         <div className="mt-6">
-          <AdBanner adSlot="2084274874" />
+          <p className="text-sm font-bold text-gray-700 mb-3">エリア別攻略ガイド</p>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { slug: "world-bazaar", name: "ワールドバザール" },
+              { slug: "adventureland", name: "アドベンチャーランド" },
+              { slug: "westernland", name: "ウエスタンランド" },
+              { slug: "fantasyland", name: "ファンタジーランド" },
+              { slug: "new-fantasyland", name: "ニューファンタジーランド" },
+              { slug: "toontown", name: "トゥーンタウン" },
+              { slug: "tomorrowland", name: "トゥモローランド" },
+            ].map((area) => (
+              <Link
+                key={area.slug}
+                href={`/area/tdl/${area.slug}`}
+                className="flex items-center gap-2 bg-white rounded-xl border border-gray-200 p-3 shadow-sm hover:border-blue-400 transition-colors"
+              >
+                <span className="text-base">🏰</span>
+                <p className="text-xs font-bold text-gray-900">{area.name}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 
