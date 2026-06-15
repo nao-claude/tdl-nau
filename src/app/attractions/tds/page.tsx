@@ -5,6 +5,7 @@ import { AttractionGuide } from "@/components/AttractionGuide";
 import { TDS_ATTRACTIONS } from "@/lib/attraction-data";
 import { AdBanner } from "@/components/AdBanner";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import { ShareBar } from "@/components/ShareBar";
 
 export const metadata: Metadata = {
@@ -155,8 +156,12 @@ export default function TDSAttractionsPage() {
         </div>
       </div>
 
+      <div className="max-w-4xl mx-auto px-4 pb-6">
+        <AmazonBanner keyword="ディズニーシー グッズ 人気" label="Amazonでディズニーシーグッズを探す" />
+      </div>
+
       {/* フッター */}
-      <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
+      <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-2">
         <p>非公式サイトです。株式会社オリエンタルランドとは無関係です。</p>
         <p className="mt-1">
           <Link href="/privacy" className="underline">プライバシーポリシー</Link>

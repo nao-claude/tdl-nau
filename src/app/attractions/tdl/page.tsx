@@ -5,6 +5,7 @@ import { AttractionGuide } from "@/components/AttractionGuide";
 import { TDL_ATTRACTIONS } from "@/lib/attraction-data";
 import { AdBanner } from "@/components/AdBanner";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 
 export const metadata: Metadata = {
   title: "ディズニーランド アトラクション一覧 2026 | 待ち時間・身長制限・DPA対象【最新】",
@@ -103,8 +104,12 @@ export default function TDLAttractionsPage() {
         </div>
       </div>
 
+      <div className="max-w-4xl mx-auto px-4 pb-6">
+        <AmazonBanner keyword="ディズニーランド グッズ 人気" label="Amazonでディズニーランドグッズを探す" />
+      </div>
+
       {/* フッター */}
-      <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
+      <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-2">
         <p>非公式サイトです。株式会社オリエンタルランドとは無関係です。</p>
         <p className="mt-1">
           <Link href="/privacy" className="underline">プライバシーポリシー</Link>

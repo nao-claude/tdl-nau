@@ -4,6 +4,7 @@ import { Map, Clock, CalendarDays } from "lucide-react";
 import { AttractionGuide } from "@/components/AttractionGuide";
 import { USJ_ATTRACTIONS } from "@/lib/attraction-data";
 import { AdBanner } from "@/components/AdBanner";
+import { AmazonBanner } from "@/components/RakutenWidget";
 
 export const metadata: Metadata = {
   title: "USJアトラクションガイド | 待ち時間・身長制限・エクスプレス・パス一覧",
@@ -68,8 +69,12 @@ export default function USJAttractionsPage() {
         <AdBanner adSlot="2084274874" containerClassName="mt-6" />
       </div>
 
+      <div className="max-w-4xl mx-auto px-4 pb-6">
+        <AmazonBanner keyword="USJ グッズ ユニバーサル" label="AmazonでUSJグッズを探す" />
+      </div>
+
       {/* フッター */}
-      <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
+      <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-2">
         <p>非公式サイトです。ユニバーサル・スタジオ・ジャパンとは無関係です。</p>
         <p className="mt-1">
           <Link href="/privacy" className="underline">プライバシーポリシー</Link>
