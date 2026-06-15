@@ -8,7 +8,7 @@ export async function GET(
 ) {
   const { park } = await params;
 
-  if (park !== "tdl" && park !== "tds") {
+  if (park !== "tdl" && park !== "tds" && park !== "usj") {
     return NextResponse.json({ error: "Invalid park ID" }, { status: 400 });
   }
 

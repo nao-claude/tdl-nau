@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Hotel, X } from "lucide-react";
-import { getMonthCalendar, CROWD_INFO, CrowdGrade } from "@/lib/crowd-prediction";
+import { getMonthCalendar, CROWD_INFO, CrowdGrade, gradeFromWaitData, predictCrowd } from "@/lib/crowd-prediction";
 import { getHolidayName } from "@/lib/holidays";
 import { DayWeather } from "@/app/api/weather/route";
 import { DayTicketPrice } from "@/app/api/ticket-prices/route";
@@ -62,6 +62,7 @@ const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 const PARK_ATTRACTIONS: Record<string, string> = {
   tdl: "プーさんのハニーハント・美女と野獣・ビッグサンダーマウンテン・スプラッシュマウンテン・モンスターズ・インク",
   tds: "ソアリン・センター・オブ・ジ・アース・トイ・ストーリー・マニア！・タワー・オブ・テラー・インディ・ジョーンズ",
+  usj: "マリオカート・ザ・フライング・ダイナソー・ハリー・ポッター・ハリウッド・ドリーム・名探偵コナン・ザ・ワールド",
 };
 
 export function CrowdCalendar({ parkId = "tdl" }: { parkId?: string }) {
@@ -71,6 +72,26 @@ export function CrowdCalendar({ parkId = "tdl" }: { parkId?: string }) {
   const [weatherMap, setWeatherMap] = useState<Map<string, DayWeather>>(new Map());
   const [priceMap, setPriceMap] = useState<Map<string, number>>(new Map());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [todayRealtimeGrade, setTodayRealtimeGrade] = useState<CrowdGrade | null>(null);
+
+  // 今月表示中のとき、今日のセルをリアルタイムデータで上書き
+  // リアルタイムが予測より混んでいる場合のみ反映（閉園間際の低待ち時間で下がらないようにする）
+  useEffect(() => {
+    if (year !== today.getFullYear() || month !== today.getMonth() + 1) return;
+    fetch(`/api/wait-times/${parkId}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (!data?.attractions) return;
+        const realtimeGrade = gradeFromWaitData(data.attractions);
+        const predicted = predictCrowd(today);
+        const grades: CrowdGrade[] = ["A", "B", "C", "D", "E", "F", "S"];
+        // リアルタイムが予測以上のときだけ上書き（閉園間際で下がるのを防ぐ）
+        if (grades.indexOf(realtimeGrade) >= grades.indexOf(predicted)) {
+          setTodayRealtimeGrade(realtimeGrade);
+        }
+      })
+      .catch(() => {});
+  }, [year, month, parkId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetch(`/api/weather?year=${year}&month=${month}`)
@@ -84,6 +105,7 @@ export function CrowdCalendar({ parkId = "tdl" }: { parkId?: string }) {
   }, [year, month]);
 
   useEffect(() => {
+    if (parkId === "usj") return; // USJはチケット価格データ対象外
     fetch(`/api/ticket-prices?year=${year}&month=${month}`)
       .then((r) => r.json())
       .then((data: DayTicketPrice[]) => {
@@ -139,12 +161,13 @@ export function CrowdCalendar({ parkId = "tdl" }: { parkId?: string }) {
           <div key={`empty-${i}`} />
         ))}
 
-        {days.map(({ date, grade }) => {
-          const info = CROWD_INFO[grade];
+        {days.map(({ date, grade: predictedGrade }) => {
           const isToday =
             date.getFullYear() === today.getFullYear() &&
             date.getMonth() === today.getMonth() &&
             date.getDate() === today.getDate();
+          const grade: CrowdGrade = isToday && todayRealtimeGrade ? todayRealtimeGrade : predictedGrade;
+          const info = CROWD_INFO[grade];
           const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
           const weekday = date.getDay();
           const holidayName = getHolidayName(date);
@@ -234,30 +257,32 @@ export function CrowdCalendar({ parkId = "tdl" }: { parkId?: string }) {
               </button>
             </div>
 
-            {/* ホテルアフィリエイトリンク */}
-            <div className="border-t border-blue-200 pt-2 mt-2">
-              <p className="text-xs text-gray-500 mb-1.5 flex items-center gap-1">
-                <Hotel className="w-3.5 h-3.5" />この日の舞浜・浦安エリアの宿を探す
-              </p>
-              <div className="flex gap-2 flex-wrap">
-                <a
-                  href={links.jalan}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 text-center text-xs font-bold py-2 px-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white transition-colors"
-                >
-                  じゃらんで探す
-                </a>
-                <a
-                  href={links.rakuten}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 text-center text-xs font-bold py-2 px-3 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"
-                >
-                  楽天トラベルで探す
-                </a>
+            {/* ホテルアフィリエイトリンク（ディズニーのみ表示） */}
+            {parkId !== "usj" && (
+              <div className="border-t border-blue-200 pt-2 mt-2">
+                <p className="text-xs text-gray-500 mb-1.5 flex items-center gap-1">
+                  <Hotel className="w-3.5 h-3.5" />この日の舞浜・浦安エリアの宿を探す
+                </p>
+                <div className="flex gap-2 flex-wrap">
+                  <a
+                    href={links.jalan}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 text-center text-xs font-bold py-2 px-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white transition-colors"
+                  >
+                    じゃらんで探す
+                  </a>
+                  <a
+                    href={links.rakuten}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 text-center text-xs font-bold py-2 px-3 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"
+                  >
+                    楽天トラベルで探す
+                  </a>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         );
       })()}
@@ -282,19 +307,21 @@ export function CrowdCalendar({ parkId = "tdl" }: { parkId?: string }) {
           </div>
         </div>
 
-        {/* チケット価格帯 */}
-        <div>
-          <p className="text-xs text-gray-500 mb-1.5 font-medium">1デーパスポート価格（大人）● = 各日の価格</p>
-          <div className="flex flex-wrap gap-2">
-            {PRICE_TIERS.map((t) => (
-              <div key={t.price} className="flex items-center gap-1">
-                <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: t.dot }} />
-                <span className={`text-xs font-bold ${t.text}`}>¥{t.price.toLocaleString()}</span>
-              </div>
-            ))}
+        {/* チケット価格帯（ディズニーのみ表示） */}
+        {parkId !== "usj" && (
+          <div>
+            <p className="text-xs text-gray-500 mb-1.5 font-medium">1デーパスポート価格（大人）● = 各日の価格</p>
+            <div className="flex flex-wrap gap-2">
+              {PRICE_TIERS.map((t) => (
+                <div key={t.price} className="flex items-center gap-1">
+                  <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: t.dot }} />
+                  <span className={`text-xs font-bold ${t.text}`}>¥{t.price.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-gray-400 mt-1">※東京ディズニーリゾート公式サイトより取得</p>
           </div>
-          <p className="text-xs text-gray-400 mt-1">※東京ディズニーリゾート公式サイトより取得</p>
-        </div>
+        )}
 
         {/* 分数の説明 */}
         <div className="bg-gray-50 rounded-lg p-2.5 text-xs text-gray-500 leading-relaxed">

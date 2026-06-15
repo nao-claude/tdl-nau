@@ -2,9 +2,15 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { AttractionInfo, BestTime, WaitTendency } from "@/lib/attraction-data";
 import { getAttractionImageUrl } from "@/lib/attraction-images";
+import { ATTRACTION_DETAILS } from "@/lib/attraction-detail";
 import { ParkId, ParkData } from "@/types";
+
+const DETAIL_SLUG: Record<number, string> = Object.fromEntries(
+  ATTRACTION_DETAILS.map((d) => [d.id, d.slug])
+);
 
 // ──────────────────────────────────────────────────────────
 // ユーティリティ
@@ -71,7 +77,7 @@ export function AttractionGuide({ parkId, attractions, locale = "ja" }: Props) {
       <div className="flex flex-wrap gap-2 mb-4">
         {[
           { id: "all",      ja: "すべて",        en: "All" },
-          { id: "dpa",      ja: "DPA対象",       en: "DPA" },
+          { id: "dpa",      ja: parkId === "usj" ? "EP対象" : "DPA対象", en: parkId === "usj" ? "Express Pass" : "DPA" },
           { id: "noHeight", ja: "身長制限なし",  en: "No Height Req." },
           { id: "low",      ja: "空きやすい",    en: "Short Waits" },
         ].map(f => (
@@ -114,14 +120,16 @@ export function AttractionGuide({ parkId, attractions, locale = "ja" }: Props) {
                         {(() => {
                           const imgUrl = getAttractionImageUrl(attraction.id);
                           return imgUrl ? (
-                            <Image
-                              src={imgUrl}
-                              alt={locale === "en" ? attraction.nameEn : attraction.nameJa}
-                              width={56}
-                              height={56}
-                              className="rounded-xl object-cover shrink-0"
-                              unoptimized
-                            />
+                            <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
+                              <Image
+                                src={imgUrl}
+                                alt={locale === "en" ? attraction.nameEn : attraction.nameJa}
+                                width={56}
+                                height={56}
+                                className="w-full h-full object-cover"
+                                unoptimized
+                              />
+                            </div>
                           ) : null;
                         })()}
                         <h4 className="text-sm font-bold text-gray-900 leading-tight">
@@ -147,7 +155,7 @@ export function AttractionGuide({ parkId, attractions, locale = "ja" }: Props) {
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       {attraction.isDPA && (
                         <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
-                          DPA
+                          {parkId === "usj" ? "EP" : "DPA"}
                         </span>
                       )}
                       {attraction.heightMin && (
@@ -167,6 +175,16 @@ export function AttractionGuide({ parkId, attractions, locale = "ja" }: Props) {
                     <p className="text-xs text-gray-600 leading-relaxed">
                       {locale === "en" ? attraction.descEn : attraction.descJa}
                     </p>
+
+                    {/* 詳細ページリンク */}
+                    {DETAIL_SLUG[attraction.id] && locale === "ja" && (
+                      <Link
+                        href={`/attractions/${parkId}/${DETAIL_SLUG[attraction.id]}`}
+                        className="inline-block mt-2 text-xs font-semibold text-blue-500 hover:text-blue-700 hover:underline"
+                      >
+                        待ち時間・攻略の詳細を見る →
+                      </Link>
+                    )}
                   </div>
                 );
               })}

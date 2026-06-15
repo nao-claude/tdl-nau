@@ -18,6 +18,20 @@ export const DPA_IDS = new Set<number>([
   218, // トイ・ストーリー・マニア！
 ]);
 
+// USJ エクスプレス・パス (EP) 対象アトラクション
+export const USJ_EP_IDS = new Set<number>([
+  12061, // マリオカート〜クッパの挑戦状〜
+  14402, // Mine-Cart Madness™
+  12065, // ハリー・ポッター・アンド・ザ・フォービドゥン・ジャーニー
+  12073, // フライト・オブ・ザ・ヒッポグリフ
+  7092,  // ザ・フライング・ダイナソー
+  12067, // ジュラシック・パーク・ザ・ライド
+  7077,  // ハリウッド・ドリーム・ザ・ライド
+  12066, // ミニオン・ハチャメチャ・ライド
+  12082, // スペース・ファンタジー・ザ・ライド
+  13005, // 名探偵コナン・ザ・ワールド（期間限定）
+]);
+
 // 40周年記念プライオリティパス 対象アトラクション（無料・当日アプリ発券）
 export const SPECIAL_PASS_IDS = new Set<number>([
   // 東京ディズニーランド
@@ -36,11 +50,12 @@ export const SPECIAL_PASS_IDS = new Set<number>([
   222, // インディ・ジョーンズ®・アドベンチャー：クリスタルスカルの魔宮
 ]);
 
-export type PassType = "dpa" | "special";
+export type PassType = "dpa" | "special" | "ep";
 
 export function getAttractionPasses(id: number): PassType[] {
   const passes: PassType[] = [];
   if (DPA_IDS.has(id)) passes.push("dpa");
   if (SPECIAL_PASS_IDS.has(id)) passes.push("special");
+  if (USJ_EP_IDS.has(id)) passes.push("ep");
   return passes;
 }

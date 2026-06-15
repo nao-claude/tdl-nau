@@ -39,6 +39,44 @@ export const TDL_AREAS: AreaDef[] = [
   },
 ];
 
+export const USJ_AREAS: AreaDef[] = [
+  {
+    name: "ハリウッド",
+    color: "bg-red-100 border-red-300",
+    attractionIds: [7077, 12070, 7214],
+  },
+  {
+    name: "ニューヨーク/ジュラシック・パーク",
+    color: "bg-green-100 border-green-300",
+    attractionIds: [12068, 12067, 7092],
+  },
+  {
+    name: "ウィザーディング・ワールド・オブ・ハリー・ポッター",
+    color: "bg-amber-100 border-amber-300",
+    attractionIds: [12065, 12073, 12072, 12197],
+  },
+  {
+    name: "スーパー・ニンテンドー・ワールド",
+    color: "bg-yellow-100 border-yellow-300",
+    attractionIds: [12061, 14402, 12071],
+  },
+  {
+    name: "ミニオン・パーク",
+    color: "bg-purple-100 border-purple-300",
+    attractionIds: [12066, 14918],
+  },
+  {
+    name: "ユニバーサル・ワンダーランド",
+    color: "bg-pink-100 border-pink-300",
+    attractionIds: [7061, 7098, 7067, 7071, 7065, 7063, 7075, 12091, 12083, 7059, 14919, 12075],
+  },
+  {
+    name: "スペシャルイベント/その他",
+    color: "bg-blue-100 border-blue-300",
+    attractionIds: [13005, 15427, 15428, 12082, 12084],
+  },
+];
+
 export const TDS_AREAS: AreaDef[] = [
   {
     name: "メディテレーニアンハーバー",

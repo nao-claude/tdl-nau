@@ -12,13 +12,13 @@ export interface CrowdInfo {
 }
 
 export const CROWD_INFO: Record<CrowdGrade, CrowdInfo> = {
-  A: { grade: "A", label: "かなり空き", color: "text-sky-600",    bgColor: "bg-sky-100",    avgWait: "人気5本平均〜19分" },
-  B: { grade: "B", label: "やや空き",   color: "text-green-600",  bgColor: "bg-green-100",  avgWait: "20〜34分" },
-  C: { grade: "C", label: "普通",       color: "text-lime-600",   bgColor: "bg-lime-100",   avgWait: "35〜54分" },
-  D: { grade: "D", label: "やや混雑",   color: "text-yellow-600", bgColor: "bg-yellow-100", avgWait: "55〜74分" },
-  E: { grade: "E", label: "混雑",       color: "text-orange-600", bgColor: "bg-orange-100", avgWait: "75〜94分" },
-  F: { grade: "F", label: "かなり混雑", color: "text-red-600",    bgColor: "bg-red-100",    avgWait: "95〜119分" },
-  S: { grade: "S", label: "超混雑",     color: "text-purple-600", bgColor: "bg-purple-100", avgWait: "120分〜" },
+  A: { grade: "A", label: "かなり空き", color: "text-sky-600",    bgColor: "bg-sky-100",    avgWait: "人気5本平均〜29分" },
+  B: { grade: "B", label: "やや空き",   color: "text-green-600",  bgColor: "bg-green-100",  avgWait: "30〜49分" },
+  C: { grade: "C", label: "普通",       color: "text-lime-600",   bgColor: "bg-lime-100",   avgWait: "50〜74分" },
+  D: { grade: "D", label: "やや混雑",   color: "text-yellow-600", bgColor: "bg-yellow-100", avgWait: "75〜109分" },
+  E: { grade: "E", label: "混雑",       color: "text-orange-600", bgColor: "bg-orange-100", avgWait: "110〜149分" },
+  F: { grade: "F", label: "かなり混雑", color: "text-red-600",    bgColor: "bg-red-100",    avgWait: "150〜189分" },
+  S: { grade: "S", label: "超混雑",     color: "text-purple-600", bgColor: "bg-purple-100", avgWait: "190分〜" },
 };
 
 // 日本の祝日（固定祝日）
@@ -75,19 +75,35 @@ function isSchoolVacation(date: Date): boolean {
   return false;
 }
 
+// 年間で最も混む固定ピーク日（S確定）
+function isPeakDay(date: Date): boolean {
+  const m = date.getMonth() + 1;
+  const d = date.getDate();
+  if (m === 1 && d === 1) return true;                    // 元日
+  if (m === 5 && d >= 3 && d <= 5) return true;           // GW核心日
+  if (m === 12 && d >= 23 && d <= 25) return true;        // クリスマスピーク
+  if (m === 12 && d >= 30) return true;                   // 年末
+  return false;
+}
+
 type EventPeriod = { start: [number, number]; end: [number, number]; name: string; boost: number };
 
 function getEventBoost(date: Date): number {
   const month = date.getMonth() + 1;
   const day = date.getDate();
 
+  // 優先度順（先にマッチしたものが適用される）
   const events: EventPeriod[] = [
-    { start: [4, 29], end: [5, 6],   name: "GW",            boost: 3 },
-    { start: [9, 1],  end: [10, 31], name: "ハロウィン",     boost: 1 },
-    { start: [11, 8], end: [12, 24], name: "クリスマス",     boost: 2 },
-    { start: [12, 25],end: [12, 31], name: "年末クリスマス", boost: 3 },
-    { start: [3, 1],  end: [3, 19],  name: "春イベント前半", boost: 2 }, // 3月前半は卒業式シーズンで混雑
-    { start: [3, 20], end: [3, 31],  name: "春イベント後半", boost: 1 }, // 春休み期間はvacationで加算されるため抑制
+    { start: [8, 10], end: [8, 17],  name: "お盆ピーク",       boost: 3 },
+    { start: [1, 2],  end: [1, 7],   name: "年始",             boost: 3 },
+    { start: [4, 29], end: [5, 6],   name: "GW",               boost: 5 },
+    { start: [12, 23],end: [12, 25], name: "クリスマスピーク", boost: 5 }, // isPeakDay と併用
+    { start: [12, 26],end: [12, 31], name: "年末",             boost: 3 },
+    { start: [3, 1],  end: [3, 19],  name: "春イベント前半",   boost: 2 }, // 卒業式・修学旅行シーズン
+    { start: [3, 20], end: [4, 7],   name: "春休み",           boost: 1 }, // vacation加算あり
+    { start: [7, 20], end: [8, 31],  name: "夏",               boost: 1 }, // vacation加算あり
+    { start: [9, 1],  end: [10, 31], name: "ハロウィン",       boost: 2 },
+    { start: [11, 8], end: [12, 22], name: "クリスマスシーズン",boost: 2 },
   ];
 
   for (const event of events) {
@@ -102,7 +118,6 @@ function getEventBoost(date: Date): number {
 
 function calcScore(date: Date): number {
   const weekday = date.getDay(); // 0=日, 6=土
-  const month = date.getMonth() + 1;
   const holiday = isHoliday(date);
   const vacation = isSchoolVacation(date);
   const eventBoost = getEventBoost(date);
@@ -114,41 +129,44 @@ function calcScore(date: Date): number {
   if (isWeekend) score += 3;
   else if (weekday === 5) score += 1; // 金曜
 
-  if (month === 3) {
-    // 3月は春休み・卒業旅行・修学旅行シーズンで年間屈指の混雑月
-    // 全日+1のベースラインを加算
-    score += 1;
-    if (holiday) {
-      // 祝日は休暇・イベントと重複加算しない
-      score += isWeekend ? 1 : 3;
-    } else if (date.getDate() <= 19) {
-      // 3/1〜3/19: 土日にもイベント加算して変化をつける
-      score += eventBoost;
-    } else {
-      // 3/20〜: 春休み期間。土日は週末ボーナスのみ、平日は休暇+イベントを加算
-      if (!isWeekend) {
-        if (vacation) score += 2;
-        score += eventBoost;
-      }
-    }
-  } else {
-    // 通常ロジック（GW・夏・冬など）
-    if (holiday) score += isWeekend ? 1 : 3;
-    if (vacation) score += 2;
-    score += eventBoost;
-  }
+  // 祝日加算（週末との重複は最小限）
+  if (holiday) score += isWeekend ? 1 : 3;
+
+  // 学校休暇（夏休み・春休み・冬休み）
+  if (vacation) score += 3;
+
+  // イベント期間加算
+  score += eventBoost;
 
   return score;
 }
 
 export function predictCrowd(date: Date): CrowdGrade {
+  if (isPeakDay(date)) return "S";
   const score = calcScore(date);
   if (score >= 9) return "S";
   if (score >= 7) return "F";
-  if (score >= 6) return "E";
-  if (score >= 5) return "D";
+  if (score >= 5) return "E";
+  if (score >= 4) return "D";
   if (score >= 3) return "C";
-  if (score >= 2) return "B";
+  if (score >= 1) return "B";
+  return "A";
+}
+
+// リアルタイム待ち時間（上位5本平均）からグレードを算出
+// 200分超はAPIの異常値（ステール/キャッシュ）として除外する
+export function gradeFromWaitData(attractions: { wait_time: number; is_open: boolean }[]): CrowdGrade {
+  const open = attractions.filter((a) => a.is_open && a.wait_time > 0 && a.wait_time <= 300);
+  if (open.length === 0) return "A";
+  const sorted = [...open].sort((a, b) => b.wait_time - a.wait_time);
+  const top = sorted.slice(0, Math.min(5, sorted.length));
+  const avg = top.reduce((sum, a) => sum + a.wait_time, 0) / top.length;
+  if (avg >= 190) return "S";
+  if (avg >= 150) return "F";
+  if (avg >= 110) return "E";
+  if (avg >= 75)  return "D";
+  if (avg >= 50)  return "C";
+  if (avg >= 30)  return "B";
   return "A";
 }
 

@@ -4,27 +4,27 @@ import { useEffect } from "react";
 
 interface Props {
   adSlot: string;
-  className?: string;
+  containerClassName?: string;
 }
 
 const ADSENSE_CLIENT_ID = "ca-pub-8944633356519670";
+const ADSENSE_ENABLED = process.env.NEXT_PUBLIC_ADSENSE_ENABLED !== "false";
 const AD_HEIGHT = 90;
 
-export function AdBanner({ adSlot, className = "" }: Props) {
+export function AdBanner({ adSlot, containerClassName = "" }: Props) {
   useEffect(() => {
-    if (!ADSENSE_CLIENT_ID) return;
+    if (!ADSENSE_CLIENT_ID || !ADSENSE_ENABLED) return;
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
     } catch {}
   }, []);
 
-  if (!ADSENSE_CLIENT_ID) return null;
+  if (!ADSENSE_CLIENT_ID || !ADSENSE_ENABLED) return null;
 
   return (
-    /* 固定高さ＋overflow:hidden で AdSense JSによる高さ変更を物理的にクリップ */
     <div
-      className={`w-full ${className}`}
+      className={containerClassName}
       style={{ height: AD_HEIGHT, overflow: "hidden", position: "relative" }}
     >
       <ins

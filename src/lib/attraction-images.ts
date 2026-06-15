@@ -78,7 +78,63 @@ const IMAGE_ID: Record<number, number> = {
 
 const CDN = "https://media1.tokyodisneyresort.jp/images/adventure/attraction";
 
+// USJ アトラクション画像（/public/images/usj/ に保存済み）
+const USJ_IMAGE: Record<number, string> = {
+  // スーパー・ニンテンドー・ワールド
+  12061: "nw_mariokart.jpg",               // マリオカート〜クッパの挑戦状〜
+  14402: "nw_donkeykong_country_ride.jpg",  // Mine-Cart Madness™
+  12071: "nw_yoshis.jpg",                  // ヨッシー・アドベンチャー
+
+  // ウィザーディング・ワールド・オブ・ハリー・ポッター
+  12065: "hp_journey.jpg",                 // ハリー・ポッター・アンド・ザ・フォービドゥン・ジャーニー
+  12073: "hp_hippo.jpg",                   // フライト・オブ・ザ・ヒッポグリフ
+
+  // ジュラシック・パーク
+  7092:  "jp_dinosaur.jpg",               // ザ・フライング・ダイナソー
+  12067: "jp_ride.jpg",                   // ジュラシック・パーク・ザ・ライド
+
+  // ニューヨーク・エリア
+  12068: "am_jaws.jpg",                   // ジョーズ
+
+  // ハリウッド・エリア
+  7077:  "hw_dream.jpg",                  // ハリウッド・ドリーム・ザ・ライド
+  12070: "hw_bkdrop.jpg",                 // ハリウッド・ドリーム・ザ・ライド〜バックドロップ〜
+  13005: "hw_conan_4d_live_show.jpg",     // 名探偵コナン・ザ・ワールド
+  7214:  "hw_singtour.jpg",               // SING ON TOUR
+  12091: "hw_osaru.jpg",                  // プレイング・ウィズ・おさるのジョージ
+  12083: "hw_sesame4d.jpg",               // セサミストリート4-Dムービーマジック
+  12084: "hw_shreks4d.jpg",               // シュレック4-Dアドベンチャー
+
+  // ミニオン・パーク
+  12066: "mi_minions.jpg",                // ミニオン・ハチャメチャ・ライド
+  14918: "mi_minion_blast.jpg",           // ミニオン・ハチャメチャ・ミッション
+  12072: "mi_minionsice.jpg",             // フリーズ・レイ・スライダーズ
+
+  // ウィザーディング・ワールド（Ollivanders）
+  12197: "hp_journey.jpg",                 // オリバンダーの魔法使い（ハリポタエリア画像流用）
+
+  // スペシャルイベント/その他
+  12082: "ev_space_fantasy_club_zedd.jpg", // スペース・ファンタジー・ザ・ライド
+  15428: "ev_space_fantasy_club_zedd.jpg", // スペース・ファンタジー〜CLUB ZEDD REMIX〜
+  15427: "ev_jujutsu_kaisen_4d.jpg",       // 呪術廻戦・ザ・リアル 4-D
+
+  // ユニバーサル・ワンダーランド
+  12075: "un_flysnoopy.jpg",              // ザ・フライング・スヌーピー
+  14919: "un_snoopys_adventure.jpg",      // スヌーピーのフライング・エース・アドベンチャー
+  7061:  "un_bigbird.jpg",               // ビッグ・バードのビッグトップ・サーカス
+  7067:  "un_skateboad.jpg",             // エルモのゴーゴー・スケートボード
+  7098:  "un_bubble.jpg",               // エルモのバブル・バブル
+  7071:  "un_littledrive.jpg",           // エルモのリトル・ドライブ
+  7065:  "un_cupcake.jpg",              // ハローキティのカップケーキ・ドリーム
+  7063:  "un_ribbon.jpg",               // ハローキティのリボン・コレクション
+  7075:  "un_balloon.jpg",              // モッピーのバルーン・トリップ
+  7059:  "un_bigdrive.jpg",             // セサミのビッグ・ドライブ
+};
+
 export function getAttractionImageUrl(attractionId: number): string | null {
+  const usjFile = USJ_IMAGE[attractionId];
+  if (usjFile) return `/images/usj/${usjFile}`;
+
   const imageId = IMAGE_ID[attractionId];
   if (!imageId) return null;
   return `${CDN}/${imageId}_thum_name.jpg`;

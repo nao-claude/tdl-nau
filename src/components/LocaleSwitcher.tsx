@@ -4,20 +4,22 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   currentLocale: "ja" | "en";
+  jaPath?: string;
+  enPath?: string;
 }
 
-export function LocaleSwitcher({ currentLocale }: Props) {
+export function LocaleSwitcher({ currentLocale, jaPath = "/", enPath = "/en" }: Props) {
   const router = useRouter();
 
   const switchToJa = () => {
     // Set cookie to remember user's choice
     document.cookie = "preferred-locale=ja; path=/; max-age=31536000; SameSite=Lax";
-    router.push("/");
+    router.push(jaPath);
   };
 
   const switchToEn = () => {
     document.cookie = "preferred-locale=en; path=/; max-age=31536000; SameSite=Lax";
-    router.push("/en");
+    router.push(enPath);
   };
 
   return (

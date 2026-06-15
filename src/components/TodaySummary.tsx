@@ -24,39 +24,21 @@ function isWithinParkHours(open: string, close: string): boolean {
   const nowMin = now.getHours() * 60 + now.getMinutes();
   return nowMin >= oh * 60 + om && nowMin < ch * 60 + cm;
 }
-import { getMonthCalendar, CROWD_INFO, CrowdGrade } from "@/lib/crowd-prediction";
-
-// 人気上位5本の平均待ち時間からグレードを算出
-// 競合サイト調査より：最長待ちではなく"中心的な人気アトラクションの平均"が業界標準
-function gradeFromWaitData(openAttractions: { wait_time: number }[]): CrowdGrade {
-  const withWait = openAttractions.filter((a) => a.wait_time > 0);
-  if (withWait.length === 0) return "A";
-
-  const sorted = [...withWait].sort((a, b) => b.wait_time - a.wait_time);
-  const top = sorted.slice(0, Math.min(5, sorted.length));
-  const avg = top.reduce((sum, a) => sum + a.wait_time, 0) / top.length;
-
-  if (avg >= 120) return "S";
-  if (avg >= 95)  return "F";
-  if (avg >= 75)  return "E";
-  if (avg >= 55)  return "D";
-  if (avg >= 35)  return "C";
-  if (avg >= 20)  return "B";
-  return "A";
-}
+import { getMonthCalendar, CROWD_INFO, gradeFromWaitData } from "@/lib/crowd-prediction";
 import { getHolidayName } from "@/lib/holidays";
 import { TodayParkHours } from "@/app/api/park-hours/route";
 
 interface Props {
   parkId: ParkId;
+  initialData?: ParkData | null;
 }
 
 const SHARE_URL = "https://disneynow.tokyo";
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 
-export function TodaySummary({ parkId }: Props) {
-  const [data, setData] = useState<ParkData | null>(null);
+export function TodaySummary({ parkId, initialData }: Props) {
+  const [data, setData] = useState<ParkData | null>(initialData ?? null);
   const [hours, setHours] = useState<TodayParkHours>({
     tdl: { open: "9:00", close: "21:00" },
     tds: { open: "9:00", close: "21:00" },
@@ -64,11 +46,15 @@ export function TodaySummary({ parkId }: Props) {
   const [weather, setWeather] = useState<CurrentWeather | null>(null);
 
   useEffect(() => {
+    if (initialData) {
+      setData(initialData); // 初期表示に使用
+    }
+    // gradeの正確性のため常に最新データをfetch
     fetch(`/api/wait-times/${parkId}`)
       .then((r) => r.json())
       .then(setData)
       .catch(() => {});
-  }, [parkId]);
+  }, [parkId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetch("/api/park-hours")
@@ -104,8 +90,10 @@ export function TodaySummary({ parkId }: Props) {
 
   const dateLabel = `${today.getMonth() + 1}月${today.getDate()}日(${WEEKDAYS[today.getDay()]})`;
 
-  const parkName = parkId === "tdl" ? "ランド" : "シー";
-  const shareText = `今日の${parkName}は混雑度${grade}！${maxWait > 0 ? `最長待ち${maxWait}分` : "待ちなし多数"}🏰 #TDLなう @disneynow_tokyo`;
+  const parkName = parkId === "tdl" ? "ランド" : parkId === "tds" ? "シー" : "USJ";
+  const shareText = parkId === "usj"
+    ? `今日のUSJは混雑度${grade}！${maxWait > 0 ? `最長待ち${maxWait}分` : "待ちなし多数"}🎡 #USJなう @disneynow_tokyo`
+    : `今日の${parkName}は混雑度${grade}！${maxWait > 0 ? `最長待ち${maxWait}分` : "待ちなし多数"}🏰 #TDLなう @disneynow_tokyo`;
   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(SHARE_URL)}`;
   const lineShareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(shareText)}`;
 
@@ -121,17 +109,23 @@ export function TodaySummary({ parkId }: Props) {
             )}
             <div className="flex flex-col gap-0 mt-0.5">
                 <p className="text-xs text-gray-400 font-medium">本日の営業時間</p>
-                {hours.tdl && (
-                  <p className="text-xs text-gray-500">ランド: {hours.tdl.open}〜{hours.tdl.close}</p>
-                )}
-                {hours.tds && (
-                  <p className="text-xs text-gray-500">シー: {hours.tds.open}〜{hours.tds.close}</p>
+                {parkId === "usj" ? (
+                  <p className="text-xs text-gray-500">USJ: {parkHour?.open ?? "9:00"}〜{parkHour?.close ?? "21:00"}</p>
+                ) : (
+                  <>
+                    {hours.tdl && (
+                      <p className="text-xs text-gray-500">ランド: {hours.tdl.open}〜{hours.tdl.close}</p>
+                    )}
+                    {hours.tds && (
+                      <p className="text-xs text-gray-500">シー: {hours.tds.open}〜{hours.tds.close}</p>
+                    )}
+                  </>
                 )}
                 {weather && (
                   <p className="text-xs text-gray-500 mt-0.5">
-                    舞浜 {weatherEmoji(weather.current.code)} {weather.current.temp}°
+                    舞浜 <span className="text-xl leading-none">{weatherEmoji(weather.current.code)}</span> {weather.current.temp}°
                     <span className="text-gray-400 mx-1">/</span>
-                    夕方 {weatherEmoji(weather.evening.code)} {weather.evening.temp}°
+                    夕方 <span className="text-xl leading-none">{weatherEmoji(weather.evening.code)}</span> {weather.evening.temp}°
                     {weather.evening.precipProb > 0 && (
                       <span className="text-blue-400 ml-1">☂{weather.evening.precipProb}%</span>
                     )}

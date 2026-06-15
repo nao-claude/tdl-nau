@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Hotel, X } from "lucide-react";
-import { getMonthCalendar, CROWD_INFO, CrowdGrade } from "@/lib/crowd-prediction";
+import { getMonthCalendar, CROWD_INFO, CrowdGrade, gradeFromWaitData, predictCrowd } from "@/lib/crowd-prediction";
 import { CROWD_INFO_EN } from "@/lib/i18n/crowd-info-en";
 import { getHolidayName } from "@/lib/holidays";
 import { DayWeather } from "@/app/api/weather/route";
@@ -60,6 +60,7 @@ const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const PARK_ATTRACTIONS_EN: Record<string, string> = {
   tdl: "Pooh's Hunny Hunt, Beauty and the Beast, Big Thunder Mountain, Splash Mountain, Monsters Inc.",
   tds: "Soaring, Center of the Earth, Toy Story Mania!, Tower of Terror, Indiana Jones",
+  usj: "Mario Kart, Harry Potter, The Flying Dinosaur, Hollywood Dream, Space Fantasy",
 };
 
 export function CrowdCalendarEn({ parkId = "tdl" }: { parkId?: string }) {
@@ -69,6 +70,23 @@ export function CrowdCalendarEn({ parkId = "tdl" }: { parkId?: string }) {
   const [weatherMap, setWeatherMap] = useState<Map<string, DayWeather>>(new Map());
   const [priceMap, setPriceMap] = useState<Map<string, number>>(new Map());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [todayRealtimeGrade, setTodayRealtimeGrade] = useState<CrowdGrade | null>(null);
+
+  useEffect(() => {
+    if (year !== today.getFullYear() || month !== today.getMonth() + 1) return;
+    fetch(`/api/wait-times/${parkId}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (!data?.attractions) return;
+        const realtimeGrade = gradeFromWaitData(data.attractions);
+        const predicted = predictCrowd(today);
+        const grades: CrowdGrade[] = ["A", "B", "C", "D", "E", "F", "S"];
+        if (grades.indexOf(realtimeGrade) >= grades.indexOf(predicted)) {
+          setTodayRealtimeGrade(realtimeGrade);
+        }
+      })
+      .catch(() => {});
+  }, [year, month, parkId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetch(`/api/weather?year=${year}&month=${month}`)
@@ -82,6 +100,7 @@ export function CrowdCalendarEn({ parkId = "tdl" }: { parkId?: string }) {
   }, [year, month]);
 
   useEffect(() => {
+    if (parkId === "usj") return;
     fetch(`/api/ticket-prices?year=${year}&month=${month}`)
       .then((r) => r.json())
       .then((data: DayTicketPrice[]) => {
@@ -139,12 +158,13 @@ export function CrowdCalendarEn({ parkId = "tdl" }: { parkId?: string }) {
           <div key={`empty-${i}`} />
         ))}
 
-        {days.map(({ date, grade }) => {
-          const info = CROWD_INFO[grade];
+        {days.map(({ date, grade: predictedGrade }) => {
           const isToday =
             date.getFullYear() === today.getFullYear() &&
             date.getMonth() === today.getMonth() &&
             date.getDate() === today.getDate();
+          const grade: CrowdGrade = isToday && todayRealtimeGrade ? todayRealtimeGrade : predictedGrade;
+          const info = CROWD_INFO[grade];
           const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
           const weekday = date.getDay();
           const holidayName = getHolidayName(date);
@@ -232,7 +252,7 @@ export function CrowdCalendarEn({ parkId = "tdl" }: { parkId?: string }) {
             </div>
 
             {/* Hotel affiliate links */}
-            <div className="border-t border-blue-200 pt-2 mt-2">
+            {parkId !== "usj" && (<div className="border-t border-blue-200 pt-2 mt-2">
               <p className="text-xs text-gray-500 mb-1.5 flex items-center gap-1">
                 <Hotel className="w-3.5 h-3.5" />Find hotels near Maihama for this date
               </p>
@@ -254,7 +274,7 @@ export function CrowdCalendarEn({ parkId = "tdl" }: { parkId?: string }) {
                   Rakuten Travel
                 </a>
               </div>
-            </div>
+            </div>)}
           </div>
         );
       })()}
@@ -281,6 +301,7 @@ export function CrowdCalendarEn({ parkId = "tdl" }: { parkId?: string }) {
         </div>
 
         {/* Ticket price tiers */}
+        {parkId !== "usj" && (
         <div>
           <p className="text-xs text-gray-500 mb-1.5 font-medium">1-Day Passport Price (Adult) ● = Daily Price</p>
           <div className="flex flex-wrap gap-2">
@@ -293,6 +314,7 @@ export function CrowdCalendarEn({ parkId = "tdl" }: { parkId?: string }) {
           </div>
           <p className="text-xs text-gray-400 mt-1">※ From Tokyo Disney Resort official site</p>
         </div>
+        )}
 
         {/* Wait time explanation */}
         <div className="bg-gray-50 rounded-lg p-2.5 text-xs text-gray-500 leading-relaxed">

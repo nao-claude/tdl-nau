@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { ParkId, ParkData, Attraction } from "@/types";
 import { TodayParkHours } from "@/app/api/park-hours/route";
-import { getMonthCalendar, predictCrowd, CROWD_INFO } from "@/lib/crowd-prediction";
+import { CurrentWeather } from "@/app/api/weather/current/route";
+import { getMonthCalendar, predictCrowd, CROWD_INFO, gradeFromWaitData, CrowdGrade } from "@/lib/crowd-prediction";
 import { MapPin, Clock } from "lucide-react";
 
 // ===== 型定義 =====
@@ -34,6 +35,20 @@ const TDL_POPULAR_IDS = [
   162, // スプラッシュ・マウンテン
   171, // ホーンテッドマンション
   167, // ミッキーのフィルハーマジック
+];
+
+// ===== USJ 人気アトラクションID（待ち時間が高くなりやすい順） =====
+const USJ_POPULAR_IDS = [
+  12061, // マリオカート
+  14402, // Mine-Cart Madness
+  7092,  // ザ・フライング・ダイナソー
+  12065, // ハリー・ポッター・フォービドゥン・ジャーニー
+  13005, // 名探偵コナン・ザ・ワールド
+  7077,  // ハリウッド・ドリーム
+  14918, // ミニオン・ハチャメチャ・ミッション
+  12082, // スペース・ファンタジー
+  12067, // ジュラシック・パーク・ザ・ライド
+  12066, // ミニオン・ハチャメチャ・ライド
 ];
 
 // ===== TDS 人気アトラクションID =====
@@ -119,7 +134,7 @@ function buildCourse(
   crowdGrade: string,
   locale: "ja" | "en" = "ja"
 ): Course {
-  const popularIds = parkId === "tdl" ? TDL_POPULAR_IDS : TDS_POPULAR_IDS;
+  const popularIds = parkId === "tdl" ? TDL_POPULAR_IDS : parkId === "tds" ? TDS_POPULAR_IDS : USJ_POPULAR_IDS;
   const open = attractions.filter((a) => a.is_open);
 
   let items: CourseAttraction[] = [];
@@ -309,6 +324,20 @@ const TDL_FIXED_ATTRACTIONS = [
   { id: 167, name: "ミッキーのフィルハーマジック",         nameEn: "Mickey's PhilharMagic" },
 ];
 
+// ===== USJ 固定アトラクションリスト（明日のコース用） =====
+const USJ_FIXED_ATTRACTIONS = [
+  { id: 12061, name: "マリオカート〜クッパの挑戦状〜",                nameEn: "Mario Kart: Koopa's Challenge™" },
+  { id: 14402, name: "Mine-Cart Madness™",                           nameEn: "Mine-Cart Madness™" },
+  { id: 7092,  name: "ザ・フライング・ダイナソー",                    nameEn: "The Flying Dinosaur™" },
+  { id: 12065, name: "ハリー・ポッター・アンド・ザ・フォービドゥン・ジャーニー", nameEn: "Harry Potter and the Forbidden Journey™" },
+  { id: 13005, name: "名探偵コナン・ザ・ワールド",                   nameEn: "Detective Conan: The World" },
+  { id: 7077,  name: "ハリウッド・ドリーム・ザ・ライド",              nameEn: "Hollywood Dream - The Ride™" },
+  { id: 14918, name: "ミニオン・ハチャメチャ・ミッション",            nameEn: "Minion Mayhem Mission" },
+  { id: 12082, name: "スペース・ファンタジー・ザ・ライド",            nameEn: "Space Fantasy - The Ride™" },
+  { id: 12067, name: "ジュラシック・パーク・ザ・ライド",              nameEn: "Jurassic Park - The Ride™" },
+  { id: 12066, name: "ミニオン・ハチャメチャ・ライド",                nameEn: "Minion Mayhem™" },
+];
+
 // ===== TDS 固定アトラクションリスト（明日のコース用） =====
 const TDS_FIXED_ATTRACTIONS = [
   { id: 219, name: "ソアリン：ファンタスティック・フライト", nameEn: "Soaring: Fantastic Flight" },
@@ -336,7 +365,7 @@ interface TomorrowCourse {
 
 // ===== 明日のコース生成（固定リストベース） =====
 function buildTomorrowCourse(parkId: ParkId, grade: string, locale: "ja" | "en" = "ja"): TomorrowCourse {
-  const list = parkId === "tdl" ? TDL_FIXED_ATTRACTIONS : TDS_FIXED_ATTRACTIONS;
+  const list = parkId === "tdl" ? TDL_FIXED_ATTRACTIONS : parkId === "tds" ? TDS_FIXED_ATTRACTIONS : USJ_FIXED_ATTRACTIONS;
 
   let morningItems: typeof list;
   let afternoonItems: typeof list;
@@ -390,6 +419,19 @@ const SLOT_COLORS: Record<Exclude<TimeSlot, "closed" | "before_open">, { header:
   evening:   { header: "from-purple-500 to-violet-400", badge: "bg-purple-100 text-purple-700", dot: "bg-purple-400" },
 };
 
+// ===== 天気アイコン =====
+function weatherEmoji(code: number): string {
+  if (code === 0) return "☀️";
+  if (code <= 2) return "⛅";
+  if (code <= 3) return "☁️";
+  if (code <= 48) return "🌫️";
+  if (code <= 57) return "🌦️";
+  if (code <= 67) return "🌧️";
+  if (code <= 77) return "🌨️";
+  if (code <= 82) return "🌧️";
+  return "⛈️";
+}
+
 // ===== スケルトン =====
 function Skeleton() {
   return (
@@ -418,6 +460,7 @@ interface Props {
   locale?: "ja" | "en";
 }
 
+
 const DEFAULT_HOURS: TodayParkHours = {
   tdl: { open: "9:00", close: "21:00" },
   tds: { open: "9:00", close: "21:00" },
@@ -426,70 +469,48 @@ const DEFAULT_HOURS: TodayParkHours = {
 export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHoursProp, locale = "ja" }: Props) {
   const [dataInternal, setDataInternal] = useState<ParkData | null>(null);
   const [hoursInternal, setHoursInternal] = useState<TodayParkHours>(DEFAULT_HOURS);
-  const [loading, setLoading] = useState(dataProp === undefined);
-  const [error, setError] = useState(false);
-
-  // デフォルト時間で即座に時間帯を判定（DEFAULT_HOURS は必ず値があるが型上は null の可能性があるためフォールバック）
-  const now = new Date();
-  const defaultParkHour = DEFAULT_HOURS[parkId];
-  const initialSlot = defaultParkHour
-    ? getTimeSlot(now, defaultParkHour.open, defaultParkHour.close)
-    : "closed";
+  const [loading, setLoading] = useState(true);
+  const [weather, setWeather] = useState<CurrentWeather | null>(null);
 
   useEffect(() => {
-    // props からデータが渡されていれば自前フェッチをスキップ
-    if (dataProp !== undefined) {
+    let cancelled = false;
+
+    // park-hours は常に独立取得（失敗してもDEFAULT_HOURSで継続）
+    fetch("/api/park-hours")
+      .then((r) => (r.ok ? r.json() : DEFAULT_HOURS))
+      .catch(() => DEFAULT_HOURS)
+      .then((ph: TodayParkHours) => { if (!cancelled) setHoursInternal(ph); });
+
+    // 天気情報取得（before_open / closed で表示）
+    fetch("/api/weather/current")
+      .then((r) => (r.ok ? r.json() as Promise<CurrentWeather> : null))
+      .then((w) => { if (!cancelled && w) setWeather(w); })
+      .catch(() => {});
+
+    // closed/before_open は wait-times 不要
+    const now = new Date();
+    const ph = DEFAULT_HOURS[parkId] ?? { open: "9:00", close: "21:00" };
+    const slot = getTimeSlot(now, ph.open, ph.close);
+    if (slot === "closed" || slot === "before_open") {
       setLoading(false);
       return;
     }
 
-    // 閉園後・開園前は wait-times 不要 → park-hours だけ取得して即表示
-    if (initialSlot === "closed" || initialSlot === "before_open") {
-      if (parkHoursProp !== undefined) {
-        setLoading(false);
-        return;
-      }
-      fetch("/api/park-hours", { signal: AbortSignal.timeout(10000) })
-        .then((r) => (r.ok ? (r.json() as Promise<TodayParkHours>) : DEFAULT_HOURS))
-        .catch(() => DEFAULT_HOURS)
-        .then((ph) => setHoursInternal(ph))
-        .finally(() => setLoading(false));
-      return;
-    }
+    // 開園中は wait-times を取得
+    fetch(`/api/wait-times/${parkId}`, { signal: AbortSignal.timeout(15000) })
+      .then((r) => (r.ok ? (r.json() as Promise<ParkData>) : null))
+      .then((pd) => { if (!cancelled && pd) setDataInternal(pd); })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoading(false); });
 
-    // 開園中は wait-times + park-hours を並列取得（park-hours が props になければ）
-    setLoading(true);
-    setError(false);
-    const fetchParkHours =
-      parkHoursProp !== undefined
-        ? Promise.resolve(null)
-        : fetch("/api/park-hours", { signal: AbortSignal.timeout(10000) })
-            .then((r) => (r.ok ? (r.json() as Promise<TodayParkHours>) : DEFAULT_HOURS))
-            .catch(() => DEFAULT_HOURS);
-
-    Promise.all([
-      fetch(`/api/wait-times/${parkId}`, { signal: AbortSignal.timeout(10000) }).then((r) => {
-        if (!r.ok) throw new Error("wait-times error");
-        return r.json() as Promise<ParkData>;
-      }),
-      fetchParkHours,
-    ])
-      .then(([pd, ph]) => {
-        setDataInternal(pd);
-        if (ph !== null) setHoursInternal(ph);
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, [parkId, dataProp, parkHoursProp]); // eslint-disable-line react-hooks/exhaustive-deps
+    return () => { cancelled = true; };
+  }, [parkId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const data = dataProp !== undefined ? dataProp : dataInternal;
-  const hours =
-    parkHoursProp !== undefined && parkHoursProp !== null ? parkHoursProp : hoursInternal;
+  const hours = parkHoursProp !== undefined && parkHoursProp !== null ? parkHoursProp : hoursInternal;
 
-  if (error) return null;
-
-  const parkHour = hours[parkId];
-  if (!parkHour) return null;
+  const now = new Date();
+  const parkHour = hours[parkId] ?? { open: "9:00", close: "21:00" };
 
   const slot = getTimeSlot(now, parkHour.open, parkHour.close);
 
@@ -510,17 +531,31 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
           <div className="flex items-center gap-2">
             <span className="text-base">🗺️</span>
             <span className="text-white font-bold text-sm">
-              {locale === "en" ? "Today's Recommended Course" : "本日のおすすめコース"}
+              {locale === "en" ? `Today's ${parkId === "tdl" ? "TDL" : parkId === "tds" ? "TDS" : "USJ"} Course` : `本日の${parkId === "tdl" ? "ランド" : parkId === "tds" ? "シー" : "USJ"}おすすめコース`}
             </span>
           </div>
-          <div className="flex items-center gap-1.5 bg-white/15 rounded-full px-2.5 py-1">
-            <span className="text-white/80 text-xs">{locale === "en" ? "Crowd" : "混雑予測"}</span>
-            <span className={`text-xs font-extrabold px-1.5 py-0.5 rounded ${todayCrowdInfo.bgColor} ${todayCrowdInfo.color}`}>
-              {todayGrade}
-            </span>
-            <span className="text-white/80 text-xs">
-              {locale === "en" ? CROWD_LABEL_EN[todayGrade] : todayCrowdInfo.label}
-            </span>
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex items-center gap-1.5 bg-white/15 rounded-full px-2.5 py-1">
+              <span className="text-white/80 text-xs">{locale === "en" ? "Crowd" : "混雑予測"}</span>
+              <span className={`text-xs font-extrabold px-1.5 py-0.5 rounded ${todayCrowdInfo.bgColor} ${todayCrowdInfo.color}`}>
+                {todayGrade}
+              </span>
+              <span className="text-white/80 text-xs">
+                {locale === "en" ? CROWD_LABEL_EN[todayGrade] : todayCrowdInfo.label}
+              </span>
+            </div>
+            {weather && (
+              <div className="flex items-center gap-1 bg-white/10 rounded-full px-2 py-0.5">
+                <span className="text-xl leading-none">{weatherEmoji(weather.current.code)}</span>
+                <span className="text-xs text-white/80">{weather.current.temp}°</span>
+                <span className="text-white/40 text-xs">→</span>
+                <span className="text-xl leading-none">{weatherEmoji(weather.evening.code)}</span>
+                <span className="text-xs text-white/80">{weather.evening.temp}°</span>
+                {weather.evening.precipProb > 0 && (
+                  <span className="text-xs text-blue-200">{weather.evening.precipProb}%</span>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <div className="p-4 space-y-4">
@@ -581,17 +616,31 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
           <div className="flex items-center gap-2">
             <span className="text-base">🗺️</span>
             <span className="text-white font-bold text-sm">
-              {locale === "en" ? "Tomorrow's Recommended Course" : "明日のおすすめコース予報"}
+              {locale === "en" ? `Tomorrow's ${parkId === "tdl" ? "TDL" : parkId === "tds" ? "TDS" : "USJ"} Course` : `明日の${parkId === "tdl" ? "ランド" : parkId === "tds" ? "シー" : "USJ"}おすすめコース予報`}
             </span>
           </div>
-          <div className="flex items-center gap-1.5 bg-white/15 rounded-full px-2.5 py-1">
-            <span className="text-white/80 text-xs">{locale === "en" ? "Crowd" : "混雑予測"}</span>
-            <span className={`text-xs font-extrabold px-1.5 py-0.5 rounded ${tomorrowCrowdInfo.bgColor} ${tomorrowCrowdInfo.color}`}>
-              {tomorrowGrade}
-            </span>
-            <span className="text-white/80 text-xs">
-              {locale === "en" ? CROWD_LABEL_EN[tomorrowGrade] : tomorrowCrowdInfo.label}
-            </span>
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex items-center gap-1.5 bg-white/15 rounded-full px-2.5 py-1">
+              <span className="text-white/80 text-xs">{locale === "en" ? "Crowd" : "混雑予測"}</span>
+              <span className={`text-xs font-extrabold px-1.5 py-0.5 rounded ${tomorrowCrowdInfo.bgColor} ${tomorrowCrowdInfo.color}`}>
+                {tomorrowGrade}
+              </span>
+              <span className="text-white/80 text-xs">
+                {locale === "en" ? CROWD_LABEL_EN[tomorrowGrade] : tomorrowCrowdInfo.label}
+              </span>
+            </div>
+            {weather && (
+              <div className="flex items-center gap-1 bg-white/10 rounded-full px-2 py-0.5">
+                <span className="text-xl leading-none">{weatherEmoji(weather.current.code)}</span>
+                <span className="text-xs text-white/80">{weather.current.temp}°</span>
+                <span className="text-white/40 text-xs">→</span>
+                <span className="text-xl leading-none">{weatherEmoji(weather.evening.code)}</span>
+                <span className="text-xs text-white/80">{weather.evening.temp}°</span>
+                {weather.evening.precipProb > 0 && (
+                  <span className="text-xs text-blue-200">{weather.evening.precipProb}%</span>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -644,14 +693,46 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
   // data が null の場合（開園中だがまだ取得できていない等）はスケルトンを返す
   if (!data) return <Skeleton />;
 
-  const today = new Date();
-  const days = getMonthCalendar(today.getFullYear(), today.getMonth() + 1);
-  const todayEntry = days.find((d) => d.date.getDate() === today.getDate());
-  const grade = todayEntry?.grade ?? "C";
+  // 開園中はリアルタイム待ち時間（上位5本平均）からグレード算出
+  const grade = gradeFromWaitData(data.attractions);
   const crowdInfo = CROWD_INFO[grade];
 
   const course = buildCourse(data.attractions, parkId, slot, grade, locale);
   const colors = SLOT_COLORS[slot];
+  // 午前中は午後コースもプレビュー表示
+  const afternoonCourse = slot === "morning"
+    ? buildCourse(data.attractions, parkId, "afternoon", grade, locale)
+    : null;
+  const afternoonColors = SLOT_COLORS["afternoon"];
+
+  const renderItems = (items: Course["items"], dotColor: string, startIndex = 0) =>
+    items.length === 0 ? (
+      <p className="text-sm text-gray-400 text-center py-2">
+        {locale === "en" ? "No attractions currently in operation" : "現在営業中のアトラクションがありません"}
+      </p>
+    ) : items.map((item, index) => (
+      <div key={item.attraction.id} className="flex items-center gap-3">
+        <div className={`w-6 h-6 rounded-full ${dotColor} text-white text-xs font-bold flex items-center justify-center shrink-0`}>
+          {startIndex + index + 1}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-gray-800 truncate leading-tight">
+            {locale === "en" ? (item.attraction.name || item.attraction.nameJa) : item.attraction.nameJa}
+          </p>
+          <p className="text-xs text-gray-500 leading-tight">{item.comment}</p>
+        </div>
+        <div className={`flex items-center gap-0.5 px-2 py-1 rounded-full text-xs font-bold shrink-0 ${waitBadgeClass(item.attraction.wait_time)}`}>
+          {item.attraction.wait_time === 0 ? (
+            <span>{locale === "en" ? "No wait" : "待ちなし"}</span>
+          ) : (
+            <>
+              <Clock className="w-3 h-3" />
+              <span>{item.attraction.wait_time}{locale === "en" ? " min" : "分"}</span>
+            </>
+          )}
+        </div>
+      </div>
+    ));
 
   return (
     <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm">
@@ -661,7 +742,7 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
           <div className="flex items-center gap-1.5">
             <span className="text-base">🗺️</span>
             <span className="text-white font-bold text-sm">
-              {locale === "en" ? "Today's Recommended Course" : "本日のおすすめコース"}
+              {locale === "en" ? `Today's ${parkId === "tdl" ? "TDL" : parkId === "tds" ? "TDS" : "USJ"} Course` : `本日の${parkId === "tdl" ? "ランド" : parkId === "tds" ? "シー" : "USJ"}おすすめコース`}
             </span>
           </div>
           <div className="flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-white/20 text-white">
@@ -677,49 +758,33 @@ export function RecommendedCourse({ parkId, data: dataProp, parkHours: parkHours
         </div>
       </div>
 
-      {/* アトラクションリスト */}
       <div className="p-4 space-y-2.5">
-        {course.items.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-2">
-            {locale === "en" ? "No attractions currently in operation" : "現在営業中のアトラクションがありません"}
+        {/* 午前セクション */}
+        {slot === "morning" && (
+          <p className="text-xs font-bold text-blue-500 mb-1">
+            {locale === "en" ? "【Morning】Secure popular attractions early" : "【午前】人気アトラクションを今すぐ"}
           </p>
-        ) : (
-          course.items.map((item, index) => (
-            <div key={item.attraction.id} className="flex items-center gap-3">
-              {/* 順番 */}
-              <div className={`w-6 h-6 rounded-full ${colors.dot} text-white text-xs font-bold flex items-center justify-center shrink-0`}>
-                {index + 1}
-              </div>
-
-              {/* アトラクション名・コメント */}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-800 truncate leading-tight">
-                  {locale === "en" ? (item.attraction.name || item.attraction.nameJa) : item.attraction.nameJa}
-                </p>
-                <p className="text-xs text-gray-500 leading-tight">{item.comment}</p>
-              </div>
-
-              {/* 待ち時間バッジ */}
-              <div className={`flex items-center gap-0.5 px-2 py-1 rounded-full text-xs font-bold shrink-0 ${waitBadgeClass(item.attraction.wait_time)}`}>
-                {item.attraction.wait_time === 0 ? (
-                  <span>{locale === "en" ? "No wait" : "待ちなし"}</span>
-                ) : (
-                  <>
-                    <Clock className="w-3 h-3" />
-                    <span>{item.attraction.wait_time}{locale === "en" ? " min" : "分"}</span>
-                  </>
-                )}
-              </div>
-            </div>
-          ))
         )}
+        {renderItems(course.items, colors.dot)}
 
         {/* アドバイス */}
         {course.advice && (
-          <div className="mt-3 rounded-xl bg-gray-50 px-3 py-2.5 flex items-start gap-2">
+          <div className="mt-1 rounded-xl bg-gray-50 px-3 py-2.5 flex items-start gap-2">
             <MapPin className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
             <p className="text-xs text-gray-600 leading-relaxed">{course.advice}</p>
           </div>
+        )}
+
+        {/* 午後プレビュー（午前のみ表示） */}
+        {afternoonCourse && (
+          <>
+            <div className="border-t border-gray-100 pt-3 mt-1">
+              <p className="text-xs font-bold text-orange-500 mb-2">
+                {locale === "en" ? "【Afternoon】Short-wait plan for later" : "【午後の作戦】待ち時間が短めのものへ"}
+              </p>
+              {renderItems(afternoonCourse.items, afternoonColors.dot)}
+            </div>
+          </>
         )}
       </div>
     </div>

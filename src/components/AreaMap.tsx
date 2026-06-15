@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { ParkId, ParkData, Attraction } from "@/types";
-import { TDL_AREAS, TDS_AREAS, AreaDef } from "@/lib/park-areas";
+import { TDL_AREAS, TDS_AREAS, USJ_AREAS, AreaDef } from "@/lib/park-areas";
 import { Clock, XCircle, RefreshCw, Heart } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { getAttractionPasses } from "@/lib/attraction-passes";
@@ -52,7 +52,7 @@ export function AreaMap({ parkId }: Props) {
     tdl: { open: "9:00", close: "21:00" },
     tds: { open: "9:00", close: "21:00" },
   });
-  const areas = parkId === "tdl" ? TDL_AREAS : TDS_AREAS;
+  const areas = parkId === "tdl" ? TDL_AREAS : parkId === "tds" ? TDS_AREAS : USJ_AREAS;
   const { isFavorite, toggle, count } = useFavorites();
 
   useEffect(() => {
@@ -94,7 +94,7 @@ export function AreaMap({ parkId }: Props) {
   // お気に入りのアトラクション一覧
   const favoriteAttractions = effectiveAttractions.filter((a) => isFavorite(a.id));
 
-  const parkName = parkId === "tdl" ? "東京ディズニーランド" : "東京ディズニーシー";
+  const parkName = parkId === "tdl" ? "東京ディズニーランド" : parkId === "tds" ? "東京ディズニーシー" : "ユニバーサル・スタジオ・ジャパン";
   const totalCount = data?.attractions.length ?? 0;
   const openCount = effectiveAttractions.filter((a) => a.is_open).length;
   const maxWaitAll = effectiveAttractions.reduce((m, a) => Math.max(m, a.wait_time), 0);
@@ -113,7 +113,10 @@ export function AreaMap({ parkId }: Props) {
       </div>
 
       {/* お気に入り説明 */}
-      <p className="text-xs text-gray-400">♡ をタップしてお気に入り登録。次回から素早く確認できます。</p>
+      <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-xl px-3 py-2">
+        <span className="text-red-400 text-base leading-none">♡</span>
+        <p className="text-xs text-red-600 font-medium">をタップしてお気に入り登録。次回から素早く確認できます。</p>
+      </div>
 
       {/* 営業時間外メッセージ */}
       {isClosed && parkHour && (
@@ -179,6 +182,7 @@ export function AreaMap({ parkId }: Props) {
                           <div className="flex gap-1 mt-0.5">
                             {passes.includes("dpa") && <span className="text-xs font-bold px-1 py-0.5 rounded bg-blue-600 text-white leading-none" style={{fontSize:"9px"}}>DPA</span>}
                             {passes.includes("special") && <span className="text-xs font-bold px-1 py-0.5 rounded bg-amber-500 text-white leading-none" style={{fontSize:"9px"}}>40周</span>}
+                            {passes.includes("ep") && <span className="text-xs font-bold px-1 py-0.5 rounded bg-green-600 text-white leading-none" style={{fontSize:"9px"}}>EP</span>}
                           </div>
                         )}
                       </div>
@@ -240,6 +244,7 @@ export function AreaMap({ parkId }: Props) {
                             <div className="flex gap-1 mt-1">
                               {passes.includes("dpa") && <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-blue-600 text-white leading-none">DPA</span>}
                               {passes.includes("special") && <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-amber-500 text-white leading-none">40周</span>}
+                              {passes.includes("ep") && <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-green-600 text-white leading-none">EP</span>}
                             </div>
                           )}
                         </div>

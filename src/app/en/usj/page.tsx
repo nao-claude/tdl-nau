@@ -48,9 +48,7 @@ export default async function UsjPageEn() {
       </header>
 
       {/* Ad: above content */}
-      <div className="max-w-4xl mx-auto px-4 pt-3">
-        <AdBanner adSlot="1897618790" />
-      </div>
+      <AdBanner adSlot="1897618790" containerClassName="max-w-4xl mx-auto px-4 pt-3" />
 
       {/* About section */}
       <section className="max-w-4xl mx-auto px-4 pt-4">
@@ -76,9 +74,7 @@ export default async function UsjPageEn() {
       </Suspense>
 
       {/* Ad: below content */}
-      <div className="max-w-4xl mx-auto px-4 pb-4">
-        <AdBanner adSlot="2084274874" />
-      </div>
+      <AdBanner adSlot="2084274874" containerClassName="max-w-4xl mx-auto px-4 pb-4" />
 
       {/* Attraction Guide link */}
       <div className="max-w-4xl mx-auto px-4 pb-6">

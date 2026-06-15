@@ -1,21 +1,15 @@
 import { Metadata } from "next";
+import { SiteHeader } from "@/components/SiteHeader";
 
 export const metadata: Metadata = {
-  title: "プライバシーポリシー | TDLなう",
-  description: "TDLなう（disneynow.tokyo）のプライバシーポリシーです。",
+  title: "プライバシーポリシー | TDLなう・USJなう",
+  description: "TDLなう・USJなう（disneynow.tokyo）のプライバシーポリシーです。",
 };
 
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-2">
-          <a href="/" className="flex items-center gap-2">
-            <span className="text-2xl">🏰</span>
-            <span className="text-base font-bold text-gray-900">TDLなう</span>
-          </a>
-        </div>
-      </header>
+      <SiteHeader />
 
       <div className="max-w-2xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">プライバシーポリシー</h1>
@@ -25,7 +19,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-base font-bold text-gray-900 mb-2">基本方針</h2>
             <p>
-              TDLなう（以下「当サイト」）は、ユーザーの個人情報の取り扱いについて、以下のとおりプライバシーポリシーを定めます。
+              TDLなう・USJなう（disneynow.tokyo、以下「当サイト」）は、ユーザーの個人情報の取り扱いについて、以下のとおりプライバシーポリシーを定めます。
             </p>
           </section>
 
@@ -72,7 +66,10 @@ export default function PrivacyPage() {
             <p>
               当サイトに掲載している待ち時間・混雑情報は、第三者サービス（Queue-Times.com）から取得したものであり、
               正確性・最新性を保証するものではありません。
-              また、当サイトは株式会社オリエンタルランドおよびウォルト・ディズニー・カンパニーとは無関係の非公式サイトです。
+            </p>
+            <p className="mt-2">
+              当サイトは、株式会社オリエンタルランドおよびウォルト・ディズニー・カンパニーとは無関係の非公式サイトです。
+              また、ユニバーサル・スタジオ・ジャパン（USJ）を運営する合同会社ユー・エス・ジェイおよびNBCユニバーサルとも一切関係のない非公式サイトです。
             </p>
           </section>
 
@@ -98,7 +95,7 @@ export default function PrivacyPage() {
       </div>
 
       <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
-        <p>非公式サイトです。株式会社オリエンタルランドとは無関係です。</p>
+        <p>非公式サイトです。株式会社オリエンタルランド・合同会社ユー・エス・ジェイとは無関係です。</p>
       </footer>
     </main>
   );

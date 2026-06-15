@@ -65,9 +65,7 @@ export default function UsjAttractionsPageEn() {
           <AttractionGuide parkId="usj" attractions={USJ_ATTRACTIONS} locale="en" />
         </div>
 
-        <div className="mt-6">
-          <AdBanner adSlot="2084274874" />
-        </div>
+        <AdBanner adSlot="2084274874" containerClassName="mt-6" />
       </div>
 
       {/* Footer */}

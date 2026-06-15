@@ -8,6 +8,8 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { ShowSchedule } from "./ShowSchedule";
 import { TodayParkHours } from "@/app/api/park-hours/route";
 
+type WaitFilter = "all" | "under30" | "nowait";
+
 interface Props {
   parkId: ParkId;
   parkName: string;
@@ -37,35 +39,38 @@ export function ParkPanel({ parkId, parkName, data: dataProp, parkHours: parkHou
   const [lastUpdated, setLastUpdated] = useState<string>("");
   const [hoursInternal, setHoursInternal] = useState<TodayParkHours>(DEFAULT_HOURS_PP);
   const { isFavorite, toggle } = useFavorites();
+  const [waitFilter, setWaitFilter] = useState<WaitFilter>("all");
 
-  // props からデータが渡されていない場合のみ park-hours を自分でフェッチ
+  // park-hours を独立取得（失敗してもDEFAULT_HOURSで継続）
   useEffect(() => {
     if (parkHoursProp !== undefined) return;
     fetch("/api/park-hours")
-      .then((r) => r.json())
-      .then(setHoursInternal)
-      .catch(() => {});
+      .then((r) => (r.ok ? r.json() : DEFAULT_HOURS_PP))
+      .catch(() => DEFAULT_HOURS_PP)
+      .then(setHoursInternal);
   }, [parkHoursProp]);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`/api/wait-times/${parkId}`, {
-        signal: AbortSignal.timeout(10000),
+        signal: AbortSignal.timeout(15000),
       });
+      if (!res.ok) throw new Error("fetch failed");
       const json: ParkData = await res.json();
       setDataInternal(json);
       setLastUpdated(new Date().toLocaleTimeString("ja-JP"));
+    } catch {
+      // エラー時はローディングを解除（データはnullのまま）
     } finally {
       setLoading(false);
     }
   }, [parkId]);
 
-  // props からデータが渡されていない場合のみ自前フェッチ
   useEffect(() => {
     if (dataProp !== undefined) return;
     load();
-    const interval = setInterval(load, 5 * 60 * 1000); // 5分毎に自動更新
+    const interval = setInterval(load, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [load, dataProp]);
 
@@ -91,6 +96,12 @@ export function ParkPanel({ parkId, parkName, data: dataProp, parkHours: parkHou
   const openCount = effectiveAttractions.filter((a) => a.is_open).length;
   const totalCount = data?.attractions.length ?? 0;
   const maxWait = effectiveAttractions.reduce((max, a) => Math.max(max, a.wait_time), 0);
+
+  const filteredAttractions = effectiveAttractions.filter((a) => {
+    if (waitFilter === "under30") return a.is_open && a.wait_time <= 30;
+    if (waitFilter === "nowait") return a.is_open && a.wait_time === 0;
+    return true;
+  });
 
   return (
     <div className="flex flex-col gap-4">
@@ -119,7 +130,41 @@ export function ParkPanel({ parkId, parkName, data: dataProp, parkHours: parkHou
       )}
 
       {/* お気に入り説明 */}
-      <p className="text-xs text-gray-400">♡ をタップしてお気に入り登録。次回から素早く確認できます。</p>
+      <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-xl px-3 py-2">
+        <span className="text-red-400 text-base leading-none">♡</span>
+        <p className="text-xs text-red-600 font-medium">をタップしてお気に入り登録。次回から素早く確認できます。</p>
+      </div>
+
+      {/* 待ち時間フィルター */}
+      <div className="flex gap-2">
+        {([
+          { id: "all",     label: "すべて" },
+          { id: "under30", label: "30分以内" },
+          { id: "nowait",  label: "待ちなし" },
+        ] as { id: WaitFilter; label: string }[]).map((f) => (
+          <button
+            key={f.id}
+            onClick={() => setWaitFilter(f.id)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+              waitFilter === f.id
+                ? "bg-green-500 text-white border-green-500"
+                : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+            }`}
+          >
+            {f.id !== "all" && "✅ "}{f.label}
+            {f.id === "under30" && data && (
+              <span className="ml-1 opacity-80">
+                ({effectiveAttractions.filter((a) => a.is_open && a.wait_time <= 30).length})
+              </span>
+            )}
+            {f.id === "nowait" && data && (
+              <span className="ml-1 opacity-80">
+                ({effectiveAttractions.filter((a) => a.is_open && a.wait_time === 0).length})
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
 
       {/* 営業時間外メッセージ */}
       {(() => {
@@ -146,7 +191,10 @@ export function ParkPanel({ parkId, parkName, data: dataProp, parkHours: parkHou
         </div>
       ) : (
         <div className="flex flex-col gap-2">
-          {effectiveAttractions.map((attraction) => (
+          {filteredAttractions.length === 0 && (
+            <p className="text-sm text-gray-400 text-center py-6">該当するアトラクションがありません</p>
+          )}
+          {filteredAttractions.map((attraction) => (
             <WaitTimeCard
               key={attraction.id}
               attraction={attraction}

@@ -18,7 +18,9 @@ export function ShowSchedule({ parkId }: Props) {
     setLoading(true);
     try {
       const res = await fetch(`/api/shows/${parkId}`);
+      if (!res.ok) return;
       const data: ShowInfo[] = await res.json();
+      if (!Array.isArray(data)) return;
       setShows(data);
       setLastUpdated(new Date().toLocaleTimeString("ja-JP"));
     } finally {

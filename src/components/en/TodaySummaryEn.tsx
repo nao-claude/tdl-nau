@@ -30,6 +30,7 @@ import { TodayParkHours } from "@/app/api/park-hours/route";
 
 interface Props {
   parkId: ParkId;
+  initialData?: ParkData | null;
 }
 
 const SHARE_URL = "https://disneynow.tokyo/en";
@@ -47,8 +48,8 @@ const CROWD_LABEL_EN: Record<string, string> = {
 const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-export function TodaySummaryEn({ parkId }: Props) {
-  const [data, setData] = useState<ParkData | null>(null);
+export function TodaySummaryEn({ parkId, initialData }: Props) {
+  const [data, setData] = useState<ParkData | null>(initialData ?? null);
   const [hours, setHours] = useState<TodayParkHours>({
     tdl: { open: "9:00", close: "21:00" },
     tds: { open: "9:00", close: "21:00" },
@@ -56,11 +57,14 @@ export function TodaySummaryEn({ parkId }: Props) {
   const [weather, setWeather] = useState<CurrentWeather | null>(null);
 
   useEffect(() => {
+    if (initialData) {
+      setData(initialData);
+    }
     fetch(`/api/wait-times/${parkId}`)
       .then((r) => r.json())
       .then(setData)
       .catch(() => {});
-  }, [parkId]);
+  }, [parkId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetch("/api/park-hours")
@@ -118,9 +122,9 @@ export function TodaySummaryEn({ parkId }: Props) {
               )}
               {weather && (
                 <p className="text-xs text-gray-500 mt-0.5">
-                  Maihama {weatherEmoji(weather.current.code)} {weather.current.temp}°
+                  Maihama <span className="text-xl leading-none">{weatherEmoji(weather.current.code)}</span> {weather.current.temp}°
                   <span className="text-gray-400 mx-1">/</span>
-                  Eve {weatherEmoji(weather.evening.code)} {weather.evening.temp}°
+                  Eve <span className="text-xl leading-none">{weatherEmoji(weather.evening.code)}</span> {weather.evening.temp}°
                   {weather.evening.precipProb > 0 && (
                     <span className="text-blue-400 ml-1">☂{weather.evening.precipProb}%</span>
                   )}

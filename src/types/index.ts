@@ -1,4 +1,4 @@
-export type ParkId = "tdl" | "tds";
+export type ParkId = "tdl" | "tds" | "usj";
 
 export interface Attraction {
   id: number;

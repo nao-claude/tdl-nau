@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SiteHeader } from "@/components/SiteHeader";
 import { AdBanner } from "@/components/AdBanner";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import Script from "next/script";
@@ -137,19 +138,7 @@ const FAQ_ITEMS = [
 export default function FaqPage() {
   return (
     <main className="min-h-screen bg-gray-50">
-      {/* ヘッダー */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Link href="/" className="text-2xl">🏰</Link>
-            <div>
-              <h1 className="text-base font-bold text-gray-900 leading-tight">TDLなう</h1>
-              <p className="text-xs text-gray-500">東京ディズニーランド・シー リアルタイム待ち時間</p>
-            </div>
-          </div>
-          <LocaleSwitcher currentLocale="ja" />
-        </div>
-      </header>
+      <SiteHeader />
 
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* パンくず */}
@@ -219,9 +208,7 @@ export default function FaqPage() {
           ))}
         </div>
 
-        <div className="mt-8">
-          <AdBanner adSlot="2084274874" />
-        </div>
+        <AdBanner adSlot="2084274874" containerClassName="mt-8" />
 
         {/* 関連ページ */}
         <div className="mt-8">

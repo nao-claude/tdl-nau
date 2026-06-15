@@ -64,6 +64,9 @@ export function WaitTimeCard({ attraction, isFavorite, onToggleFavorite }: Props
               {passes.includes("special") && (
                 <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-amber-500 text-white leading-none">40周年PP</span>
               )}
+              {passes.includes("ep") && (
+                <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-green-600 text-white leading-none">EP対象</span>
+              )}
             </div>
           )}
         </div>

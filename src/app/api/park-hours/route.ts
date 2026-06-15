@@ -10,6 +10,7 @@ export interface ParkHours {
 export interface TodayParkHours {
   tdl: ParkHours | null;
   tds: ParkHours | null;
+  [key: string]: ParkHours | null | undefined;
 }
 
 // 公式サイトのスクレイピングはVercelのIPからブロックされるため
@@ -19,6 +20,7 @@ export async function GET() {
     {
       tdl: { open: "9:00", close: "21:00" },
       tds: { open: "9:00", close: "21:00" },
+      usj: { open: "9:00", close: "21:00" },
     } as TodayParkHours,
     {
       headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" },

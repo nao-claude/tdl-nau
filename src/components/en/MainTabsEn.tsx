@@ -1,24 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Clock, CalendarDays, Map } from "lucide-react";
+import { Clock, CalendarDays, Map, Route } from "lucide-react";
 import { ParkPanelEn } from "./ParkPanelEn";
 import { CrowdCalendarEn } from "./CrowdCalendarEn";
 import { AreaMapEn } from "./AreaMapEn";
 import { TodaySummaryEn } from "./TodaySummaryEn";
 import { RecommendedCourse } from "@/components/RecommendedCourse";
 import { ParkId, ParkData } from "@/types";
-import { TodayParkHours } from "@/app/api/park-hours/route";
 
-type Tab = "realtime" | "calendar" | "map";
+type Tab = "realtime" | "calendar" | "map" | "course";
 type Park = ParkId;
 
 const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: "map",      label: "By Area",         icon: <Map className="w-4 h-4" /> },
-  { id: "realtime", label: "Ranking",          icon: <Clock className="w-4 h-4" /> },
-  { id: "calendar", label: "Crowd Forecast",   icon: <CalendarDays className="w-4 h-4" /> },
+  { id: "map",      label: "By Area",        icon: <Map className="w-4 h-4" /> },
+  { id: "realtime", label: "Ranking",         icon: <Clock className="w-4 h-4" /> },
+  { id: "course",   label: "Today's Course",   icon: <Route className="w-4 h-4" /> },
+  { id: "calendar", label: "Crowd Forecast",  icon: <CalendarDays className="w-4 h-4" /> },
 ];
 
 const PARKS: { id: Park; label: string }[] = [
@@ -26,81 +26,23 @@ const PARKS: { id: Park; label: string }[] = [
   { id: "tds", label: "Sea" },
 ];
 
-const DEFAULT_HOURS: TodayParkHours = {
-  tdl: { open: "9:00", close: "21:00" },
-  tds: { open: "9:00", close: "21:00" },
-};
+interface Props {
+  initialTdlData?: ParkData | null;
+  initialTdsData?: ParkData | null;
+}
 
-export function MainTabsEn() {
+export function MainTabsEn({ initialTdlData, initialTdsData }: Props) {
   const searchParams = useSearchParams();
   const initialTab = (searchParams.get("tab") as Tab) ?? "map";
   const [tab, setTab]   = useState<Tab>(initialTab);
   const [park, setPark] = useState<Park>("tdl");
 
-  // Data management for RecommendedCourse (fetched regardless of active tab)
-  const [waitData, setWaitData] = useState<ParkData | null>(null);
-  const [parkHours, setParkHours] = useState<TodayParkHours | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchData() {
-      setWaitData(null);
-      try {
-        const [waitRes, hoursRes] = await Promise.all([
-          fetch(`/api/wait-times/${park}`, { signal: AbortSignal.timeout(10000) }),
-          fetch("/api/park-hours", { signal: AbortSignal.timeout(10000) }),
-        ]);
-        if (cancelled) return;
-        const waitJson: ParkData = waitRes.ok ? await waitRes.json() : await Promise.reject();
-        const hoursJson: TodayParkHours = hoursRes.ok ? await hoursRes.json() : DEFAULT_HOURS;
-        if (cancelled) return;
-        setWaitData(waitJson);
-        setParkHours(hoursJson);
-      } catch {
-        // On fetch failure: leave as null and let child component handle display
-      }
-    }
-
-    fetchData();
-    const interval = setInterval(fetchData, 5 * 60 * 1000); // Auto-refresh every 5 minutes
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
-  }, [park]);
+  const initialData = park === "tdl" ? initialTdlData : initialTdsData;
 
   return (
     <div>
       {/* Today's summary */}
-      <TodaySummaryEn parkId={park} />
-
-      {/* Today's recommended course (always visible regardless of active tab) */}
-      <div className="max-w-4xl mx-auto px-4 pt-4">
-        <RecommendedCourse
-          parkId={park}
-          data={waitData}
-          parkHours={parkHours}
-          locale="en"
-        />
-      </div>
-
-      {/* Tab nav */}
-      <div className="max-w-4xl mx-auto px-4 pt-4">
-        <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition-colors
-                ${tab === t.id ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
-            >
-              {t.icon}
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <TodaySummaryEn parkId={park} initialData={initialData} />
 
       {/* Attraction Guide Banner */}
       <div className="max-w-4xl mx-auto px-4 pt-3">
@@ -120,7 +62,24 @@ export function MainTabsEn() {
         </div>
       </div>
 
-      {/* Park switcher (realtime & map only) */}
+      {/* Tab nav */}
+      <div className="max-w-4xl mx-auto px-4 pt-3">
+        <div className="flex gap-1 bg-gray-200 p-1 rounded-xl">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold transition-colors
+                ${tab === t.id ? "bg-gray-900 text-white shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
+            >
+              {t.icon}
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Park switcher (hidden on Crowd Forecast tab) */}
       {tab !== "calendar" && (
         <div className="max-w-4xl mx-auto px-4 pt-3">
           <div className="flex gap-2">
@@ -141,12 +100,10 @@ export function MainTabsEn() {
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 py-4">
         {tab === "realtime" && (
-          <>
-            <ParkPanelEn
-              parkId={park}
-              parkName={park === "tdl" ? "Tokyo Disneyland" : "Tokyo DisneySea"}
-            />
-          </>
+          <ParkPanelEn
+            parkId={park}
+            parkName={park === "tdl" ? "Tokyo Disneyland" : "Tokyo DisneySea"}
+          />
         )}
 
         {tab === "calendar" && (
@@ -164,6 +121,10 @@ export function MainTabsEn() {
 
         {tab === "map" && (
           <AreaMapEn parkId={park} />
+        )}
+
+        {tab === "course" && (
+          <RecommendedCourse parkId={park} locale="en" />
         )}
       </div>
     </div>

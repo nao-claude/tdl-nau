@@ -42,9 +42,7 @@ export default async function UsjPage() {
       </header>
 
       {/* 広告①：コンテンツ上部 */}
-      <div className="max-w-4xl mx-auto px-4 pt-3">
-        <AdBanner adSlot="1897618790" />
-      </div>
+      <AdBanner adSlot="1897618790" containerClassName="max-w-4xl mx-auto px-4 pt-3" />
 
       {/* サービス紹介 */}
       <section className="max-w-4xl mx-auto px-4 pt-4">
@@ -70,9 +68,7 @@ export default async function UsjPage() {
       </Suspense>
 
       {/* 広告②：コンテンツ下部 */}
-      <div className="max-w-4xl mx-auto px-4 pb-4">
-        <AdBanner adSlot="2084274874" />
-      </div>
+      <AdBanner adSlot="2084274874" containerClassName="max-w-4xl mx-auto px-4 pb-4" />
 
       {/* アトラクションガイドリンク */}
       <div className="max-w-4xl mx-auto px-4 pb-6">
