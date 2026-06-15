@@ -5,6 +5,7 @@ import { MainTabs } from "@/components/MainTabs";
 import { AdBanner } from "@/components/AdBanner";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ShareBar } from "@/components/ShareBar";
+import { RakutenWidgetResponsive } from "@/components/RakutenWidget";
 import { fetchParkData } from "@/lib/api";
 
 const CDN = "https://media1.tokyodisneyresort.jp/images/adventure/attraction";
@@ -275,6 +276,12 @@ export default async function Home() {
           </div>
           <ShareBar />
         </div>
+      </section>
+
+      {/* 楽天モーションウィジェット */}
+      <section className="max-w-4xl mx-auto px-4 pb-6">
+        <p className="text-xs text-gray-400 mb-2">PR・広告</p>
+        <RakutenWidgetResponsive />
       </section>
 
       {/* フッター */}

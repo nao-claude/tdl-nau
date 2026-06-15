@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { SiteHeader } from "@/components/SiteHeader";
 import { AdBanner } from "@/components/AdBanner";
+import { RakutenWidgetResponsive } from "@/components/RakutenWidget";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -250,7 +251,13 @@ export default function HotelGuidePage() {
           <p className="text-xs text-gray-400 text-center mt-2">同じ日付でも楽天とじゃらんで料金が違うことがあります。両方確認推奨。</p>
         </section>
 
-        <AdBanner adSlot="2084274874" containerClassName="mb-8" />
+        <AdBanner adSlot="2084274874" containerClassName="mb-4" />
+
+        {/* 楽天モーションウィジェット */}
+        <div className="mb-8">
+          <p className="text-xs text-gray-400 mb-1">PR・広告</p>
+          <RakutenWidgetResponsive />
+        </div>
 
         {/* 近隣・格安ホテル */}
         <section className="mb-8">
