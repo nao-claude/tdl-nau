@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { SiteHeader } from "@/components/SiteHeader";
 import { AdBanner } from "@/components/AdBanner";
-import { RakutenWidgetResponsive } from "@/components/RakutenWidget";
+import { RakutenWidgetResponsive, AmazonBanner } from "@/components/RakutenWidget";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -253,10 +253,11 @@ export default function HotelGuidePage() {
 
         <AdBanner adSlot="2084274874" containerClassName="mb-4" />
 
-        {/* 楽天モーションウィジェット */}
-        <div className="mb-8">
-          <p className="text-xs text-gray-400 mb-1">PR・広告</p>
+        {/* 楽天モーションウィジェット + Amazon */}
+        <div className="mb-8 space-y-3">
+          <p className="text-xs text-gray-400">PR・広告</p>
           <RakutenWidgetResponsive />
+          <AmazonBanner keyword="旅行 バッグ スーツケース ディズニー" label="旅行バッグ・スーツケースをAmazonで探す" />
         </div>
 
         {/* 近隣・格安ホテル */}

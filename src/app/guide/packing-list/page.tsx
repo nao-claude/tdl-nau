@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -323,6 +324,12 @@ export default function PackingListPage() {
           </div>
 
         </div>
+
+        <AmazonBanner
+          keyword="テーマパーク 持ち物 便利グッズ"
+          label="ディズニー持ち物・便利グッズをAmazonで探す"
+          className="mt-6"
+        />
 
         <p className="text-xs text-gray-400 text-center mt-8">
           当サイトは東京ディズニーリゾートの非公式サイトです。最新情報は公式サイトでご確認ください。
