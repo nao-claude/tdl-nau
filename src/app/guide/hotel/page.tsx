@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { SiteHeader } from "@/components/SiteHeader";
 import { AdBanner } from "@/components/AdBanner";
 import Script from "next/script";
@@ -26,6 +27,10 @@ const OFFICIAL_HOTELS = [
     point: "全室ディズニーリゾートビューが選択可能。大型施設でプール・スパあり。",
     recommend: "記念日・贅沢旅行",
     recommendColor: "text-pink-600",
+    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=400&fit=crop&auto=format&q=80",
+    imageAlt: "ヒルトン東京ベイ プール",
+    gradientFrom: "from-blue-600",
+    gradientTo: "to-indigo-800",
   },
   {
     name: "シェラトン・グランデ・トーキョーベイ・ホテル",
@@ -37,6 +42,10 @@ const OFFICIAL_HOTELS = [
     point: "大型プール完備。ディズニーキャラクタールームが人気で子連れに◎。",
     recommend: "子連れ・ファミリー",
     recommendColor: "text-lime-600",
+    image: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800&h=400&fit=crop&auto=format&q=80",
+    imageAlt: "シェラトン・グランデ・トーキョーベイ ロビー",
+    gradientFrom: "from-emerald-600",
+    gradientTo: "to-teal-800",
   },
   {
     name: "グランドニッコー東京ベイ 舞浜",
@@ -48,6 +57,10 @@ const OFFICIAL_HOTELS = [
     point: "高層ホテルから東京湾の景色が楽しめる。レストランが充実。",
     recommend: "カップル・大人旅",
     recommendColor: "text-purple-600",
+    image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&h=400&fit=crop&auto=format&q=80",
+    imageAlt: "グランドニッコー東京ベイ 外観",
+    gradientFrom: "from-purple-600",
+    gradientTo: "to-violet-800",
   },
   {
     name: "ホテルオークラ東京ベイ",
@@ -59,6 +72,10 @@ const OFFICIAL_HOTELS = [
     point: "落ち着いた雰囲気の老舗ホテル。ディズニーグッズショップが館内に。",
     recommend: "大人・落ち着いた旅",
     recommendColor: "text-indigo-600",
+    image: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&h=400&fit=crop&auto=format&q=80",
+    imageAlt: "ホテルオークラ東京ベイ ロビー",
+    gradientFrom: "from-amber-600",
+    gradientTo: "to-orange-800",
   },
   {
     name: "東京ベイ舞浜ホテル クラブリゾート",
@@ -70,6 +87,10 @@ const OFFICIAL_HOTELS = [
     point: "オフィシャルホテルの中では比較的リーズナブル。大浴場あり。",
     recommend: "コスパ重視",
     recommendColor: "text-green-600",
+    image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800&h=400&fit=crop&auto=format&q=80",
+    imageAlt: "東京ベイ舞浜ホテル クラブリゾート 外観",
+    gradientFrom: "from-green-600",
+    gradientTo: "to-emerald-800",
   },
   {
     name: "サンルートプラザ東京",
@@ -81,6 +102,10 @@ const OFFICIAL_HOTELS = [
     point: "オフィシャルホテル最安クラス。シンプルだが清潔で使いやすい。",
     recommend: "節約派ファミリー",
     recommendColor: "text-blue-600",
+    image: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800&h=400&fit=crop&auto=format&q=80",
+    imageAlt: "サンルートプラザ東京 外観",
+    gradientFrom: "from-sky-600",
+    gradientTo: "to-blue-800",
   },
 ];
 
@@ -181,19 +206,31 @@ export default function HotelGuidePage() {
         {/* オフィシャルホテル一覧 */}
         <section className="mb-8">
           <h2 className="text-lg font-bold text-gray-900 mb-4">オフィシャルホテル 全6軒 比較</h2>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {OFFICIAL_HOTELS.map((hotel) => (
-              <div key={hotel.name} className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div>
+              <div key={hotel.name} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                {/* ホテル写真 */}
+                <div className={`relative w-full bg-gradient-to-r ${hotel.gradientFrom} ${hotel.gradientTo}`} style={{ height: 180 }}>
+                  <Image
+                    src={hotel.image}
+                    alt={hotel.imageAlt}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute bottom-0 left-0 p-3">
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${hotel.badgeColor}`}>
                       {hotel.badge}
                     </span>
-                    <p className="text-sm font-bold text-gray-900 mt-1">{hotel.name}</p>
+                    <p className="text-base font-bold text-white mt-1 leading-tight">{hotel.name}</p>
                   </div>
-                  <p className="text-xs font-bold text-gray-500 shrink-0">{hotel.price}</p>
+                  <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm rounded-lg px-2 py-1">
+                    <p className="text-xs font-bold text-white">{hotel.price}</p>
+                  </div>
                 </div>
-                <div className="space-y-1 text-xs text-gray-600">
+                {/* 詳細情報 */}
+                <div className="p-4 space-y-1.5 text-xs text-gray-600">
                   <p><span className="font-semibold text-gray-700">アクセス：</span>{hotel.access}</p>
                   <p><span className="font-semibold text-gray-700">特徴：</span>{hotel.point}</p>
                   <p>
