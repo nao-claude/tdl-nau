@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -244,6 +245,8 @@ export default function RepeatVisitorPage() {
             </Link>
           </div>
         </div>
+
+        <AmazonBanner keyword="ディズニー グッズ 限定" label="ディズニー限定グッズをAmazonで探す" className="mt-4" />
 
         <p className="text-xs text-gray-400 text-center mt-8">当サイトは東京ディズニーリゾートの非公式サイトです。</p>
       </div>

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -363,6 +364,7 @@ export default function DpaGuidePage() {
           </Link>
         </div>
 
+        <AmazonBanner keyword="ディズニー グッズ 人気" label="Amazonでディズニー人気商品を探す" className="mt-4" />
         <p className="text-xs text-gray-400 text-center mt-6">
           ※売り切れ時間・待ち時間はいずれも目安です。混雑度・季節・イベントにより大きく異なります。<br />
           当サイトは東京ディズニーリゾートの非公式サイトです。

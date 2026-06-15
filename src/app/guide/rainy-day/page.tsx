@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -236,6 +237,8 @@ export default function RainyDayPage() {
             </Link>
           </div>
         </div>
+
+        <AmazonBanner keyword="折り畳み傘 レインコート ディズニー" label="雨対策グッズをAmazonで探す" className="mt-4" />
 
         <p className="text-xs text-gray-400 text-center mt-8">当サイトは東京ディズニーリゾートの非公式サイトです。</p>
       </div>

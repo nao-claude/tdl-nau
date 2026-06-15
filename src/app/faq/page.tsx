@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import { AdBanner } from "@/components/AdBanner";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import Script from "next/script";
@@ -238,8 +239,12 @@ export default function FaqPage() {
         </div>
       </div>
 
+      <div className="max-w-2xl mx-auto px-4 pb-4">
+        <AmazonBanner keyword="ディズニー グッズ" label="Amazonでディズニー関連商品を探す" />
+      </div>
+
       {/* フッター */}
-      <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
+      <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-4">
         <p>非公式サイトです。株式会社オリエンタルランドとは無関係です。</p>
         <p className="mt-1">
           <Link href="/privacy" className="underline">プライバシーポリシー</Link>

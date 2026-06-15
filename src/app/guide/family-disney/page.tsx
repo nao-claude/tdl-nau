@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import Script from "next/script";
 import Image from "next/image";
 
@@ -248,6 +249,7 @@ export default function FamilyDisneyPage() {
           </Link>
         </div>
 
+        <AmazonBanner keyword="ディズニー 子供 グッズ" label="子連れディズニー便利グッズをAmazonで探す" className="mt-4" />
         <p className="text-xs text-gray-400 text-center mt-8">
           当サイトは東京ディズニーリゾートの非公式サイトです。<br />
           最新・正確な情報は公式サイトでご確認ください。

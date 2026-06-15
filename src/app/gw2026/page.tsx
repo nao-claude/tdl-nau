@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -251,6 +252,7 @@ export default function GW2026Page() {
           </Link>
         </div>
 
+        <AmazonBanner keyword="ディズニー GW 旅行 グッズ" label="GW旅行グッズをAmazonで探す" className="mt-4" />
         <p className="text-xs text-gray-400 text-center mt-6">
           ※混雑予想は過去のデータと曜日・祝日パターンをもとにした予測です。<br />
           実際の混雑はイベント・天候等により異なります。<br />

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import Script from "next/script";
 import Image from "next/image";
 
@@ -205,6 +206,7 @@ export default function AnniversaryPage() {
           </Link>
         </div>
 
+        <AmazonBanner keyword="ディズニー プレゼント カップル" label="記念日プレゼントをAmazonで探す" className="mt-4" />
         <p className="text-xs text-gray-400 text-center mt-8">
           当サイトは東京ディズニーリゾートの非公式サイトです。<br />
           特典・サービス内容は変更になる場合があります。最新情報は公式サイトでご確認ください。

@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -289,6 +290,8 @@ export default function BudgetPage() {
           </div>
 
         </div>
+        <AmazonBanner keyword="ディズニー 節約 グッズ" label="ディズニー節約グッズをAmazonで探す" className="mt-4" />
+
         <p className="text-xs text-gray-400 text-center mt-8">当サイトは東京ディズニーリゾートの非公式サイトです。料金は変更になる場合があります。</p>
       </div>
 
