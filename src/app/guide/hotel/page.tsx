@@ -12,100 +12,76 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://disneynow.tokyo/guide/hotel" },
 };
 
-const RAKUTEN_MAIHAMA = "https://hb.afl.rakuten.co.jp/hgc/522dc3a1.a8f621bb.522dc3a2.b6743386/?pc=https%3A%2F%2Ftravel.rakuten.co.jp%2Fhotel%2Fsearch%2F%3Ff_area%3D040602%26f_otona_su%3D2%26f_heya_su%3D1";
-const JALAN_MAIHAMA   = "https://www.jalan.net/sen/SEN210000/?prefCode=13&distCode=1306";
-const RAKUTEN_NEAR    = "https://hb.afl.rakuten.co.jp/hgc/522dc3a1.a8f621bb.522dc3a2.b6743386/?pc=https%3A%2F%2Ftravel.rakuten.co.jp%2Fhotel%2Fsearch%2F%3Ff_area%3D040602%26f_otona_su%3D2%26f_heya_su%3D1%26f_tanka_min%3D0%26f_tanka_max%3D15000";
+const AF = "https://hb.afl.rakuten.co.jp/hgc/522dc3a1.a8f621bb.522dc3a2.b6743386/?pc=";
+const rakutenHotel = (id: number) => `${AF}${encodeURIComponent(`https://hotel.travel.rakuten.co.jp/hinfo/${id}/`)}`;
+const RAKUTEN_TDR  = `${AF}${encodeURIComponent("https://travel.rakuten.co.jp/tdr/")}`;
+const JALAN_MAIHAMA = "https://www.jalan.net/sen/SEN210000/?prefCode=13&distCode=1306";
 
 const OFFICIAL_HOTELS = [
   {
     name: "ヒルトン東京ベイ",
-    badge: "オフィシャル",
-    badgeColor: "bg-yellow-100 text-yellow-800",
+    rakutenId: 1405,
     price: "3万〜7万円/室",
     access: "リゾートラインで舞浜駅から約3分",
-    shuttle: true,
     point: "全室ディズニーリゾートビューが選択可能。大型施設でプール・スパあり。",
     recommend: "記念日・贅沢旅行",
     recommendColor: "text-pink-600",
-    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=400&fit=crop&auto=format&q=80",
-    imageAlt: "ヒルトン東京ベイ プール",
-    gradientFrom: "from-blue-600",
-    gradientTo: "to-indigo-800",
+    image: "https://img.travel.rakuten.co.jp/share/image_up/1405/LARGE/4163fd2ba454e531c22ea0e44852bcb1e6c7b8ff.47.9.26.3.jpg",
+    imageAlt: "ヒルトン東京ベイ 外観",
+    gradientFrom: "from-blue-700",
+    gradientTo: "to-indigo-900",
   },
   {
     name: "シェラトン・グランデ・トーキョーベイ・ホテル",
-    badge: "オフィシャル",
-    badgeColor: "bg-yellow-100 text-yellow-800",
+    rakutenId: 27896,
     price: "3万〜6万円/室",
     access: "リゾートラインで舞浜駅から約3分",
-    shuttle: true,
     point: "大型プール完備。ディズニーキャラクタールームが人気で子連れに◎。",
     recommend: "子連れ・ファミリー",
     recommendColor: "text-lime-600",
-    image: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800&h=400&fit=crop&auto=format&q=80",
-    imageAlt: "シェラトン・グランデ・トーキョーベイ ロビー",
-    gradientFrom: "from-emerald-600",
-    gradientTo: "to-teal-800",
+    image: "https://img.travel.rakuten.co.jp/share/image_up/27896/LARGE/3e4040c057f0e71ebe64dc8893d37657b160c839.47.9.26.3.jpg",
+    imageAlt: "シェラトン・グランデ・トーキョーベイ 外観",
+    gradientFrom: "from-emerald-700",
+    gradientTo: "to-teal-900",
   },
   {
     name: "グランドニッコー東京ベイ 舞浜",
-    badge: "オフィシャル",
-    badgeColor: "bg-yellow-100 text-yellow-800",
+    rakutenId: 179245,
     price: "2.5万〜5万円/室",
     access: "リゾートラインで舞浜駅から約6分",
-    shuttle: true,
     point: "高層ホテルから東京湾の景色が楽しめる。レストランが充実。",
     recommend: "カップル・大人旅",
     recommendColor: "text-purple-600",
-    image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&h=400&fit=crop&auto=format&q=80",
-    imageAlt: "グランドニッコー東京ベイ 外観",
-    gradientFrom: "from-purple-600",
-    gradientTo: "to-violet-800",
+    image: "https://img.travel.rakuten.co.jp/share/image_up/179245/LARGE/d773f0262bf7c2d3075df1002b1ed08d06ad30c8.47.9.26.3.jpg",
+    imageAlt: "グランドニッコー東京ベイ 舞浜 外観",
+    gradientFrom: "from-purple-700",
+    gradientTo: "to-violet-900",
   },
   {
     name: "ホテルオークラ東京ベイ",
-    badge: "オフィシャル",
-    badgeColor: "bg-yellow-100 text-yellow-800",
+    rakutenId: 1304,
     price: "2.5万〜5万円/室",
     access: "リゾートラインで舞浜駅から約6分",
-    shuttle: true,
     point: "落ち着いた雰囲気の老舗ホテル。ディズニーグッズショップが館内に。",
     recommend: "大人・落ち着いた旅",
     recommendColor: "text-indigo-600",
-    image: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&h=400&fit=crop&auto=format&q=80",
-    imageAlt: "ホテルオークラ東京ベイ ロビー",
-    gradientFrom: "from-amber-600",
-    gradientTo: "to-orange-800",
+    image: "https://trvimg.r10s.jp/share/image_up/1304/origin/c4e4aac054dde79d25eafd835c566d1d27f1bd24.47.1.26.2.jpg",
+    imageAlt: "ホテルオークラ東京ベイ エントランス",
+    gradientFrom: "from-amber-700",
+    gradientTo: "to-orange-900",
   },
   {
-    name: "東京ベイ舞浜ホテル クラブリゾート",
-    badge: "オフィシャル",
-    badgeColor: "bg-yellow-100 text-yellow-800",
+    name: "舞浜ビューホテル by HULIC",
+    rakutenId: 54127,
     price: "2万〜4万円/室",
     access: "リゾートラインで舞浜駅から約8分",
-    shuttle: true,
-    point: "オフィシャルホテルの中では比較的リーズナブル。大浴場あり。",
+    point: "コスパ重視のオフィシャルホテル。パーク内のリゾートライン駅に近い。",
     recommend: "コスパ重視",
     recommendColor: "text-green-600",
-    image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800&h=400&fit=crop&auto=format&q=80",
-    imageAlt: "東京ベイ舞浜ホテル クラブリゾート 外観",
-    gradientFrom: "from-green-600",
-    gradientTo: "to-emerald-800",
-  },
-  {
-    name: "サンルートプラザ東京",
-    badge: "オフィシャル",
-    badgeColor: "bg-yellow-100 text-yellow-800",
-    price: "1.5万〜3万円/室",
-    access: "リゾートラインで舞浜駅から約6分",
-    shuttle: true,
-    point: "オフィシャルホテル最安クラス。シンプルだが清潔で使いやすい。",
-    recommend: "節約派ファミリー",
-    recommendColor: "text-blue-600",
-    image: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800&h=400&fit=crop&auto=format&q=80",
-    imageAlt: "サンルートプラザ東京 外観",
-    gradientFrom: "from-sky-600",
-    gradientTo: "to-blue-800",
+    image: "https://img.travel.rakuten.co.jp/share/image_up/54127/LARGE/09cc36be739e7e6e53ea06565b6c00ce56a6c1f5.47.9.26.3.jpg",
+    imageAlt: "舞浜ビューホテル by HULIC 外観",
+    gradientFrom: "from-green-700",
+    gradientTo: "to-emerald-900",
   },
 ];
 
@@ -220,8 +196,8 @@ export default function HotelGuidePage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   <div className="absolute bottom-0 left-0 p-3">
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${hotel.badgeColor}`}>
-                      {hotel.badge}
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-white/20 text-white">
+                      {hotel.recommend}
                     </span>
                     <p className="text-base font-bold text-white mt-1 leading-tight">{hotel.name}</p>
                   </div>
@@ -237,6 +213,14 @@ export default function HotelGuidePage() {
                     <span className="font-semibold text-gray-700">おすすめ：</span>
                     <span className={`font-bold ${hotel.recommendColor}`}>{hotel.recommend}</span>
                   </p>
+                  <a
+                    href={rakutenHotel(hotel.rakutenId)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 flex items-center justify-center gap-1 bg-red-500 hover:bg-red-600 text-white font-bold text-xs py-2 px-3 rounded-xl transition-colors"
+                  >
+                    楽天トラベルで空室・料金を確認 →
+                  </a>
                 </div>
               </div>
             ))}
@@ -245,7 +229,7 @@ export default function HotelGuidePage() {
           {/* 楽天・じゃらんボタン */}
           <div className="mt-4 grid grid-cols-2 gap-3">
             <a
-              href={RAKUTEN_MAIHAMA}
+              href={RAKUTEN_TDR}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-1.5 bg-red-500 hover:bg-red-600 text-white font-bold text-sm py-3 px-4 rounded-2xl transition-colors"
@@ -284,7 +268,7 @@ export default function HotelGuidePage() {
             ))}
           </div>
           <a
-            href={RAKUTEN_NEAR}
+            href={RAKUTEN_TDR}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-1.5 bg-red-500 hover:bg-red-600 text-white font-bold text-sm py-3 px-4 rounded-2xl transition-colors"
@@ -338,7 +322,7 @@ export default function HotelGuidePage() {
         {/* 最終CTAボタン */}
         <div className="grid grid-cols-2 gap-3 mb-8">
           <a
-            href={RAKUTEN_MAIHAMA}
+            href={RAKUTEN_TDR}
             target="_blank"
             rel="noopener noreferrer"
             className="flex flex-col items-center justify-center bg-red-500 hover:bg-red-600 text-white font-bold text-sm py-4 px-3 rounded-2xl transition-colors text-center"
