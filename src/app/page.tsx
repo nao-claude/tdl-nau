@@ -65,10 +65,13 @@ export default async function Home() {
       {/* 広告①：コンテンツ上部 */}
       <AdBanner adSlot="1897618790" containerClassName="max-w-4xl mx-auto px-4 pt-3" />
 
-      {/* 楽天ウィジェット：ファーストビュー */}
-      <div className="max-w-4xl mx-auto px-4 pt-2 overflow-x-auto">
-        <p className="text-xs text-gray-400 mb-1">PR・広告</p>
-        <RakutenWidgetResponsive />
+      {/* 広告：ファーストビュー */}
+      <div className="max-w-4xl mx-auto px-4 pt-2 space-y-2">
+        <p className="text-xs text-gray-400">PR・広告</p>
+        <AmazonBanner keyword="ディズニー グッズ" label="ディズニーグッズ・旅行用品をAmazonで探す" />
+        <div className="overflow-x-auto">
+          <RakutenWidgetResponsive />
+        </div>
       </div>
 
       <Suspense>
