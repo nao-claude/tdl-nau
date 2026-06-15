@@ -11,6 +11,15 @@ const CDN = "https://media1.tokyodisneyresort.jp/images/adventure/attraction";
 
 const LATEST_ARTICLES = [
   {
+    href: "/guide/hotel",
+    imageId: 1117,
+    imageAlt: "東京ディズニーリゾート周辺ホテル",
+    category: "ホテル",
+    title: "ディズニー近隣ホテル完全ガイド 2026",
+    desc: "オフィシャルホテル全6軒を比較。シャトルバス・料金・格安ホテルの探し方まで",
+    date: "2026.06.15",
+  },
+  {
     href: "/guide/couple",
     imageId: 1117,
     imageAlt: "ラプンツェルのランタンフェスティバル",
@@ -35,15 +44,6 @@ const LATEST_ARTICLES = [
     category: "節約",
     title: "ディズニー費用・節約完全ガイド 2026",
     desc: "1日の費用内訳と節約テク7選。予算シミュレーション付き",
-    date: "2026.06.07",
-  },
-  {
-    href: "/guide/rainy-day",
-    imageId: 611,
-    imageAlt: "ホーンテッドマンション",
-    category: "天気対策",
-    title: "雨の日のディズニー完全攻略",
-    desc: "実は雨の日は狙い目。屋内アトラクション一覧と雨の日プラン",
     date: "2026.06.07",
   },
 ];
@@ -205,6 +205,7 @@ export default async function Home() {
           <h2 className="text-sm font-bold text-gray-700 mb-3">攻略ガイド</h2>
           <div className="grid grid-cols-2 gap-2">
             {[
+              { href: "/guide/hotel", icon: "🏨", title: "近隣ホテル完全ガイド", sub: "楽天・じゃらんで最安値比較" },
               { href: "/guide/first-time-tdl", icon: "📖", title: "初めてのTDL完全ガイド", sub: "チケット・DPA・回り方" },
               { href: "/guide/family-disney", icon: "👨‍👩‍👧", title: "子連れ完全ガイド", sub: "年齢別プラン・身長制限" },
               { href: "/guide/anniversary", icon: "🎂", title: "誕生日・記念日特典", sub: "バースデーシール攻略" },

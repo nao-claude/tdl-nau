@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import { SiteHeader } from "@/components/SiteHeader";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -49,14 +50,7 @@ const CHRISTMAS_DAYS = [
 export default function Christmas2026Page() {
   return (
     <main className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl">🏰</span>
-            <span className="text-base font-bold text-gray-900">TDLなう</span>
-          </Link>
-        </div>
-      </header>
+      <SiteHeader />
 
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* パンくず */}
@@ -294,7 +288,7 @@ export default function Christmas2026Page() {
               "url": "https://disneynow.tokyo",
             },
             "datePublished": "2026-04-22",
-            "dateModified": "2026-04-22",
+            "dateModified": "2026-06-15",
           }),
         }}
       />

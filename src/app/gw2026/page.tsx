@@ -4,11 +4,30 @@ import { SiteHeader } from "@/components/SiteHeader";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "ディズニー・ハロウィーン2026 混雑予想カレンダー | TDLなう",
+  title: "GW2026 ディズニー混雑予想カレンダー | TDLなう",
   description:
-    "2026年ディズニー・ハロウィーンの東京ディズニーランド・ディズニーシー混雑予想。9月〜10月31日の日別混雑レベル・仮装ルール・攻略ポイントを徹底解説。",
-  alternates: { canonical: "https://disneynow.tokyo/halloween2026" },
+    "2026年ゴールデンウィークの東京ディズニーランド・ディズニーシー混雑予想。4月29日〜5月6日の日別混雑レベル・おすすめ日・攻略ポイントを徹底解説。",
+  alternates: { canonical: "https://disneynow.tokyo/gw2026" },
 };
+
+const GW_DAYS = [
+  { date: "4/25(土)", label: "GW前週",  grade: "C", holiday: false },
+  { date: "4/26(日)", label: "GW前週",  grade: "C", holiday: false },
+  { date: "4/27(月)", label: "",         grade: "A", holiday: false },
+  { date: "4/28(火)", label: "",         grade: "A", holiday: false },
+  { date: "4/29(水)", label: "昭和の日", grade: "E", holiday: true  },
+  { date: "4/30(木)", label: "",         grade: "C", holiday: false },
+  { date: "5/1(金)",  label: "",         grade: "C", holiday: false },
+  { date: "5/2(土)",  label: "",         grade: "E", holiday: false },
+  { date: "5/3(日)",  label: "憲法記念日", grade: "F", holiday: true },
+  { date: "5/4(月)",  label: "みどりの日", grade: "E", holiday: true },
+  { date: "5/5(火)",  label: "こどもの日", grade: "E", holiday: true },
+  { date: "5/6(水)",  label: "振替休日※", grade: "E", holiday: true },
+  { date: "5/7(木)",  label: "GW明け",  grade: "A", holiday: false },
+  { date: "5/8(金)",  label: "GW明け",  grade: "A", holiday: false },
+  { date: "5/9(土)",  label: "GW後週",  grade: "C", holiday: false },
+  { date: "5/10(日)", label: "GW後週",  grade: "C", holiday: false },
+];
 
 const GRADE_INFO: Record<string, { label: string; bg: string; text: string; bar: string }> = {
   S: { label: "超混雑",       bg: "bg-purple-100", text: "text-purple-700", bar: "bg-purple-500" },
@@ -24,31 +43,7 @@ const GRADE_BAR_WIDTH: Record<string, string> = {
   S: "w-full", F: "w-11/12", E: "w-4/5", D: "w-3/5", C: "w-2/5", B: "w-1/4", A: "w-1/8",
 };
 
-const HALLOWEEN_DAYS = [
-  { date: "9/5(土)",  label: "開幕週末",   grade: "E", holiday: false },
-  { date: "9/6(日)",  label: "開幕週末",   grade: "E", holiday: false },
-  { date: "9/8(火)",  label: "平日",       grade: "C", holiday: false },
-  { date: "9/12(土)", label: "",           grade: "E", holiday: false },
-  { date: "9/13(日)", label: "",           grade: "E", holiday: false },
-  { date: "9/19(土)", label: "3連休",      grade: "F", holiday: false },
-  { date: "9/20(日)", label: "3連休",      grade: "F", holiday: false },
-  { date: "9/21(月)", label: "敬老の日",   grade: "E", holiday: true  },
-  { date: "9/22(火)", label: "平日",       grade: "C", holiday: false },
-  { date: "9/26(土)", label: "",           grade: "E", holiday: false },
-  { date: "9/27(日)", label: "",           grade: "F", holiday: false },
-  { date: "10/3(土)", label: "",           grade: "E", holiday: false },
-  { date: "10/4(日)", label: "",           grade: "E", holiday: false },
-  { date: "10/10(土)","label": "体育の日前",grade: "F", holiday: false },
-  { date: "10/11(日)","label": "体育の日前",grade: "F", holiday: false },
-  { date: "10/12(月)","label": "体育の日", grade: "E", holiday: true  },
-  { date: "10/17(土)","label": "",         grade: "E", holiday: false },
-  { date: "10/18(日)","label": "",         grade: "E", holiday: false },
-  { date: "10/24(土)","label": "ハロウィン前",grade: "F", holiday: false },
-  { date: "10/25(日)","label": "ハロウィン前",grade: "F", holiday: false },
-  { date: "10/31(土)","label": "ハロウィン当日",grade: "S", holiday: false },
-];
-
-export default function Halloween2026Page() {
+export default function GW2026Page() {
   return (
     <main className="min-h-screen bg-gray-50">
       <SiteHeader />
@@ -58,37 +53,26 @@ export default function Halloween2026Page() {
         <nav className="text-xs text-gray-400 mb-4">
           <Link href="/" className="hover:text-gray-600">ホーム</Link>
           <span className="mx-1">/</span>
-          <span>ハロウィン2026混雑予想</span>
+          <span>GW2026混雑予想</span>
         </nav>
 
         <h1 className="text-2xl font-bold text-gray-900 mb-1">
-          ディズニー・ハロウィーン2026 混雑予想カレンダー
+          GW2026 ディズニー混雑予想カレンダー
         </h1>
         <p className="text-sm text-gray-500 mb-6">
-          2026年9月〜10月31日の東京ディズニーランド・ディズニーシー混雑レベルとハロウィン攻略ポイント
+          2026年ゴールデンウィーク（4月25日〜5月10日）の混雑レベルと攻略ポイント
         </p>
-
-        {/* イベント概要 */}
-        <section className="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-6">
-          <h2 className="text-sm font-bold text-orange-800 mb-2">🎃 ディズニー・ハロウィーン2026 概要</h2>
-          <ul className="text-xs text-orange-700 space-y-1">
-            <li>・開催期間：2026年9月上旬〜10月31日（予定）</li>
-            <li>・対象パーク：東京ディズニーランド・東京ディズニーシー</li>
-            <li>・ゲスト仮装：15歳以上も仮装参加可能（ハロウィーン期間限定）</li>
-            <li>・限定グリーティング・パレード・スペシャルメニューあり</li>
-          </ul>
-        </section>
 
         {/* 混雑カレンダー */}
         <section className="mb-8">
-          <h2 className="text-base font-bold text-gray-800 mb-3">📅 日別 混雑予想（主要日程）</h2>
+          <h2 className="text-base font-bold text-gray-800 mb-3">📅 日別 混雑予想</h2>
           <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
             <div className="divide-y divide-gray-100">
-              {HALLOWEEN_DAYS.map((day) => {
+              {GW_DAYS.map((day) => {
                 const g = GRADE_INFO[day.grade];
                 return (
                   <div key={day.date} className={`flex items-center gap-3 px-4 py-3 ${day.holiday ? "bg-red-50/40" : ""}`}>
-                    <div className="w-24 shrink-0">
+                    <div className="w-20 shrink-0">
                       <p className={`text-sm font-bold ${day.holiday ? "text-red-600" : "text-gray-800"}`}>
                         {day.date}
                       </p>
@@ -113,88 +97,63 @@ export default function Halloween2026Page() {
             </div>
           </div>
           <p className="text-xs text-gray-400 mt-2">
-            ※記載のない平日はC判定が目安。週末・祝日は基本E〜F判定です。
+            ※5/6は5/3（日曜日の祝日）の振替休日となるため、祝日レベルの混雑が予想されます。
           </p>
         </section>
 
-        {/* おすすめ・避けるべき日 */}
+        {/* おすすめ日・避けるべき日 */}
         <section className="mb-8 grid grid-cols-1 gap-3">
           <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4">
             <h2 className="text-base font-bold text-emerald-800 mb-2">✅ 比較的空いている日</h2>
             <ul className="space-y-1 text-sm text-emerald-700">
-              <li><span className="font-bold">平日（月〜金）</span> — C判定でまあまあ混雑。ハロウィーン期間中の平日は比較的狙い目</li>
-              <li><span className="font-bold">9月上旬〜中旬の平日</span> — 開幕直後・夏休み明けで落ち着いている。ハロウィン気分を楽しみながら比較的快適に回れる</li>
+              <li><span className="font-bold">4/27(月)・4/28(火)</span> — GW前の平日。A判定でガラガラ。休みが取れるならここ一択</li>
+              <li><span className="font-bold">4/30(木)・5/1(金)</span> — GW中盤の平日。C判定でまあまあ混雑だが祝日より大幅に空いている</li>
+              <li><span className="font-bold">5/7(木)・5/8(金)</span> — GW明けの平日。A判定。ただし特定のアトラクションが混むこともある</li>
             </ul>
           </div>
           <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
             <h2 className="text-base font-bold text-red-800 mb-2">⚠️ 特に混雑する日</h2>
             <ul className="space-y-1 text-sm text-red-700">
-              <li><span className="font-bold">10/31(土)・ハロウィン当日</span> — S判定。年間最混雑クラス。仮装した来場者で超満員。早朝入場必須</li>
-              <li><span className="font-bold">10月の土日</span> — F判定。10月に入るとハロウィン一色で混雑がピークへ</li>
-              <li><span className="font-bold">9/19〜9/21・3連休</span> — F〜E判定。シルバーウィークはどの日も混雑</li>
+              <li><span className="font-bold">5/3(日・憲法記念日)</span> — F判定。GW中で最も混雑。待ち時間100分超えが続出</li>
+              <li><span className="font-bold">4/29(水・昭和の日)・5/2(土)・5/4〜5/6</span> — E判定。全日程で混雑。DPA必須</li>
             </ul>
           </div>
         </section>
 
-        {/* 仮装ルール */}
-        <section className="bg-purple-50 border border-purple-200 rounded-2xl p-5 mb-8">
-          <h2 className="text-base font-bold text-gray-900 mb-3">🎭 ハロウィーン 仮装ルール（2026年版）</h2>
-          <div className="space-y-2 text-sm">
-            <div className="bg-white rounded-xl p-3">
-              <p className="font-bold text-purple-600 mb-1">✅ 仮装OK</p>
-              <ul className="text-xs text-gray-600 space-y-1">
-                <li>・ディズニーキャラクターのコスチューム</li>
-                <li>・顔が隠れない程度のメイク・フェイスペイント</li>
-                <li>・カチューシャ・しっぽなどの小物アクセサリー</li>
-              </ul>
-            </div>
-            <div className="bg-white rounded-xl p-3">
-              <p className="font-bold text-red-600 mb-1">❌ 仮装NG</p>
-              <ul className="text-xs text-gray-600 space-y-1">
-                <li>・顔全体を覆うマスク・覆面</li>
-                <li>・過度に露出の多い衣装</li>
-                <li>・他のゲストに不快感を与える衣装・メイク</li>
-                <li>・刃物に見えるような小道具（おもちゃ含む）</li>
-              </ul>
-            </div>
-          </div>
-          <p className="text-xs text-gray-400 mt-2">※ルールは年によって変更される場合があります。公式サイトで必ず最新情報を確認してください。</p>
-        </section>
-
-        {/* 攻略ポイント */}
+        {/* GW攻略ポイント */}
         <section className="mb-8">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">🎯 ハロウィーン攻略 5つのポイント</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-4">🎯 GW攻略 5つのポイント</h2>
           <div className="space-y-3">
             {[
               {
                 num: 1,
-                title: "仮装は事前に準備・当日は更衣室を活用",
-                body: "仮装して行く場合は、電車移動を考慮した着脱しやすいコーデを。パーク内にコインロッカーや更衣室はありますが混雑時は待ち時間が発生します。着替えが必要な場合は入園直後か閉園前の空いた時間帯を狙いましょう。",
+                title: "開園1時間前には到着する",
+                body: "GW期間中は入場ゲート前にすでに行列ができます。最低でも開園45分前、できれば1時間前到着を目標にしましょう。特に5/3は1時間30分前でも遅いくらいです。",
               },
               {
                 num: 2,
-                title: "ハロウィーン限定グリーティングは整理券制",
-                body: "人気キャラクターのスペシャルグリーティングは整理券が必要なことが多く、開園直後に配布が完了してしまいます。グリーティングを優先する場合は開園前から並ぶ必要があります。",
+                title: "入園後すぐDPAを購入する",
+                body: "開園直後はDPAの在庫が最も豊富です。目的のアトラクションに向かう前に、まずアプリを開いて優先度の高いDPAを購入してください。ランドは「美女と野獣」、シーは「アナとエルサ」が最優先です。",
               },
               {
                 num: 3,
-                title: "限定フードは午前中に確保",
-                body: "ハロウィーン限定のスペシャルメニューは人気商品が午前中に売り切れることがあります。特にスイーツ系・限定ポップコーンは早めに確保しておきましょう。",
+                title: "午前中に人気アトラクションを攻略する",
+                body: "GW中の人気アトラクションの待ち時間は午後にかけてどんどん伸びます。ビッグサンダー・マウンテン、スプラッシュ・マウンテン（ランド）、ソアリン、センター・オブ・ジ・アース（シー）は午前中のうちに乗っておきましょう。",
               },
               {
                 num: 4,
-                title: "ナイトタイムショーは場所取りが重要",
-                body: "ハロウィーン期間のナイトタイムエンターテイメントは例年大人気。良い場所で見るには開始1〜1.5時間前からの場所取りが必要です。場所取りをしている間に他の家族がアトラクションを回る役割分担も有効です。",
+                title: "昼食は11時台・14時台を狙う",
+                body: "12〜13時はパーク内のレストランが最も混雑します。少し早め・遅めにずらすだけで30分以上の待ち時間を節約できます。テイクアウト系やクイックサービスを活用するのも効果的です。",
               },
               {
                 num: 5,
-                title: "10/31当日は覚悟が必要",
-                body: "ハロウィン当日（10/31）は年間最混雑クラス。仮装した来場者で埋め尽くされ、アトラクションの待ち時間は通常の1.5〜2倍になります。この日に行くなら「雰囲気を楽しむ」目的に絞り、アトラクション数は欲張らない計画を。",
+                title: "夕方以降はショー・パレードを優先する",
+                body: "GW期間は夕方以降もアトラクションの待ち時間が長いままです。その時間帯はショー・パレードの観覧に切り替えると満足度が上がります。閉園1〜2時間前はアトラクションが比較的空き始めます。",
               },
             ].map((item) => (
               <div key={item.num} className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
                 <div className="flex items-start gap-3">
-                  <span className="w-7 h-7 rounded-full bg-orange-500 text-white text-sm font-bold flex items-center justify-center shrink-0">
+                  <span className="w-7 h-7 rounded-full bg-blue-500 text-white text-sm font-bold flex items-center justify-center shrink-0">
                     {item.num}
                   </span>
                   <div>
@@ -205,6 +164,35 @@ export default function Halloween2026Page() {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* GW DPA戦略 */}
+        <section className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-8">
+          <h2 className="text-base font-bold text-gray-900 mb-3">🎫 GW期間のDPA戦略</h2>
+          <p className="text-sm text-gray-700 mb-3">
+            GW中はDPAの売り切れが通常よりも<strong>30〜60分早く</strong>なります。特に最人気アトラクションは開園後15〜20分で完売することも。
+          </p>
+          <div className="space-y-2 text-sm">
+            <div className="bg-white rounded-xl p-3">
+              <p className="font-bold text-red-600 mb-1">🏰 ランド最優先：美女と野獣（2,000円）</p>
+              <p className="text-xs text-gray-600">GW中は開園後10〜20分で完売。入園したら最初の1分で購入すること。ベイマックス（1,500円）はその直後に。</p>
+            </div>
+            <div className="bg-white rounded-xl p-3">
+              <p className="font-bold text-blue-600 mb-1">⛵ シー最優先：アナとエルサ（2,000円）</p>
+              <p className="text-xs text-gray-600">GW中は開園後5〜15分で完売の可能性あり。ラプンツェル（2,000円）も連続して購入。ファンタジースプリングス3本は全てDPA対象で大人気。</p>
+            </div>
+            <div className="bg-white rounded-xl p-3">
+              <p className="font-bold text-gray-700 mb-1">💰 GW想定予算：1人5,000〜8,000円</p>
+              <p className="text-xs text-gray-600">通常期より1〜2枚多く使う想定で計画を。予算が許せばランド3枚・シー3枚（ファンタジースプリングス全制覇）が最高効率。</p>
+            </div>
+          </div>
+          <Link
+            href="/dpa"
+            className="mt-3 flex items-center justify-between bg-amber-400 rounded-xl p-3 hover:bg-amber-500 transition-colors"
+          >
+            <p className="text-sm font-bold text-white">DPA完全攻略ガイドを見る</p>
+            <span className="text-white">›</span>
+          </Link>
         </section>
 
         {/* 混雑判定の基準 */}
@@ -271,22 +259,22 @@ export default function Halloween2026Page() {
       </div>
 
       <Script
-        id="halloween2026-jsonld"
+        id="gw2026-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
-            "headline": "ディズニー・ハロウィーン2026 混雑予想カレンダー｜9月〜10月31日攻略ガイド",
+            "headline": "GW2026 ディズニー混雑予想カレンダー｜ゴールデンウィーク攻略ガイド",
             "description":
-              "2026年ディズニー・ハロウィーンの混雑予想。9月〜10月31日の日別混雑レベル・仮装ルール・攻略ポイントを徹底解説。",
-            "url": "https://disneynow.tokyo/halloween2026",
+              "2026年ゴールデンウィークの東京ディズニーランド・ディズニーシー混雑予想。4月29日〜5月6日の日別混雑レベル・おすすめ日・攻略ポイントを徹底解説。",
+            "url": "https://disneynow.tokyo/gw2026",
             "publisher": {
               "@type": "Organization",
               "name": "TDLなう",
               "url": "https://disneynow.tokyo",
             },
-            "datePublished": "2026-04-22",
+            "datePublished": "2026-03-29",
             "dateModified": "2026-06-15",
           }),
         }}

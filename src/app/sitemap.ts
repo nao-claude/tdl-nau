@@ -1,9 +1,12 @@
 import { MetadataRoute } from "next";
 import { getDetailsByPark } from "@/lib/attraction-detail";
+import { getAllAreaSlugs } from "@/lib/area-guide-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const tdlDetails = getDetailsByPark("tdl");
   const tdsDetails = getDetailsByPark("tds");
+  const tdlAreaSlugs = getAllAreaSlugs("tdl");
+  const tdsAreaSlugs = getAllAreaSlugs("tds");
 
   return [
     {
@@ -49,10 +52,34 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.5,
     },
     {
+      url: "https://disneynow.tokyo/usj",
+      lastModified: new Date(),
+      changeFrequency: "hourly",
+      priority: 0.9,
+    },
+    {
+      url: "https://disneynow.tokyo/attractions/usj",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: "https://disneynow.tokyo/en",
       lastModified: new Date(),
       changeFrequency: "hourly",
       priority: 0.9,
+    },
+    {
+      url: "https://disneynow.tokyo/en/usj",
+      lastModified: new Date(),
+      changeFrequency: "hourly",
+      priority: 0.8,
+    },
+    {
+      url: "https://disneynow.tokyo/en/attractions/usj",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
     {
       url: "https://disneynow.tokyo/en/attractions/tdl",
@@ -91,6 +118,72 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: "https://disneynow.tokyo/guide",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: "https://disneynow.tokyo/guide/first-time-tdl",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://disneynow.tokyo/guide/family-disney",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://disneynow.tokyo/guide/anniversary",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: "https://disneynow.tokyo/guide/dining",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://disneynow.tokyo/guide/packing-list",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://disneynow.tokyo/guide/rainy-day",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://disneynow.tokyo/guide/budget",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://disneynow.tokyo/guide/hotel",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: "https://disneynow.tokyo/guide/couple",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://disneynow.tokyo/guide/repeat-visitor",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: "https://disneynow.tokyo/privacy",
       lastModified: new Date(),
       changeFrequency: "monthly",
@@ -107,6 +200,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.7,
+    })),
+    ...tdlAreaSlugs.map((slug) => ({
+      url: `https://disneynow.tokyo/area/tdl/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
+    ...tdsAreaSlugs.map((slug) => ({
+      url: `https://disneynow.tokyo/area/tds/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
     })),
   ];
 }
