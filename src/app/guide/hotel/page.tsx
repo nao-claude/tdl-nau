@@ -11,13 +11,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://disneynow.tokyo/guide/hotel" },
 };
 
-// ---- アフィリエイトリンク設定 ----
-// 楽天トラベルのアフィリエイトIDを取得後、以下のURLを差し替えてください
-// 例: https://hb.afl.rakuten.co.jp/hgc/{af_id}/{campaign}/...
-const RAKUTEN_MAIHAMA = "https://travel.rakuten.co.jp/yado/search/?f_area1=13&f_keyword=%E8%88%9E%E6%B5%9C+%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC";
+const RAKUTEN_MAIHAMA = "https://hb.afl.rakuten.co.jp/hgc/522dc3a1.a8f621bb.522dc3a2.b6743386/?pc=https%3A%2F%2Ftravel.rakuten.co.jp%2Fhotel%2Fsearch%2F%3Ff_area%3D040602%26f_otona_su%3D2%26f_heya_su%3D1";
 const JALAN_MAIHAMA   = "https://www.jalan.net/sen/SEN210000/?prefCode=13&distCode=1306";
-const RAKUTEN_NEAR    = "https://travel.rakuten.co.jp/yado/search/?f_area1=13&f_keyword=%E6%96%B0%E6%B5%A6%E5%AE%89+%E5%AE%89%E3%81%8F";
-// ---------------------------------
+const RAKUTEN_NEAR    = "https://hb.afl.rakuten.co.jp/hgc/522dc3a1.a8f621bb.522dc3a2.b6743386/?pc=https%3A%2F%2Ftravel.rakuten.co.jp%2Fhotel%2Fsearch%2F%3Ff_area%3D040602%26f_otona_su%3D2%26f_heya_su%3D1%26f_tanka_min%3D0%26f_tanka_max%3D15000";
 
 const OFFICIAL_HOTELS = [
   {
