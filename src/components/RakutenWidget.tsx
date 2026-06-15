@@ -1,73 +1,81 @@
 "use client";
-import { useEffect, useRef } from "react";
 
 interface Props {
-  /** 例: "468x160" | "728x200" | "320x200" */
+  /** "468x160" | "728x200" | "160x600" | "320x200" */
   size: string;
   className?: string;
 }
 
 /**
- * 楽天モーションウィジェット
- * ユーザーの閲覧履歴に基づいてパーソナライズされた楽天商品を表示する。
+ * 楽天モーションウィジェット（iframe方式）
+ * public/rk-widget.html を iframe で読み込むことで
+ * document.currentScript が正しく動作し、ウィジェットが表示される。
  */
 export function RakutenWidget({ size, className }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    el.innerHTML = "";
-
-    // グローバル変数を先に設定
-    const varScript = document.createElement("script");
-    varScript.type = "text/javascript";
-    varScript.textContent = [
-      'rakuten_design="slide";',
-      'rakuten_affiliateId="11a128c7.c67ea3dd.11a128c8.2f346613";',
-      'rakuten_items="ctsmatch";',
-      'rakuten_genreId="0";',
-      `rakuten_size="${size}";`,
-      'rakuten_target="_blank";',
-      'rakuten_theme="gray";',
-      'rakuten_border="off";',
-      'rakuten_auto_mode="on";',
-      'rakuten_genre_title="off";',
-      'rakuten_recommend="on";',
-      `rakuten_ts="${Date.now()}";`,
-    ].join("");
-    el.appendChild(varScript);
-
-    // ウィジェット本体スクリプトを後から読み込む
-    const widgetScript = document.createElement("script");
-    widgetScript.type = "text/javascript";
-    widgetScript.src =
-      "https://xml.affiliate.rakuten.co.jp/widget/js/rakuten_widget.js?20230106";
-    el.appendChild(widgetScript);
-
-    return () => {
-      el.innerHTML = "";
-    };
-  }, [size]);
-
-  return <div ref={ref} className={className} />;
+  const [w, h] = size.split("x").map(Number);
+  return (
+    <iframe
+      src={`/rk-widget.html?size=${size}&t=${Date.now()}`}
+      width={w}
+      height={h}
+      frameBorder="0"
+      scrolling="no"
+      title="楽天広告"
+      className={className}
+      style={{ display: "block" }}
+    />
+  );
 }
 
 /**
  * スマホ/PC 両対応ラッパー
- * スマホ: 468x160、PC: 728x200
+ * スマホ: 468x160 / PC: 728x200
  */
 export function RakutenWidgetResponsive({ className }: { className?: string }) {
   return (
     <div className={className}>
-      {/* スマホ用 (md未満) */}
       <div className="md:hidden overflow-x-auto">
         <RakutenWidget size="468x160" />
       </div>
-      {/* PC用 (md以上) */}
       <div className="hidden md:block overflow-x-auto">
         <RakutenWidget size="728x200" />
       </div>
     </div>
+  );
+}
+
+/**
+ * PCサイドバー追従型広告
+ * max-w-4xl(896px) のコンテンツ両外側に fixed で表示
+ * xl(1280px)以上の画面幅でのみ表示
+ */
+export function RakutenStickyAds() {
+  return (
+    <>
+      {/* 左サイド */}
+      <div
+        className="hidden xl:block fixed z-20"
+        style={{
+          top: "50%",
+          transform: "translateY(-50%)",
+          left: "max(8px, calc(50% - 448px - 168px))",
+          width: 160,
+        }}
+      >
+        <RakutenWidget size="160x600" />
+      </div>
+      {/* 右サイド */}
+      <div
+        className="hidden xl:block fixed z-20"
+        style={{
+          top: "50%",
+          transform: "translateY(-50%)",
+          right: "max(8px, calc(50% - 448px - 168px))",
+          width: 160,
+        }}
+      >
+        <RakutenWidget size="160x600" />
+      </div>
+    </>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import { RakutenStickyAds } from "@/components/RakutenWidget";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -61,6 +62,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <RakutenStickyAds />
         {children}
         <Script id="jsonld-site" type="application/ld+json" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org",
