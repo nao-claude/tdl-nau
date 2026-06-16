@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { MainTabsEn } from "@/components/en/MainTabsEn";
 import { AdBanner } from "@/components/AdBanner";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { fetchParkData } from "@/lib/api";
 
@@ -113,6 +114,9 @@ export default async function HomeEn() {
       </div>
 
       {/* Footer */}
+      <div className="max-w-4xl mx-auto px-4 pb-4">
+        <AmazonBanner keyword="Tokyo Disney Resort goods" label="Shop Disney goods on Amazon Japan" />
+      </div>
       <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
         <p>Unofficial site. Not affiliated with Oriental Land Co., Ltd.</p>
         <p className="mt-1">

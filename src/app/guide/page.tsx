@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 
 export const metadata: Metadata = {
   title: "ディズニー攻略記事一覧 | TDLなう",
@@ -188,6 +189,9 @@ export default function GuidePage() {
         </p>
       </div>
 
+      <div className="max-w-4xl mx-auto px-4 pb-4">
+        <AmazonBanner keyword="ディズニー 攻略 グッズ" label="Amazonでディズニーグッズを探す" />
+      </div>
       <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
         <p>非公式サイトです。株式会社オリエンタルランドとは無関係です。</p>
         <p className="mt-1 flex items-center justify-center gap-3">

@@ -158,6 +158,9 @@ export default async function TDSAttractionDetailPage({ params }: Props) {
         </div>
       </div>
 
+      <div className="max-w-4xl mx-auto px-4 pb-4">
+        <AmazonBanner keyword="ディズニーシー アトラクション グッズ" label="Amazonでディズニーシーグッズを探す" />
+      </div>
       <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
         <p>非公式サイトです。株式会社オリエンタルランドとは無関係です。</p>
       </footer>

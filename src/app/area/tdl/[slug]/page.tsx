@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { getAreaGuide, getAllAreaSlugs, TDL_AREA_GUIDES } from "@/lib/area-guide-data";
 import { AdBanner } from "@/components/AdBanner";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 
 const CDN = "https://media1.tokyodisneyresort.jp/images/adventure/attraction";
 
@@ -260,6 +261,9 @@ export default async function TdlAreaPage({ params }: { params: Promise<{ slug: 
         </p>
       </div>
 
+      <div className="max-w-4xl mx-auto px-4 pb-4">
+        <AmazonBanner keyword="ディズニーランド グッズ エリア" label="Amazonでディズニーランドグッズを探す" />
+      </div>
       <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-4">
         <p>非公式サイトです。株式会社オリエンタルランドとは無関係です。</p>
         <p className="mt-1"><Link href="/privacy" className="underline">プライバシーポリシー</Link></p>

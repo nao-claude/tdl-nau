@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { MainTabsUsjEn } from "@/components/en/MainTabsUsjEn";
 import { AdBanner } from "@/components/AdBanner";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { fetchParkData } from "@/lib/api";
 import type { Metadata } from "next";
@@ -92,6 +93,9 @@ export default async function UsjPageEn() {
       </div>
 
       {/* Footer */}
+      <div className="max-w-4xl mx-auto px-4 pb-4">
+        <AmazonBanner keyword="USJ Universal Studio Japan goods" label="Shop USJ goods on Amazon Japan" />
+      </div>
       <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
         <p>Unofficial site. Not affiliated with Universal Studios Japan.</p>
         <p className="mt-1 flex items-center justify-center gap-3 flex-wrap">

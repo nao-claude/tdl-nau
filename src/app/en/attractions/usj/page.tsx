@@ -4,6 +4,7 @@ import { Map, Clock, CalendarDays } from "lucide-react";
 import { AttractionGuide } from "@/components/AttractionGuide";
 import { USJ_ATTRACTIONS } from "@/lib/attraction-data";
 import { AdBanner } from "@/components/AdBanner";
+import { AmazonBanner } from "@/components/RakutenWidget";
 
 export const metadata: Metadata = {
   title: "USJ Attraction Guide | Wait Times · Height Requirements · Express Pass",
@@ -69,6 +70,9 @@ export default function UsjAttractionsPageEn() {
       </div>
 
       {/* Footer */}
+      <div className="max-w-4xl mx-auto px-4 pb-4">
+        <AmazonBanner keyword="USJ Universal Studio goods" label="Shop USJ goods on Amazon Japan" />
+      </div>
       <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
         <p>Unofficial site. Not affiliated with Universal Studios Japan.</p>
         <p className="mt-1">

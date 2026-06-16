@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { MainTabsUsj } from "@/components/MainTabsUsj";
 import { AdBanner } from "@/components/AdBanner";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { fetchParkData } from "@/lib/api";
 import type { Metadata } from "next";
@@ -86,6 +87,9 @@ export default async function UsjPage() {
       </div>
 
       {/* フッター */}
+      <div className="max-w-4xl mx-auto px-4 pb-4">
+        <AmazonBanner keyword="USJ グッズ ユニバーサル" label="AmazonでUSJ関連グッズを探す" />
+      </div>
       <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
         <p>非公式サイトです。ユニバーサル・スタジオ・ジャパンとは無関係です。</p>
         <p className="mt-1 flex items-center justify-center gap-3 flex-wrap">

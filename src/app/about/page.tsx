@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AmazonBanner } from "@/components/RakutenWidget";
 
 export const metadata: Metadata = {
   title: "このサイトについて | TDLなう",
@@ -186,6 +187,9 @@ export default function AboutPage() {
             </Link>
           </div>
 
+        <div className="mt-4">
+          <AmazonBanner keyword="ディズニー グッズ" label="Amazonでディズニー関連商品を探す" />
+        </div>
         </div>
       </div>
     </main>

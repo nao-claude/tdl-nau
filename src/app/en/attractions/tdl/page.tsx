@@ -4,6 +4,7 @@ import { Map, Clock, CalendarDays } from "lucide-react";
 import { AttractionGuide } from "@/components/AttractionGuide";
 import { TDL_ATTRACTIONS } from "@/lib/attraction-data";
 import { AdBanner } from "@/components/AdBanner";
+import { AmazonBanner } from "@/components/RakutenWidget";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 
 export const metadata: Metadata = {
@@ -85,6 +86,9 @@ export default function TDLAttractionsPageEn() {
       </div>
 
       {/* Footer */}
+      <div className="max-w-4xl mx-auto px-4 pb-4">
+        <AmazonBanner keyword="Tokyo Disneyland goods" label="Shop Disneyland goods on Amazon Japan" />
+      </div>
       <footer className="text-center py-6 text-xs text-gray-400 border-t border-gray-200 mt-8">
         <p>Unofficial site. Not affiliated with Oriental Land Co., Ltd.</p>
         <p className="mt-1">
