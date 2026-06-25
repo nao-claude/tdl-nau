@@ -62,9 +62,6 @@ export default async function Home() {
     <main className="min-h-screen bg-gray-50">
       <SiteHeader />
 
-      {/* 広告①：コンテンツ上部 */}
-      <AdBanner adSlot="1897618790" containerClassName="max-w-4xl mx-auto px-4 pt-3" />
-
       {/* 広告：ファーストビュー */}
       <div className="max-w-4xl mx-auto px-4 pt-2 space-y-2">
         <p className="text-xs text-gray-400">PR・広告</p>
