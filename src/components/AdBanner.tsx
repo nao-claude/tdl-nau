@@ -23,19 +23,13 @@ export function AdBanner({ adSlot, containerClassName = "" }: Props) {
   if (!ADSENSE_CLIENT_ID || !ADSENSE_ENABLED) return null;
 
   return (
-    <div
-      className={containerClassName}
-      style={{ height: AD_HEIGHT, overflow: "hidden", position: "relative" }}
-    >
+    <div className={containerClassName}>
       <ins
         className="adsbygoogle"
         style={{
           display: "block",
-          position: "absolute",
-          top: 0,
-          left: 0,
           width: "100%",
-          height: "100%",
+          minHeight: AD_HEIGHT,
         }}
         data-ad-client={ADSENSE_CLIENT_ID}
         data-ad-slot={adSlot}
