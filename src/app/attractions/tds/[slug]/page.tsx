@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { TDS_ATTRACTIONS } from "@/lib/attraction-data";
 import { getAttractionDetail, getDetailsByPark } from "@/lib/attraction-detail";
 import { AttractionWaitBadge } from "@/components/AttractionWaitBadge";
+import { AmazonBanner } from "@/components/RakutenWidget";
 
 const CDN = "https://media1.tokyodisneyresort.jp/images/adventure/attraction";
 function galleryUrl(id: number) { return `${CDN}/${id}_thum_name.jpg`; }
