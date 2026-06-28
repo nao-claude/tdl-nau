@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { NextRequest, NextResponse } from "next/server";
 import { STATIC_TICKET_PRICES } from "@/lib/ticket-prices-static";
 
