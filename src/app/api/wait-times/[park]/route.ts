@@ -4,11 +4,11 @@ import { ParkId } from "@/types";
 
 export const runtime = "nodejs";
 
-async function fetchFromBlob(park: ParkId) {
-  const url = process.env.BLOB_BASE_URL;
-  if (!url) return null;
+const XSERVER_BASE = "https://heartyselect.xsrv.jp/disney-data";
+
+async function fetchFromXServer(park: ParkId) {
   try {
-    const res = await fetch(`${url}/wait-times/${park}.json`, { cache: "no-store" });
+    const res = await fetch(`${XSERVER_BASE}/${park}.json`, { cache: "no-store" });
     if (!res.ok) return null;
     const data = await res.json();
     // 10分以上古いデータは使わない
@@ -31,8 +31,8 @@ export async function GET(
   }
 
   try {
-    // まずBlobキャッシュから取得
-    const cached = await fetchFromBlob(park as ParkId);
+    // まずXServerのキャッシュから取得
+    const cached = await fetchFromXServer(park as ParkId);
     if (cached) {
       return NextResponse.json(cached, {
         headers: { "Cache-Control": "public, s-maxage=180, stale-while-revalidate=60" },

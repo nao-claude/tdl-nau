@@ -190,14 +190,7 @@ async function fetchSharedData() {
     console.warn("Park hours fetch failed, skipping hours line.");
   }
 
-  // 短縮URL（1回だけ取得）
-  let siteUrl = "https://disneynow.tokyo";
-  try {
-    const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(siteUrl)}`, { signal: AbortSignal.timeout(5000) });
-    if (res.ok) siteUrl = await res.text();
-  } catch {
-    console.warn("TinyURL fetch failed, using original URL.");
-  }
+  const siteUrl = "https://disneynow.tokyo";
 
   return { now, grade, weather, waitTimes, parkHours, siteUrl };
 }

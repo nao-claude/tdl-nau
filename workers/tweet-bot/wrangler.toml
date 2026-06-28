@@ -9,3 +9,10 @@ compatibility_flags = ["nodejs_compat"]
 # 13:00 JST = 04:00 UTC
 # 16:00 JST = 07:00 UTC
 crons = ["0 23 * * *", "0 4 * * *", "0 7 * * *"]
+
+# 返信済みTweetID管理（重複リプライ防止）
+# セットアップ: npx wrangler kv namespace create REPLIED_TWEETS
+# → 出力されたIDを下の id に設定してください
+[[kv_namespaces]]
+binding = "REPLIED_TWEETS"
+id = "f49bae9ec22f46358b081762438567bc"
