@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 
-export const maxDuration = 5;
-
 export interface ParkHours {
   open: string;
   close: string;

@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchParkData } from "@/lib/api";
 import { ParkId } from "@/types";
 
-export const runtime = "nodejs";
-
 const XSERVER_BASE = "https://heartyselect.xsrv.jp/disney-data";
 
 async function fetchFromXServer(park: ParkId) {
@@ -11,7 +9,6 @@ async function fetchFromXServer(park: ParkId) {
     const res = await fetch(`${XSERVER_BASE}/${park}.json`, { cache: "no-store" });
     if (!res.ok) return null;
     const data = await res.json();
-    // 10分以上古いデータは使わない
     const fetchedAt = new Date(data.fetchedAt).getTime();
     if (Date.now() - fetchedAt > 10 * 60 * 1000) return null;
     return data;
@@ -31,7 +28,6 @@ export async function GET(
   }
 
   try {
-    // まずXServerのキャッシュから取得
     const cached = await fetchFromXServer(park as ParkId);
     if (cached) {
       return NextResponse.json(cached, {
@@ -39,7 +35,6 @@ export async function GET(
       });
     }
 
-    // フォールバック: 直接外部APIから取得
     const data = await fetchParkData(park as ParkId);
     return NextResponse.json(data, {
       headers: { "Cache-Control": "public, s-maxage=180, stale-while-revalidate=60" },
