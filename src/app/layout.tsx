@@ -22,12 +22,12 @@ export const viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://disneynow.tokyo"),
-  title: "TDLなう | ディズニーランド・シー 今日のリアルタイム待ち時間【無料・2026】",
-  description: "ディズニーランド・ディズニーシーの今日のリアルタイム待ち時間を無料で確認。5分ごと自動更新・混雑予想カレンダー・DPA攻略ガイドも掲載。",
+  title: "ディズニーランド・シー 待ち時間 リアルタイム【今日の混雑予報】| TDLなう",
+  description: "ディズニーランド・ディズニーシーのリアルタイム待ち時間を今すぐ確認。5分ごと自動更新・混雑予想カレンダー・DPA攻略ガイドも無料で掲載。",
   keywords: "TDL 待ち時間, TDS 待ち時間, ディズニーランド 混雑, ディズニーシー 混雑, 東京ディズニーリゾート 待ち時間, 混雑予想",
   openGraph: {
-    title: "TDLなう | ディズニーランド・シー 今日のリアルタイム待ち時間【無料・2026】",
-    description: "ディズニーランド・ディズニーシーの今日のリアルタイム待ち時間を無料で確認。5分ごと自動更新・混雑予想カレンダー・DPA攻略も掲載。",
+    title: "ディズニーランド・シー 待ち時間 リアルタイム【今日の混雑予報】| TDLなう",
+    description: "ディズニーランド・ディズニーシーのリアルタイム待ち時間を今すぐ確認。5分ごと自動更新・混雑予想カレンダー・DPA攻略も無料で掲載。",
     url: "https://disneynow.tokyo",
     siteName: "TDLなう",
     locale: "ja_JP",
@@ -38,8 +38,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@disneynow_tokyo",
     creator: "@disneynow_tokyo",
-    title: "TDLなう | ディズニーランド・シー 今日のリアルタイム待ち時間【無料・2026】",
-    description: "ディズニーランド・ディズニーシーの今日のリアルタイム待ち時間を無料で確認。5分ごと自動更新・混雑予想カレンダー・DPA攻略も掲載。",
+    title: "ディズニーランド・シー 待ち時間 リアルタイム【今日の混雑予報】| TDLなう",
+    description: "ディズニーランド・ディズニーシーのリアルタイム待ち時間を今すぐ確認。5分ごと自動更新・混雑予想カレンダー・DPA攻略も無料で掲載。",
     images: ["/og-image.png"],
   },
   alternates: {
