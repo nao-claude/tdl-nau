@@ -5,9 +5,9 @@ import { AmazonBanner } from "@/components/RakutenWidget";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "ディズニー・ハロウィーン2026 混雑予想カレンダー | TDLなう",
+  title: "ディズニーハロウィン2026 混雑予想カレンダー【9月〜10月】| TDLなう",
   description:
-    "2026年ディズニー・ハロウィーンの東京ディズニーランド・ディズニーシー混雑予想。9月〜10月31日の日別混雑レベル・仮装ルール・攻略ポイントを徹底解説。",
+    "ディズニーハロウィン2026の混雑予想カレンダー。東京ディズニーランド・シーの9月〜10月の日別混雑レベル・仮装ルール・DPA攻略を解説。混みやすい日・穴場日付がひと目でわかる。",
   alternates: { canonical: "https://disneynow.tokyo/halloween2026" },
 };
 

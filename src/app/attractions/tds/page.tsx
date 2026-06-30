@@ -10,7 +10,7 @@ import { ShareBar } from "@/components/ShareBar";
 
 export const metadata: Metadata = {
   title: "ディズニーシー アトラクション一覧 2026 | 待ち時間・身長制限・DPA対象【最新】",
-  description: "ディズニーシー全アトラクションの今日のリアルタイム待ち時間・身長制限・DPA対象を無料で一覧表示。ファンタジースプリングス最新情報も掲載。",
+  description: "ディズニーシー全アトラクションの身長制限一覧・リアルタイム待ち時間・DPA対象を無料で確認。インディ・センターオブアース・ソアリンなど身長制限あり・なし一覧。ファンタジースプリングス情報も掲載。",
   alternates: {
     canonical: "https://disneynow.tokyo/attractions/tds",
     languages: {

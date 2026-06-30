@@ -19,8 +19,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const area = getAreaGuide("tdl", slug);
   if (!area) return {};
   return {
-    title: `${area.name}完全攻略ガイド 2026 | アトラクション・フォトスポット・グルメ | TDLなう`,
-    description: `東京ディズニーランド「${area.name}」の完全ガイド。${area.theme}をテーマにしたエリアのアトラクション情報・待ち時間傾向・フォトスポット・おすすめグルメ・回り方のコツを徹底解説。`,
+    title: `${area.name} 待ち時間・攻略ガイド 2026【アトラクション一覧】| TDLなう`,
+    description: `東京ディズニーランド「${area.name}」の待ち時間・攻略ガイド。アトラクション情報・混みやすい時間帯・フォトスポット・グルメ・効率的な回り方を徹底解説。`,
     alternates: { canonical: `https://disneynow.tokyo/area/tdl/${slug}` },
   };
 }
