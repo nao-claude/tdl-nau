@@ -5,8 +5,8 @@ import { AmazonBanner } from "@/components/RakutenWidget";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "DPA（ディズニー・プレミアアクセス）攻略ガイド 2026 | TDLなう",
-  description: "東京ディズニーランド・シーのDPA完全攻略。どれから買うべきか、売り切れる時間帯、予算別おすすめ、当日の購入タイミングを徹底解説。",
+  title: "DPA攻略ガイド2026【優先順位・売り切れ時間】ディズニー・プレミアアクセス | TDLなう",
+  description: "ディズニーDPA（プレミアアクセス）の攻略ガイド。どれから買うべきか優先順位・売り切れる時間帯・予算別おすすめ・当日の購入タイミングを徹底解説。",
   alternates: { canonical: "https://disneynow.tokyo/dpa" },
 };
 

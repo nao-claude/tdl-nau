@@ -5,9 +5,9 @@ import { AmazonBanner } from "@/components/RakutenWidget";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "ディズニー・クリスマス2026 混雑予想カレンダー | TDLなう",
+  title: "ディズニークリスマス2026 混雑予想カレンダー【11月〜12月】| TDLなう",
   description:
-    "2026年ディズニー・クリスマスの東京ディズニーランド・ディズニーシー混雑予想。11月〜12月25日の日別混雑レベル・イルミネーション・攻略ポイントを徹底解説。",
+    "ディズニークリスマス2026の混雑予想カレンダー。東京ディズニーランド・シーの11月〜12月25日の日別混雑レベル・イルミネーション・攻略ポイントを徹底解説。混みやすい日・穴場日付がひと目でわかる。",
   alternates: { canonical: "https://disneynow.tokyo/christmas2026" },
 };
 

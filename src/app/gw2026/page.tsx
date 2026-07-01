@@ -5,9 +5,9 @@ import { AmazonBanner } from "@/components/RakutenWidget";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "GW2026 ディズニー混雑予想カレンダー | TDLなう",
+  title: "ゴールデンウィーク2026 ディズニー混雑予想【GW攻略カレンダー】| TDLなう",
   description:
-    "2026年ゴールデンウィークの東京ディズニーランド・ディズニーシー混雑予想。4月29日〜5月6日の日別混雑レベル・おすすめ日・攻略ポイントを徹底解説。",
+    "GW2026のディズニー混雑予想カレンダー。東京ディズニーランド・シーの4月29日〜5月6日の日別混雑レベル・空いてる日・攻略ポイントを徹底解説。ゴールデンウィークを快適に楽しむための完全ガイド。",
   alternates: { canonical: "https://disneynow.tokyo/gw2026" },
 };
 

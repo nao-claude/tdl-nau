@@ -8,8 +8,8 @@ import { fetchParkData } from "@/lib/api";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "USJなう | ユニバーサル・スタジオ・ジャパン リアルタイム待ち時間・混雑予想",
-  description: "ユニバーサル・スタジオ・ジャパン（USJ）のリアルタイム待ち時間をエリア別・ランキング別に無料で確認。混雑予想カレンダーやおすすめコースも掲載。",
+  title: "USJ 待ち時間 リアルタイム【今日の混雑予想】| ユニバーサル・スタジオ・ジャパン",
+  description: "USJ（ユニバーサル・スタジオ・ジャパン）のリアルタイム待ち時間を今すぐ確認。エリア別・ランキング別に無料表示。混雑予想カレンダー・おすすめコースも掲載。",
   alternates: { canonical: "https://disneynow.tokyo/usj" },
 };
 
